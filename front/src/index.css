@@ -14,14 +14,9 @@
   background-color: #242424;
 
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
 }
 
 a {
-  font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
@@ -31,7 +26,6 @@ a:hover {
 
 body {
   margin: 0 5em;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -53,18 +47,14 @@ button {
   margin-top: 0.2em;
   margin-left: 0.5em;
   font-size: 0.7em;
-  font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #7310c4;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
 @media (prefers-color-scheme: light) {
