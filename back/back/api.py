@@ -1,9 +1,9 @@
-from ninja import NinjaAPI, Schema, Router
+from ninja import NinjaAPI
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 
 api = NinjaAPI()
-router = Router()
 
-@router.post('/sign', response=User)
-def sign_up or_in()
+@api.get("/hello")
+def hello(request):
+    return "Hello world"
