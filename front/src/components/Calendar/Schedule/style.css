@@ -33,6 +33,13 @@
   text-overflow: ellipsis;
   font-weight: 600;
   color: black;
+  text-align: left;
 
   padding: 5px;
+}
+
+/* 제목없음 */
+h1:empty:after {
+  content: attr(placeholder);
+  color: gray;
 }

@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useContext } from "react";
+import { ModalSetterContext } from "../../../context/ModalProvider";
+import { state } from "../../../context/ModalProvider";
 
 export function useShowModal() {
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const setModalState = useContext(ModalSetterContext);
 
-  const onShow = () => setShowModal(true);
+  const onShow = (props: state) => {
+    setModalState(props);
+  };
   const onClose = () => {
-    console.log("이거 실행되고 있는데");
-    setShowModal(false);
+    setModalState(null);
   };
 
-  return { showModal, onShow, onClose };
+  return { onShow, onClose };
 }

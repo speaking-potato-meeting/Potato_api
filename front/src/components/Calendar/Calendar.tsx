@@ -49,26 +49,104 @@ const getAllSchedules = async (): Promise<ISchedule[] | null> => {
 
 export default function Calendar() {
   const [nowDate, setNowDate] = useState<Date>(() => new Date());
-  const [allSchedule, setAllSchedule] = useState<ISchedule[] | null>([]);
+  const [allSchedule, setAllSchedule] = useState<ISchedule[]>([]);
+
+  function generateId(arr: ISchedule[] | contents[]) {
+    const maxId = arr.reduce((max, obj) => (obj.id > max ? obj.id : max), 0);
+    return maxId;
+  }
+
+  function dateToString(arg: UniqueIdentifier) {
+    const timeStamp = new Date(arg);
+    const timeString = `${timeStamp.getFullYear()}-${(timeStamp.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${timeStamp.getDate().toString().padStart(2, "0")}`;
+    return timeString;
+  }
+
+  const addNewSchedule = (date: string, content: string) => {
+    let newSchedule: ISchedule;
+
+    date = dateToString(date);
+
+    // 추가하고자 하는 날짜 객체 가져오기
+    const toAddDate = allSchedule.find((s) => s.date === date);
+
+    // 존재하는 스케줄이 없을 경우
+    if (!toAddDate) {
+      newSchedule = {
+        id: generateId(allSchedule) + 1,
+        date,
+        contents: [
+          {
+            id: 0,
+            content,
+          },
+        ],
+      };
+      return setAllSchedule([...allSchedule, newSchedule]);
+    }
+
+    newSchedule = {
+      ...toAddDate,
+      contents: [
+        ...toAddDate.contents,
+        {
+          id: generateId(toAddDate.contents) + 1,
+          content,
+        },
+      ],
+    };
+    return setAllSchedule((prev) =>
+      prev.map((s) => {
+        if (s.date === newSchedule.date) {
+          return newSchedule;
+        }
+        return s;
+      })
+    );
+  };
+
+  const editSchedule = (contentId: number, date: string, content: string) => {
+    const editedSchedule = allSchedule
+      .find((s) => {
+        if (s.date === date) {
+          return s;
+        }
+      })
+      ?.contents.map((c) => {
+        if (c.id === contentId) {
+          return {
+            ...c,
+            content,
+          };
+        }
+        return c;
+      });
+
+    if (editSchedule !== undefined) {
+      setAllSchedule((prev) => {
+        const newState = prev.map((s) => {
+          if (s.date === date) {
+            return {
+              ...s,
+              contents: editedSchedule,
+            };
+          }
+          return s;
+        });
+        return newState as ISchedule[];
+      });
+    }
+  };
 
   function handleDragEnd(event: DragEndEvent) {
     const { over, active } = event;
 
-    function dateToString(arg: UniqueIdentifier) {
-      const timeStamp = new Date(arg);
-      const timeString = `${timeStamp.getFullYear()}-${(
-        timeStamp.getMonth() + 1
-      )
-        .toString()
-        .padStart(2, "0")}-${timeStamp.getDate().toString().padStart(2, "0")}`;
-      return timeString;
-    }
-
     if (over) {
+      // 옮기고자 하는 날짜 정보
       const { id } = active as { id: string };
       const [editId, editDate] = id.split("+");
-
-      let uniqueId = 2;
 
       setAllSchedule((prev) => {
         // 수정하고자 하는 날짜 객체 가져오기(draggable)
@@ -104,8 +182,10 @@ export default function Calendar() {
 
               return {
                 ...s,
-                id: uniqueId++,
-                contents: [...s.contents, { ...editContent, id: uniqueId++ }],
+                contents: [
+                  ...s.contents,
+                  { ...editContent, id: generateId(s.contents) + 1 },
+                ],
               } as ISchedule;
             }
             return s;
@@ -120,11 +200,11 @@ export default function Calendar() {
             const newSchedule = [
               ...nextState,
               {
-                id: uniqueId++,
+                id: generateId(nextState) + 1,
                 date: dateToString(over.id),
                 contents: [
                   {
-                    id: uniqueId++,
+                    id: 0,
                     content:
                       wantEdit.contents.find((c) => c.id === parseInt(editId))
                         ?.content ?? "",
@@ -165,7 +245,6 @@ export default function Calendar() {
   const allDay: Date[] = getDays(nowDate);
 
   const mouseSensor = useSensor(MouseSensor, {
-    // Require the mouse to move by 10 pixels before activating
     activationConstraint: {
       distance: 10,
     },
@@ -207,6 +286,7 @@ export default function Calendar() {
                   day.getDate() === scheduleDate.getDate()
                 );
               })}
+              scheduleSetter={{ addNewSchedule, editSchedule }}
             />
           ))}
         </DndContext>
