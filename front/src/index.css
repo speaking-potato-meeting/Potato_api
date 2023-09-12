@@ -14,6 +14,7 @@
   background-color: #242424;
 
   font-synthesis: none;
+    --hover-background--default: rgb(241, 241, 239);
 }
 
 a {

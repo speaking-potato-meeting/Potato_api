@@ -1,0 +1,69 @@
+section {
+  width: 90vw;
+  margin: auto;
+  max-width: 1080px;
+}
+
+.controller {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.controller button {
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  padding: 8px;
+}
+.controller button:hover {
+  background-color: antiquewhite;
+  cursor: pointer;
+}
+
+.buttonGroup {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.weekContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.06);
+}
+
+.weekContainer .weekBox {
+  padding-bottom: 5px;
+  text-align: center;
+}
+
+.dateContainer {
+  display: grid;
+  grid-template-columns: repeat(7, calc(100% / 7));
+  min-height: 150vh;
+}
+
+.dateContainer .dateBox {
+  position: relative;
+  min-height: 130px;
+  text-align: end;
+
+  border: 1px solid #80808021;
+}
+.dateContainer .dateBox span {
+  position: absolute;
+  right: 0;
+  margin: 5px;
+  text-align: center;
+}
+.dateContainer .dateBox .today {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  background: orange;
+  border-radius: 50%;
+}
+
+.notMonth {
+  color: grey;
+}
