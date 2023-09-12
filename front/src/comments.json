@@ -1,0 +1,37 @@
+[
+  {
+    "id": 0,
+    "name": "coenffl",
+    "text": "약속있어서 감품회 불참합니다...",
+    "timestamp": "Sun Sep 10 2023 17:05:00 GMT+0900",
+    "pf_pic": "./images/230521_0.jpeg"
+  },
+  {
+    "id": 1,
+    "name": "kunja266",
+    "text": "--------마감--------",
+    "timestamp": "Sun Sep 10 2023 17:27:00 GMT+0900",
+    "pf_pic": "./images/킹감자.jpeg"
+  },
+  {
+    "id": 2,
+    "name": "joohoneywalker@",
+    "text": "정말 급한 일이 있어서 감품회 못 갈 것 같습니다 (대장님한테 개별 연락함)",
+    "timestamp": "Sun Sep 10 2023 17:47:00 GMT+0900",
+    "pf_pic": "./images/joo프사.jpeg"
+  },
+  {
+    "id": 3,
+    "name": "kunja266", 
+    "text": "--------진짜 마감--------",
+    "timestamp": "Sun Sep 10 2023 17:55:00 GMT+0900",
+    "pf_pic": "./images/킹감자.jpeg"
+  },
+  {
+    "id": 4,
+    "name": "oootakkk",
+    "text": "한번만 봐주십쇼...",
+    "timestamp": "Sun Sep 10 2023 21:05:00 GMT+0900",
+    "pf_pic": "./images/yang.jpeg"
+  }
+]

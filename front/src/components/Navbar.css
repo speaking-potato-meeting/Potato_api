@@ -1,0 +1,31 @@
+/* navbar 전체 영역 */
+.nav_nav {
+  padding: 1.5rem 0;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  /* position: sticky;
+  top: 0; */
+}
+
+.nav_ul {
+  display: flex;
+  margin: 0;
+}
+
+.nav_li {
+  border: 0;
+  margin: 0;
+  padding: 0 0.8rem;
+}
+
+.nav_a {
+  color: white;
+}
+
+/* 밝은 버전일 때 */
+@media (prefers-color-scheme: light) {
+  .nav_a {
+    color: black;
+  }
+}

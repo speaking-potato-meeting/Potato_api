@@ -1,0 +1,82 @@
+/* 댓글 컴포넌트 전체 영역 */
+.comment {
+  margin: 2rem 9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* 오늘 날짜 h1 */
+.today {
+  margin: 0.5rem 1.5rem;
+}
+
+.comment li {
+  border: 0.2px white solid;
+  border-radius: 1em;
+  padding: 0.7em;
+  margin: 0.85rem;
+}
+
+/* 프로필 사진과 작성자와 timestamp를 묶은 */
+.comment-profile-timestamp-box {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+}
+
+/* 프로필 사진과 작성자를 묶은 */
+.comment-profile-box {
+  display: flex;
+  align-items: center;
+}
+
+/* 댓글 프로필 사진 */
+.comment-pf-pic {
+  width: 45px;
+  height: 45px;
+  border-radius: 3em;
+  margin-right: 0.5em;
+}
+
+/* 수정 모드시 input과 버튼들 묶은 */
+.comment-edit-content {
+  margin-left: 0.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 댓글 작성자 */
+.comment-name {
+  margin-left: 0.5rem;
+}
+
+/* 수정 모드 아닐 때 댓글 내용 */
+.comment-text {
+  margin: 0.4rem 1rem;
+}
+
+/* 댓글 수정 모드시 나타나는 input */
+.comment-edit-input {
+  font-family: 'Dovemayo_gothic';
+  width: 400px;
+  height: 22px;
+  font-size: 16px;
+  margin: 0.4rem 1rem;
+  border: 0;
+}
+
+/* 댓글 생성 input과 버튼을 감싸는 */
+.comment-input-box {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* 댓글 생성 input */
+.comment-input {
+  width: 80%;
+  /* font-family: 'Dovemayo_gothic'; */
+  /* font-size: 16px; */
+}
