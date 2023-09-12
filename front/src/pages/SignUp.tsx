@@ -1,11 +1,22 @@
-import React from 'react'
+import { RuleForm } from "../components/RuleForm/RuleForm";
 
 const SignUp = () => {
   return (
-    <div>
-      SignUp
-    </div>
-  )
-}
+    <section>
+      <div
+        style={{
+          width: "600px",
+          margin: "auto",
+          minHeight: "50vw",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <RuleForm />
+      </div>
+    </section>
+  );
+};
 
-export default SignUp
+export default SignUp;
