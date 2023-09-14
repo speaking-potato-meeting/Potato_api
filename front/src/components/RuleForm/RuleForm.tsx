@@ -37,51 +37,51 @@ export function RuleForm() {
   };
   return (
     <form onSubmit={handleSubmit}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-        }}
-      >
-        <button onClick={addFields}>+</button>규칙 추가하기
+      <div className="form-header">
+        <button onClick={addFields}>+</button>
+        <span>규칙 추가하기</span>
       </div>
-      {inputFields.map((input, idx) => {
-        return (
-          <div
-            key={idx}
-            style={{
-              display: "flex",
-              gap: "15px",
-              margin: "15px",
-            }}
-          >
-            <input
-              size={7}
-              type="text"
-              name="fee"
-              placeholder="금액"
-              value={input.fee}
-              onChange={(e) => handleFormChange(idx, e)}
-            />
-            <input
-              type="text"
-              name="rule"
-              placeholder="규칙"
-              value={input.rule}
-              onChange={(e) => handleFormChange(idx, e)}
-            />
-            <button
-              onClick={() => {
-                removeFields(idx);
-              }}
-            >
-              -
-            </button>
-          </div>
-        );
-      })}
-      <button style={{ width: "100%" }}>완료</button>
+      <div className="form-contents">
+        <ol>
+          {inputFields.map((input, idx) => {
+            return (
+              <li key={idx} className="field">
+                <span>{`${idx + 1}.`}</span>
+                <div className="input">
+                  <input
+                    type="text"
+                    name="fee"
+                    placeholder="금액"
+                    value={input.fee}
+                    onChange={(e) => handleFormChange(idx, e)}
+                  />
+                </div>
+
+                <div className="input">
+                  <input
+                    type="text"
+                    name="rule"
+                    placeholder="규칙"
+                    value={input.rule}
+                    onChange={(e) => handleFormChange(idx, e)}
+                  />
+                </div>
+                <button
+                  className="field-remove-btn"
+                  onClick={() => {
+                    removeFields(idx);
+                  }}
+                >
+                  -
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+      <div className="form-footer">
+        <button type="submit">말하는 감자되기</button>
+      </div>
     </form>
   );
 }
