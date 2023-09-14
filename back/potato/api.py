@@ -11,20 +11,21 @@ api  = NinjaAPI()
 
 class commentIn(Schema):
     user: int 
-    # user = 1
+    user = 1
     timestamp: date
-    # timestamp = datetime.now()
+    timestamp = datetime.now()
     text: str
-    # text = '확인'
+    text = '확인1'
 
 class commentOut(Schema):
     id: int
+    id =1
     user: int 
-    # user = 1
+    user = 1
     timestamp: date
-    # timestamp = datetime.now()
+    timestamp = datetime.now()
     text: str
-    # text = '확인'
+    text = '확인2'
 
 
 @api.post("/comments")
@@ -37,3 +38,16 @@ def get_Comment(request, comment_id: int):
     comment = get_object_or_404(Comment, id=comment_id)
     return comment
 
+@api.put("/comments/{comment_id}")
+def update_Comment(request,comment_id: int,payload: commentIn):
+    comment = get_object_or_404(Comment, id=comment_id)
+    for attr, value, in payload.dict.items():
+        setattr(comment,attr,value)
+    comment.save()
+    return {"success" : True}
+
+@api.delete("/comments/{comment_id}")
+def delete_Comment(request,comment_id: int):
+    comment = get_object_or_404(Comment, id=comment_id)
+    comment.delete()
+    return {"success" : True}

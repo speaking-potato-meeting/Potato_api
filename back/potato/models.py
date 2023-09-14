@@ -35,7 +35,7 @@ class User(AbstractUser):
     cdt = models.DateTimeField(auto_now_add=True)
     individual_rule = models.TextField(null=True, blank=True)
     #변경
-    birth = models.DateField()
+    birth = models.DateField(null=True)
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
