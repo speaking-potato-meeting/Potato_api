@@ -39,9 +39,9 @@ def get_Comment(request, comment_id: int):
     return comment
 
 @api.put("/comments/{comment_id}")
-def update_Comment(request,comment_id: int,payload: commentIn):
+def update_Comment(request,comment_id: int, payload: commentIn):
     comment = get_object_or_404(Comment, id=comment_id)
-    for attr, value, in payload.dict.items():
+    for attr, value, in payload.dict().items():
         setattr(comment,attr,value)
     comment.save()
     return {"success" : True}
