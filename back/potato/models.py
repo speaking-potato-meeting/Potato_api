@@ -82,3 +82,4 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     text = models.TextField(null=True, blank=True)
+    
