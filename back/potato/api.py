@@ -38,7 +38,7 @@ def create_Comment(request, payload: commentIn):
     return {"id": comment.id, "timestamp": comment.timestamp}
 
 
-@api.get('comments/{comment_id}', response=commentOut)
+@api.get('/comments/{comment_id}', response=commentOut)
 def get_Comment(request, comment_id: int):
     comment = get_object_or_404(Comment, id=comment_id)
     return comment
@@ -46,8 +46,9 @@ def get_Comment(request, comment_id: int):
 @api.put("/comments/{comment_id}")
 def update_Comment(request,comment_id: int, payload: commentIn):
     comment = get_object_or_404(Comment, id=comment_id)
-    for attr, value, in payload.dict().items():
-        setattr(comment,attr,value)
+    comment.user_id = payload.user_id
+    comment.timestamp = payload.timestamp
+    comment.text = payload.text
     comment.save()
     return {"success" : True}
 
