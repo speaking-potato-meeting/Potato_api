@@ -14,26 +14,18 @@ const Tictoc = () => {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   // intervalId를 받아 현재 시간 측정중인지!
   const [intervalId, setIntervalId] = useState<number | null>(null);
-  // 총 공부한 시간
-  // 어차피 초깃값이 0이기 때문에 조건걸지않고 처음부터 공부한 시간에 더해줘도 됨
-  // 근데 문제는 이렇게 하면 다음날까지도 이렇게 될수 있기 때문에
-  // 현재 시간을 가지고 오는데
-  // 날이 바뀌면(수->목) 오늘(수) 날짜데이터가 있는지 확인해보고 
-  // 있다면 거기에(수요일 데이터) 더한후 이걸 다시 0으로 바꿔주어야할거같다
-  // 없다면 새로운 데이터(수요일 데이터)에 이걸 집어넣어주고 0으로 바꿔줘야함
-  // 그리고 브라우저를 끄면 중지 + 저장 기능도 만들어야함
-  // 그리고... 가장 중요한... 브라우저를 끄지않고 
-  const [studyTime, setStudyTime] = useState<number>(0);
+  // 저장된 공부시간 가져오기!
+  const savedStudyTime = localStorage.getItem('studyTime');
+  // 문자열을 10진수 정수 number로 변환합니다.
+  const studyTime = savedStudyTime ? parseInt(savedStudyTime, 10) : 0;
 
-  
+
   // 버튼 클릭 시 시간 측정 시작
   const startTimer = () => {
     // 시간 측정 중이 아니라면!
     if (intervalId === null) {
       // 공부 시작 시간 새로 받기
       setStartTime(new Date()); // 얘가 문제였음!
-      console.log('공부 시작 시간 들어옵니다.')
-      console.log(startTime) 
       // setInterval 시작하고 인터벌 ID를 저장
       const id = window.setInterval(() => {
         // 현재 시간 1초 당 계속 받아오기
@@ -50,14 +42,37 @@ const Tictoc = () => {
   const timepause = () => {
     // setInterval을 중지하고 intervalId를 초기화 시킨다
     if (intervalId) {
-      // 총 공부시간에 기존에 들어간 공부시간 저장하기
-      setStudyTime(elapsedTime)
-      console.log('공부시간 저장!')
-      console.log(studyTime) // 공부시간이 저장되긴하는데 일회용이다...
       setStartTime(null);
       clearInterval(intervalId);
       setIntervalId(null);
-    } 
+      
+      // 이제 해야할 것
+      // 기존에 사용하고 있던 StudyTime 대신 이 친구들을...
+      // 날짜를 받아서 어제와 같으면 같은 날짜의 데이터에 값을 저장해주고
+      // 저장한 날짜값 불러오기
+      // 현재 날짜를 문자열로 가져옵니다.
+      const currentDate = new Date().toISOString().slice(0, 10);
+
+      // localStorage에서 해당 날짜의 데이터를 가져옵니다.
+      const storedData = localStorage.getItem(currentDate);
+
+      if (storedData) {
+        // 이미 해당 날짜의 데이터가 저장되어 있는 경우
+        const parsedData = JSON.parse(storedData);
+        const storedStudyTimeInt = parsedData.studyTime ? parseInt(parsedData.studyTime, 10) : 0;
+        const updateStudyTime = storedStudyTimeInt + elapsedTime
+        // 기존 데이터를 업데이트하거나 필요에 따라 처리합니다.
+        const updateData = { "username": 'coenffl', "date": parsedData.date, "studyTime": updateStudyTime.toString() };
+        const studyJsonString = JSON.stringify(updateData);
+        localStorage.setItem(parsedData.date, studyJsonString);
+      } else {
+        // 해당 날짜의 데이터가 아직 없는 경우
+        const studyData = { "username": 'coenffl', "date": currentDate, "studyTime": elapsedTime.toString() };
+        const studyJsonString = JSON.stringify(studyData);
+        localStorage.setItem(currentDate, studyJsonString);
+      }
+    }
+      
   }
 
   // 비동기 처리
@@ -92,16 +107,18 @@ const Tictoc = () => {
   const formattedTime = millisecondsToTime(elapsedTime);
 
   return (
-    <div>
-      <h1>{today_is}</h1>
-      <BsFillPlayCircleFill size='50' className='tictoc-btn' onClick={startTimer}/>
-      <BsFillPauseCircleFill size='50' className='tictoc-btn' onClick={timepause}/>
+    <div className='tictoc'>
+      <h1 className='text-ac'>{today_is}</h1>
       {elapsedTime >= 0 && (
         <div>
-          <h1>경과 시간:</h1>
           <h1>{formattedTime.hours} 시간 {formattedTime.minutes} 분 {formattedTime.seconds} 초</h1>
         </div>
       )}
+      {intervalId === null ? (
+        <BsFillPlayCircleFill size='100' className='tictoc-btn' onClick={startTimer}/>
+      ) : (
+        <BsFillPauseCircleFill size='100' className='tictoc-btn' onClick={timepause}/>
+      )} 
     </div>
   );
 };
