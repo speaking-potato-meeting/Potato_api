@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from argon2 import PasswordHasher
 # , Group, Permission
 # Create your models here.
 
@@ -25,7 +26,7 @@ class User(AbstractUser):
     )
     username = models.CharField(max_length=20,unique=True)
     #unique=True 중복x
-    password = models.CharField(max_length=20)
+    password = models.CharField(max_length=200)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=50)

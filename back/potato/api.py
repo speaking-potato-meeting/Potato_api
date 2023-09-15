@@ -10,26 +10,26 @@ from django.shortcuts import get_object_or_404
 api  = NinjaAPI()
 
 class commentIn(Schema):
-    user: int 
-    user = 1
+    user: int
+    # user = 2
     timestamp: date
-    timestamp = datetime.now()
+    # timestamp = datetime.now()
     text: str
-    text = '확인1'
+    # text = '확인1'
 
 class commentOut(Schema):
     id: int
-    id =1
-    user: int 
-    user = 1
+    # id =1
+    user: int
+    # user = 2
     timestamp: date
-    timestamp = datetime.now()
+    # timestamp = datetime.now()
     text: str
-    text = '확인2'
-
+    # text = '확인2'
 
 @api.post("/comments")
 def create_Comment(request, payload: commentIn):
+    
     comment = Comment.objects.create(**payload.dict())
     return {'id': comment.id}
 
