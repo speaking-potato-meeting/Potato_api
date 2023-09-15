@@ -1,37 +1,42 @@
 from ninja import NinjaAPI
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
-from .models import Comment
+from .models import Comment,User
 from datetime import date, datetime
 from ninja import Schema
 from django.shortcuts import get_object_or_404
 
 
+
 api  = NinjaAPI()
 
 class commentIn(Schema):
-    user: int 
-    user = 1
-    timestamp: date
-    timestamp = datetime.now()
+    user_id: int = None
+    # user =1
+    timestamp: date = None
+    # timestamp = datetime.now()
     text: str
-    text = '확인1'
+    # text = "확인"
+
 
 class commentOut(Schema):
-    id: int
-    id =1
-    user: int 
-    user = 1
-    timestamp: date
-    timestamp = datetime.now()
+    id: int = None
+    # id=1
+    user_id: int = None
+    # user =1
+    timestamp: date = None
+    # timestamp = datetime.now()
     text: str
-    text = '확인2'
+    # text = "확인1"
+
 
 
 @api.post("/comments")
 def create_Comment(request, payload: commentIn):
-    comment = Comment.objects.create(**payload.dict())
-    return {'id': comment.id}
+    user = User.objects.get(id=payload.user_id)  # Fetch the User instance
+    comment = Comment.objects.create(user=user, text=payload.text)
+    return {"id": comment.id, "timestamp": comment.timestamp}
+
 
 @api.get('comments/{comment_id}', response=commentOut)
 def get_Comment(request, comment_id: int):
