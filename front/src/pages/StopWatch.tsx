@@ -1,9 +1,9 @@
-import React from 'react'
+import Tictoc from "../components/Tictoc"
 
 const StopWatch = () => {
   return (
     <div>
-      StopWatch
+      <Tictoc />
     </div>
   )
 }
