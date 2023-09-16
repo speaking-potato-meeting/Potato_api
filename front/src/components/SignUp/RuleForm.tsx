@@ -22,10 +22,18 @@ export function RuleForm() {
   ) => {
     const { target } = event;
 
-    let data = [...inputFields];
     if (target.className === "invalid") {
-      target.classList.remove("invalid");
+      if (target.value.length === 0) {
+        console.log(target.value, "이거 왜 안 머겅?");
+        target.parentElement!.classList.add("invalid");
+      }
+      if (target.value.length > 0) {
+        target.parentElement!.classList.remove("invalid");
+      }
     }
+
+    let data = [...inputFields];
+
     data[idx][`${target.name}`] = target.value;
     setInputFields(data);
   };
@@ -62,22 +70,34 @@ export function RuleForm() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    let focusNode: {
+      idx: number | null;
+      node: HTMLInputElement | null;
+    } = { idx: null, node: null };
     const validateForm = inputFields
       .map((f, idx) => {
         // 1. 금액 & 규칙 모두 적지 않았을 경우
-        if (!f.fee && !f.rule) return;
+        // if (!f.fee && !f.rule) return f;
 
         // 2. 규칙은 적었는데 금액은 적지 않은 경우
         if (!f.fee) {
           console.log(`${idx}번째 금액 값이 비었습니다.`);
           const map = getMap("fee");
           const node = map.get(idx);
-          console.log(node);
           if (node) {
             node.classList.add("invalid");
-            node.focus();
+            node.parentElement!.classList.add("invalid");
+            if (!focusNode.node) {
+              focusNode = {
+                idx,
+                node,
+              };
+              focusNode = focusNode.idx < idx ? focusNode : { idx, node };
+              console.log(focusNode);
+            }
+            // node.focus();
           }
-          return f;
+          // return f;
         }
 
         // 3. 금액은 적었는데 규칙은 적지 않은 경우
@@ -85,15 +105,26 @@ export function RuleForm() {
           console.log(`${idx}번째의 규칙 값이 비었습니다.`);
           const map = getMap("rule");
           const node = map.get(idx);
-          console.log(node);
           if (node) {
-            node.focus();
+            node.classList.add("invalid");
+            node.parentElement!.classList.add("invalid");
+            if (!focusNode.node) {
+              focusNode = {
+                idx,
+                node,
+              };
+              focusNode = focusNode.idx < idx ? focusNode : { idx, node };
+            }
           }
         }
         return f;
       })
       .filter((value): value is Rule => value !== undefined);
+
     console.log(validateForm);
+    if (focusNode.node) {
+      focusNode.node.focus();
+    }
 
     setInputFields(validateForm);
   };

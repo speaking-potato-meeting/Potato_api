@@ -71,14 +71,11 @@ button {
   line-height: 35px;
   transition: all 0.2s;
 }
-
-.input input:focus-within {
-  border-radius: 8px;
+.input:focus-within {
   box-shadow: inset 0 0 0 2px var(--point-color), 0 0 0 2px var(--point-color);
 }
 
-.input input.invalid:focus-within {
-  border-radius: 8px;
+.input.invalid {
   box-shadow: inset 0 0 0 2px var(--point-red), 0 0 0 2px var(--point-red);
 }
 
