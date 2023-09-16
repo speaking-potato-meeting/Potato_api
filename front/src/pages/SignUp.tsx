@@ -1,4 +1,5 @@
-import { RuleForm } from "../components/RuleForm/RuleForm";
+import { RuleForm } from "../components/SignUp/RuleForm";
+import SignUpForm from "../components/SignUp/SignUpForm";
 
 const SignUp = () => {
   return (
@@ -11,6 +12,9 @@ const SignUp = () => {
       </header>
       <div className="RuleForm-container">
         <RuleForm />
+      </div>
+      <div className="SignUp-container">
+        <SignUpForm />
       </div>
     </section>
   );

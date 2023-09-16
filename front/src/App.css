@@ -72,8 +72,14 @@ button {
   transition: all 0.2s;
 }
 
-.input:focus-within {
+.input input:focus-within {
+  border-radius: 8px;
   box-shadow: inset 0 0 0 2px var(--point-color), 0 0 0 2px var(--point-color);
+}
+
+.input input.invalid:focus-within {
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 2px var(--point-red), 0 0 0 2px var(--point-red);
 }
 
 .input input {
@@ -90,7 +96,7 @@ button {
 }
 
 .field span,
-div {
+.field div {
   flex-basis: 30px;
 }
 
