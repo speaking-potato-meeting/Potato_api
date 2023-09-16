@@ -24,6 +24,11 @@ const Tictoc = () => {
   const startTimer = () => {
     // 시간 측정 중이 아니라면!
     if (intervalId === null) {
+      // 날짜 받아서 기록이 있는지 확인하고
+      // 있다면 기록된 시간 가져와서 거기에 더해주고
+      // 없다면 지금 방식대로 기록
+
+
       // 공부 시작 시간 새로 받기
       setStartTime(new Date()); // 얘가 문제였음!
       // setInterval 시작하고 인터벌 ID를 저장
@@ -39,6 +44,21 @@ const Tictoc = () => {
     }
   };
   
+  // 비동기 처리
+  useEffect(() => {
+    // 시작 시간이 변경될 때마다 경과 시간 계산
+    if (startTime !== null) {
+      const interval = setInterval(() => {
+        // 때마다 시간 가지고 와서 시간 차 계산하고 elapsedTime에 넘겨주기
+        const currentTime = new Date();
+        // 계산 똑같이
+        const elapsedMilliseconds = startTime ? currentTime.getTime() - startTime.getTime() + studyTime : 0;
+        setElapsedTime(elapsedMilliseconds);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [startTime]);
+
   const timepause = () => {
     // setInterval을 중지하고 intervalId를 초기화 시킨다
     if (intervalId) {
@@ -75,31 +95,21 @@ const Tictoc = () => {
       
   }
 
-  // 비동기 처리
-  useEffect(() => {
-    // 시작 시간이 변경될 때마다 경과 시간 계산
-    if (startTime !== null) {
-      const interval = setInterval(() => {
-        // 때마다 시간 가지고 와서 시간 차 계산하고 elapsedTime에 넘겨주기
-        const currentTime = new Date();
-        // 계산 똑같이
-        const elapsedMilliseconds = startTime ? currentTime.getTime() - startTime.getTime() + studyTime : 0;
-        setElapsedTime(elapsedMilliseconds);
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [startTime]);
-
   // 밀리초를 시, 분, 초로 변환
   const millisecondsToTime = (milliseconds: number) => {
     const seconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
 
+    // 10미만인 경우 앞에 0을 붙여서 fomatting해주기로
+    const formattedHours = hours % 24 < 10 ? `0${hours % 24}` : hours % 24;
+    const formattedMinutes = minutes % 60 < 10 ? `0${minutes % 60}` : minutes % 60;
+    const formattedSeconds = seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60;
+  
     return {
-      hours: hours % 24,
-      minutes: minutes % 60,
-      seconds: seconds % 60,
+      hours: formattedHours,
+      minutes: formattedMinutes,
+      seconds: formattedSeconds,
     };
   };
 
@@ -108,16 +118,14 @@ const Tictoc = () => {
 
   return (
     <div className='tictoc'>
-      <h1 className='text-ac'>{today_is}</h1>
+      <h1 className='today-is'>{today_is}</h1>
       {elapsedTime >= 0 && (
-        <div>
-          <h1>{formattedTime.hours} 시간 {formattedTime.minutes} 분 {formattedTime.seconds} 초</h1>
-        </div>
+        <h1 className='format-time'>{formattedTime.hours} : {formattedTime.minutes} : {formattedTime.seconds}</h1>
       )}
       {intervalId === null ? (
-        <BsFillPlayCircleFill size='100' className='tictoc-btn' onClick={startTimer}/>
+        <BsFillPlayCircleFill size='140' className='tictoc-btn' onClick={startTimer}/>
       ) : (
-        <BsFillPauseCircleFill size='100' className='tictoc-btn' onClick={timepause}/>
+        <BsFillPauseCircleFill size='140' className='tictoc-btn' onClick={timepause}/>
       )} 
     </div>
   );
