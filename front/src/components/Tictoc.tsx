@@ -21,6 +21,27 @@ const Tictoc = () => {
   // 문자열을 10진수 정수 number로 변환합니다.
   const studyTime = savedStudyTime ? parseInt(savedStudyTime, 10) : 0;
 
+  // 저장시 중복코드가 많아서 함수로 만듦
+  const updateElapsedTime = (storedData: string | null, startTime: Date | null) => {
+    const currentTime = new Date();
+    let elapsedMilliseconds = 0;
+    // 측정 시작되는 순간부터 
+    if (startTime) {
+      elapsedMilliseconds = currentTime.getTime() - startTime.getTime();
+      // 해당 날짜의 데이터가 있다면 
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        const storedStudyTimeInt = parsedData.studyTime ? parseInt(parsedData.studyTime, 10) : 0;
+        // 기록된 시간 가져와서 거기에 더해주고
+        elapsedMilliseconds += storedStudyTimeInt;
+      } 
+      // 없다면 방금 측정한 공부시간만을 더해준다.
+      else {
+        elapsedMilliseconds += studyTime;
+      }
+    }
+    setElapsedTime(elapsedMilliseconds);
+  };
 
   // 버튼 클릭 시 시간 측정 시작
   const startTimer = () => {
@@ -33,28 +54,25 @@ const Tictoc = () => {
         const storedStudyTimeInt = parsedData.studyTime ? parseInt(parsedData.studyTime, 10) : 0;
         // 공부 시작 시간 새로 받기
         setStartTime(new Date());
+
         // setInterval 시작하고 인터벌 ID를 저장
         const id = window.setInterval(() => {
-        // 현재 시간 1초 당 계속 받아오기
-        const currentTime = new Date();
-        // 저장되어있던 시간을 차에 더해준다.
-        const elapsedMilliseconds = startTime ? currentTime.getTime() - startTime.getTime() + storedStudyTimeInt : 0;
-        // 그리고 그 값을 elapsedTime에 넣어줌
-        setElapsedTime(elapsedMilliseconds);
-        console.log('해당 날짜의 데이터가 있습니다.')
-        console.log(elapsedMilliseconds) // 0
+          // 현재 시간 1초 당 계속 받아오기
+          const currentTime = new Date();
+          // 저장되어있던 시간을 차에 더해준다.
+          const elapsedMilliseconds = startTime ? currentTime.getTime() - startTime.getTime() + storedStudyTimeInt : 0;
+          // 그리고 그 값을 elapsedTime에 넣어줌
+          setElapsedTime(elapsedMilliseconds);
         }, 1000);
+
         setIntervalId(id); // 인터벌 ID 저장
       } 
       else {
         setStartTime(new Date());
         const id = window.setInterval(() => {
-        const currentTime = new Date();
-        const elapsedMilliseconds = startTime ? currentTime.getTime() - startTime.getTime() + studyTime : 0;
-        setElapsedTime(elapsedMilliseconds);
+          updateElapsedTime(null, startTime);
         }, 1000);
         setIntervalId(id); // 인터벌 ID 저장
-        console.log('해당 날짜의 데이터가 없습니다.')
       };
     }
   };
@@ -64,24 +82,7 @@ const Tictoc = () => {
     // 시작 시간이 변경될 때마다 경과 시간 계산
     if (startTime !== null) {
       const interval = setInterval(() => {
-        if (storedData) {
-          // 저장되어있던 시간을 불러와서
-          const parsedData = JSON.parse(storedData);
-          const storedStudyTimeInt = parsedData.studyTime ? parseInt(parsedData.studyTime, 10) : 0;
-          // 현재 시간 1초 당 계속 받아오기
-          const currentTime = new Date();
-          // 저장되어있던 시간을 차에 더해준다.
-          const elapsedMilliseconds = startTime ? currentTime.getTime() - startTime.getTime() + storedStudyTimeInt : 0;
-          // 그리고 그 값을 elapsedTime에 넣어줌
-          setElapsedTime(elapsedMilliseconds);
-        } else {
-          // 때마다 시간 가지고 와서 시간 차 계산하고 elapsedTime에 넘겨주기
-          const currentTime = new Date();
-          // 계산 똑같이
-          const elapsedMilliseconds = startTime ? currentTime.getTime() - startTime.getTime() + studyTime : 0;
-          setElapsedTime(elapsedMilliseconds);
-        };
-        
+        updateElapsedTime(storedData, startTime);
       }, 1000);
       return () => clearInterval(interval);
     }
