@@ -13,8 +13,13 @@ h3 {
   padding: 0;
 }
 
-select {
+select,
+fieldset {
   all: unset;
+}
+
+fieldset {
+  display: block;
 }
 
 .SignUp {
@@ -34,8 +39,6 @@ select {
   margin: 15px auto;
 }
 
-.signForm-field {
-}
 .input select,
 select option {
   text-transform: uppercase;
@@ -43,6 +46,61 @@ select option {
 
 body {
   margin: 0;
+}
+
+.signForm-title {
+  font-size: 2rem;
+  font-weight: bold;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 20px;
+}
+
+.signForm-field + .signForm-field {
+  margin-top: 10px;
+}
+
+.field-label {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  margin-top: 0.2em;
+}
+
+.field-label.optional {
+  justify-content: flex-start;
+}
+
+.field_error {
+  color: var(--point-red);
+  opacity: 0;
+}
+
+.signForm-field.invalid .field_error {
+  opacity: 1;
+}
+
+.signForm-field.invalid .input {
+  box-shadow: inset 0 0 0 2px var(--point-red), 0 0 0 2px var(--point-red);
+}
+
+.sr-only {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  clip: rect(0, 0, 0, 0);
+}
+
+.form {
+}
+
+.form-fieldset {
+  padding: 10px;
+}
+
+.form-fieldset + .form-fieldset {
+  margin-top: 20px;
 }
 
 /* ruleForm */
@@ -145,9 +203,4 @@ button {
 .form-footer {
   display: flex;
   justify-content: flex-end;
-}
-
-.field-label {
-  display: block;
-  padding: 5px 0;
 }
