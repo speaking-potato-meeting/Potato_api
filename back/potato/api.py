@@ -11,23 +11,39 @@ from django.shortcuts import get_object_or_404
 api  = NinjaAPI()
 
 class commentIn(Schema):
-    user_id: int = None
+    user_id: int
     # user =1
-    timestamp: date = None
+    timestamp: date
     # timestamp = datetime.now()
     text: str
     # text = "확인"
 
 
 class commentOut(Schema):
-    id: int = None
+    id: int
     # id=1
-    user_id: int = None
+    user_id: int
     # user =1
-    timestamp: date = None
+    timestamp: date
     # timestamp = datetime.now()
     text: str
     # text = "확인1"
+
+class userIn(Schema):
+    username: str
+    password: str
+    email: str
+    phone: str
+    address: str
+    github: str
+    postion: str
+    individual_rule: str
+    birth: date
+    is_admin: bool
+    is_active: bool
+    is_staff: bool
+    is_superuser: bool
+
 
 
 
@@ -57,3 +73,14 @@ def delete_Comment(request,comment_id: int):
     comment = get_object_or_404(Comment, id=comment_id)
     comment.delete()
     return {"success" : True}
+
+@api.post('/user')
+def create_User(request, payload: userIn):
+    user = User.objects.create(**payload.dict())
+    return {"id":user.id}
+
+@api.delete('/user/{user_id}')
+def delete_User(request,user_id: int):
+    user =  get_object_or_404(User, id=user_id)
+    user.delete()
+    return {"success": True}
