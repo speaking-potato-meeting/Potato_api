@@ -25,13 +25,14 @@ class User(AbstractUser):
     )
     username = models.CharField(max_length=20,unique=True)
     #unique=True 중복x
-    password = models.CharField(max_length=20)
+    password = models.CharField(max_length=200)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=50)
-    github = models.CharField(max_length=80)
+    github = models.URLField()
+    blog = models.URLField(blank=True)
     MBTI = models.CharField(max_length=4, choices=MBTI_CHOICES, default='')
-    postion = models.CharField(max_length=20)
+    position = models.CharField(max_length=20)
     cdt = models.DateTimeField(auto_now_add=True)
     individual_rule = models.TextField(null=True, blank=True)
     #변경
@@ -82,3 +83,6 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     text = models.TextField(null=True, blank=True)
+    
+
+
