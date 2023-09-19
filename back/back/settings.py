@@ -39,12 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'potato',
+    'corsheaders', # CORS 관련 추가
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',     # CORS 관련 추가 미들웨어 최상단에 있어야한대
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -124,3 +126,34 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CORS 관련 추가
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:8000'
+                         ,'http://localhost:8000']
+CORS_ALLOW_CREDENTIALS = True # <-쿠키가 cross-site HTTP 요청에 포함될 수 있다
+
+##CORS
+CORS_ORIGIN_ALLOW_ALL=True # <- 모든 호스트 허용
+
+CORS_ALLOW_METHODS = (  #<-실제 요청에 허용되는 HTTP 동사 리스트
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+)
+
+CORS_ALLOW_HEADERS = ( # <-실제 요청을 할 때 사용될 수 있는 non-standard HTTP 헤더 목록// 현재 기본값
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)
+
+APPEND_SLASH = False #<- / 관련 에러 제거

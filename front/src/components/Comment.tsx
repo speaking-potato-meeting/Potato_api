@@ -2,9 +2,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { commentType } from "../types";
 import './comment.css'
+import axios from 'axios';
 
 const dateNow = new Date();
 const today = dateNow.toISOString().slice(0, 10);
+
+// 통신 성공!!!!!!!!!!!!!!!!!!!!!!!!!!
+// const response = await axios.get('http://127.0.0.1:8000/api/comments/2');
+// console.log(response);
 
 const Comment = (): JSX.Element => {
   // text를 받아오는 고런..
@@ -18,40 +23,56 @@ const Comment = (): JSX.Element => {
   const CommentTextInput: React.MutableRefObject< | HTMLInputElement | undefined> = useRef();
   const CommentEditTextInput: React.MutableRefObject< | HTMLInputElement | undefined> = useRef();
 
+
+  // 데이터를 서버에서 가져오는 함수
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/comments/'); // 백엔드의 API 엔드포인트를 설정하세요
+      const commentData = response.data;
+      setComments(commentData);
+    } catch (error) {
+      console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
+    }
+  };
+
+  // 기존 비동기 코드 대체
   useEffect(() => {
-    // JSON 파일을 비동기적으로 로드
-    fetch('/src/comments.json')
-      .then((response) => response.json())
-      .then((data) => {
-        setComments(data);
-      })
-      .catch((error) => console.error('댓글 데이터를 로드하는 중 오류 발생:', error));
+    fetchData();
   }, []);
 
-  const handleCommentSubmit = () => {
+  
+  const createComment = async () => {
+    // 유효성 검사 (댓글 내용 비어있는지)
     if (newText.length === 0) {
-      // 댓글 내용이 비어있으면 input창으로 포커싱하고 등록하지 않음
       if (CommentTextInput.current) {
         CommentTextInput.current.focus();
       }     
       return;
     }
 
-    // text 제외한 모든 고정된 값을 가진 댓글을 생성
-    const newComment = {
-      id: comments.length,
-      name: 'yangu1455',
-      text: newText,
-      timestamp: new Date(),
-      pf_pic: "./images/킹감자.jpeg",
-    };
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/comments', {
+        user_id: 2, // user 어떻게 넘겨줘야하지? 임시로 이렇게 넘겨주기
+        text: newText, // 새로 받을 텍스트
+      });
 
-    // 새로운 댓글을 기존 댓글 목록에 추가
-    setComments([...comments, newComment]);
-    setNewText('');
+      const newComment = {
+        id: response.data.id,
+        user_id: 2, // 여기도 임시로...
+        timestamp: response.data.timestamp,
+        text: newText,
+      };
+      
+      // 새로운 댓글을 기존 댓글 목록에 추가
+      setComments([...comments, newComment]);
+      setNewText('');
+    } catch (error) {
+      console.error('댓글 생성 중 오류 발생:', error);
+    }
   };
 
-  const editCommentSubmit = (id: number, text: string) => {
+  // 나 이제 수정 시작한다??
+  const editCommentSubmit = async (id: number, text: string) => {
     setEditingCommentId(id);
     setNewEditText(text);
     // 안먹힘..
@@ -60,9 +81,10 @@ const Comment = (): JSX.Element => {
     // }
   };
 
+  // 댓글 수정시 실행함수
   const handleConfirmEdit = () => {
+    // 댓글 수정 유효성 검사 (댓글 내용이 비어있거나 수정 대상 댓글이 없으면 수정하지 않음)
     if (newEditText.length === 0 || editingCommentId === null) {
-      // 댓글 내용이 비어있거나 수정 대상 댓글이 없으면 수정하지 않음
       if (CommentEditTextInput.current) {
         CommentEditTextInput.current.focus();
       }
@@ -87,8 +109,9 @@ const Comment = (): JSX.Element => {
     setEditingCommentId(null);
   };
 
-  const deleteCommentSubmit = (id: number) => {
+  const deleteCommentSubmit = async (id: number) => {
     try {
+      await axios.delete(`http://127.0.0.1:8000/api/comments/${id}`); // 추가됨
       const updatedComments = comments.filter((comment) => comment.id !== id);
       setComments(updatedComments);
     } catch (error) {
@@ -96,7 +119,7 @@ const Comment = (): JSX.Element => {
     }    
   };
 
-  // 와 이거 '~분 전'으로 표시되는 함수 블로그에서 가지고 옴 감사합니다...
+  // '~분 전'으로 표시되는 함수
   const elapsedTime = (date: Date): string => {
     const start = new Date(date);
     const end = new Date();
@@ -124,8 +147,9 @@ const Comment = (): JSX.Element => {
           <li key={comment.id}>
             <div className='comment-profile-timestamp-box'>
               <div className='comment-profile-box'>
-                <img className='comment-pf-pic' src={comment.pf_pic} alt="프로필 사진" />
-                <p className='comment-name'>{comment.name}</p>
+                <img className='comment-pf-pic' src='../public/images/yang.jpeg' alt="프로필 사진" />
+                {/* 일단 user 말고 comment.id로 하겠음 */}
+                <p className='comment-name'>{comment.id}</p>
               </div>
               <div>
                 <p>{elapsedTime(comment.timestamp)}</p>
@@ -134,7 +158,7 @@ const Comment = (): JSX.Element => {
 
 
             <div className='comment-edit-content'>
-              {/* // 수정 모드 일때 */}
+              {/*  수정 모드 일때 */}
               {editingCommentId === comment.id ? (
                 <div>
                   <input
@@ -183,7 +207,7 @@ const Comment = (): JSX.Element => {
           value={newText}
           onChange={(e) => setNewText(e.target.value)}
         />
-        <button onClick={handleCommentSubmit}>
+        <button onClick={createComment}>
           댓글 생성
         </button>
       </div>
