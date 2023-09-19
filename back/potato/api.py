@@ -15,19 +15,19 @@ api  = NinjaAPI()
 
 #댓글
 class commentIn(Schema):
-    user_id: int = None
+    user_id: int
     # user =1
-    timestamp: date = None
+    timestamp: date
     # timestamp = datetime.now()
     text: str
     # text = "확인"
 
 class commentOut(Schema):
-    id: int = None
+    id: int
     # id=1
-    user_id: int = None
+    user_id: int
     # user =1
-    timestamp: date = None
+    timestamp: date
     # timestamp = datetime.now()
     text: str
     # text = "확인1"
@@ -58,19 +58,6 @@ def delete_Comment(request,comment_id: int):
     comment.delete()
     return {"success" : True}
 #댓글
-
-class CreateUserin(Schema):
-    username: str
-    password: str
-    email: str
-    phone: str
-    address: str
-    github: str
-    blog: Optional[HttpUrl] 
-    MBTI: str
-    postion: str
-    individual_rule: str
-    birth: date
 
 class CreateUserSchema(Schema):
     username: str
@@ -152,3 +139,5 @@ def delete_user(request, user_id: int):
         return {"message": "성공"}
     except User.DoesNotExist:
         return {"message": "실패"}, 404
+
+

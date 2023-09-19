@@ -25,7 +25,7 @@ class User(AbstractUser):
     )
     username = models.CharField(max_length=20,unique=True)
     #unique=True 중복x
-    password = models.CharField(max_length=20)
+    password = models.CharField(max_length=200)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=50)
@@ -84,3 +84,5 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     text = models.TextField(null=True, blank=True)
     
+
+

@@ -60,7 +60,7 @@
 /* 댓글 수정 모드시 나타나는 input */
 .comment-edit-input {
   font-family: 'Dovemayo_gothic';
-  width: 400px;
+  width: 650px;
   height: 22px;
   font-size: 16px;
   margin: 0.4rem 1rem;
@@ -77,6 +77,16 @@
 /* 댓글 생성 input */
 .comment-input {
   width: 80%;
+  border: 1px rgb(173, 173, 173) solid;
   /* font-family: 'Dovemayo_gothic'; */
   /* font-size: 16px; */
+}
+
+@media (prefers-color-scheme: light) {
+  .comment li {
+    border-color: black;
+  }
+  .comment-edit-input {
+    border: 1px rgb(173, 173, 173) solid;
+  }
 }
