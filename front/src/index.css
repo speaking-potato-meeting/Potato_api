@@ -1,12 +1,13 @@
 @font-face {
-  font-family: 'Dovemayo_gothic';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.1/Dovemayo_gothic.woff2') format('woff2');
+  font-family: "Dovemayo_gothic";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.1/Dovemayo_gothic.woff2")
+    format("woff2");
   font-weight: normal;
   font-style: normal;
 }
 
 :root {
-  font-family: 'Dovemayo_gothic';
+  font-family: "Dovemayo_gothic";
   line-height: 1.5;
 
   color-scheme: light dark;
@@ -14,7 +15,10 @@
   background-color: #242424;
 
   font-synthesis: none;
-    --hover-background--default: rgb(241, 241, 239);
+  --hover-background--default: rgb(241, 241, 239);
+  --point-color: rgba(0, 0, 0, 0.7);
+  --point-red: rgba(300, 0, 0, 0.4);
+  --background-color: rgba(0, 0, 0, 0.2);
 }
 
 a {

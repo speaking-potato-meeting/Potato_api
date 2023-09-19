@@ -1,11 +1,18 @@
-import Comment from '../components/Comment';
+import Calendar from "../components/Calendar/Calendar";
+import ModalContainer from "../components/Calendar/Schedule/ModalContainers";
+import Comment from "../components/Comment";
+import ModalProvider from "../context/ModalProvider";
 
 const Home = () => {
   return (
-    <div>
+    <>
       <Comment />
-    </div>
-  )
-}
+      <ModalProvider>
+        <Calendar />
+        <ModalContainer />
+      </ModalProvider>
+    </>
+  );
+};
 
-export default Home
+export default Home;
