@@ -34,10 +34,10 @@ class User(AbstractUser):
     MBTI = models.CharField(max_length=4, choices=MBTI_CHOICES, default='')
     position = models.CharField(max_length=20)
     cdt = models.DateTimeField(auto_now_add=True)
-    individual_rule = models.TextField(null=True, blank=True)
+    # individual_rule = models.TextField(null=True, blank=True)
     #변경
     birth = models.DateField()
-    profile_image = models.ImageField()
+    # profile_image = models.ImageField()
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

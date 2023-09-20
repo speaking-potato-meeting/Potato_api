@@ -29,32 +29,18 @@ class commentOut(Schema):
     text: str
 
 #유저
-class CreateUserin(Schema):
-    username: str
-    password: str
-    email: str
-    phone: str
-    address: str
-    github: str
-    blog: Optional[HttpUrl] 
-    MBTI: str
-    position: str
-    individual_rule: str
-    birth: date
-
-#유저
 class CreateUserSchema(Schema):
-    username: str
-    password: str
     email: str
-    phone: str
+    password: str
+    username: str
+    birth: date
     address: str
-    github: str
-    blog: Optional[HttpUrl] 
+    phone: str
     MBTI: str
     position: str
-    individual_rule: str
-    birth: date
+    github: str
+    blog: Optional[HttpUrl] 
+    # individual_rule: str
 
 #로그인/로그아웃   
 class LoginInput(Schema):
@@ -95,17 +81,17 @@ def delete_Comment(request,comment_id: int):
 @api.post("/create-user")
 def create_user(request, data: CreateUserSchema):
     user = User.objects.create_user(
-        username=data.username,
         email=data.email,
         password=data.password,
-        phone = data.phone,
+        username=data.username,
+        birth = data.birth,
         address = data.address,
-        github = data.github,
-        blog = data.blog,
+        phone = data.phone,
         MBTI = data.MBTI,
         position = data.position,
-        individual_rule = data.individual_rule,
-        birth = data.birth,
+        github = data.github,
+        blog = data.blog,
+        # individual_rule = data.individual_rule,
     )
     user.save()
     return {"message": "성공"}
@@ -125,7 +111,7 @@ def get_user(request, user_id: int):
             "blog": user.blog,
             "MBTI": user.MBTI,
             "position": user.position,
-            "individual_rule": user.individual_rule,
+            # "individual_rule": user.individual_rule,
             "birth": user.birth.strftime('%Y-%m-%d'),
         }
         return serialized_user
@@ -146,7 +132,7 @@ def update_user(request, user_id: int, data: CreateUserSchema):
         user.blog = data.blog
         user.MBTI = data.MBTI
         user.position = data.position
-        user.individual_rule = data.individual_rule
+        # user.individual_rule = data.individual_rule
         user.birth = data.birth
         user.save()
         return {"message": "성공"}
