@@ -17,8 +17,8 @@ api  = NinjaAPI()
 
 #댓글
 class commentIn(Schema):
-    user_id: int = None
-    timestamp: date = None
+    # user_id: int = None
+    # timestamp: date = None
     text: str
 
 #댓글
@@ -66,11 +66,12 @@ def get_comment(request, comment_id: int):
 @api.put("/comments/{comment_id}")
 def update_Comment(request,comment_id: int, payload: commentIn):
     comment = get_object_or_404(Comment, id=comment_id)
-    comment.user_id = payload.user_id
-    comment.timestamp = payload.timestamp
+    # comment.user_id = payload.user_id
+    # comment.timestamp = payload.timestamp 기본
+    # comment.timestamp = datetime.now()현재시간
     comment.text = payload.text
     comment.save()
-    return {"success" : True}
+    return {"username": comment.user.username , "text":comment.text }
 
 #댓글삭제
 @api.delete("/comments/{comment_id}")
