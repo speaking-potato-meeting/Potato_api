@@ -103,7 +103,7 @@ def create_user(request, data: CreateUserSchema):
         github = data.github,
         blog = data.blog,
         MBTI = data.MBTI,
-        postion = data.position,
+        position = data.position,
         individual_rule = data.individual_rule,
         birth = data.birth,
     )
@@ -124,7 +124,7 @@ def get_user(request, user_id: int):
             "github": user.github,
             "blog": user.blog,
             "MBTI": user.MBTI,
-            "postion": user.position,
+            "position": user.position,
             "individual_rule": user.individual_rule,
             "birth": user.birth.strftime('%Y-%m-%d'),
         }
