@@ -6,9 +6,13 @@ type Rule = {
   rule: string;
 };
 
+export type formProps = {
+  onClick: () => void;
+};
+
 type inputMap = Map<number, HTMLInputElement>;
 
-export function RuleForm() {
+export function RuleForm({ onClick }: formProps) {
   const [inputFields, setInputFields] = useState<Rule[]>([
     { fee: "", rule: "" },
   ]);
@@ -193,6 +197,9 @@ export function RuleForm() {
         </ol>
       </div>
       <div className="form-footer">
+        <button type="button" onClick={onClick}>
+          이전으로
+        </button>
         <button type="submit">말하는 감자되기</button>
       </div>
     </form>
