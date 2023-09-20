@@ -162,7 +162,7 @@ def delete_user(request, user_id: int):
         return {"message": "성공"}
     except User.DoesNotExist:
         return {"message": "실패"}, 404
-    
+
 #로그인
 @api.post("/login")
 def login_user(request, data: LoginInput):
@@ -181,3 +181,4 @@ def logout_user(request):
         return {"message": "성공"}
     else:
         raise HttpError(401, "실패")
+

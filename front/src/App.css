@@ -3,3 +3,204 @@
   margin: 2rem 9rem;
   max-width: 700px;
 }
+
+/* SignUp */
+
+/* reset */
+h3 {
+  font-size: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+select,
+fieldset {
+  all: unset;
+}
+
+fieldset {
+  display: block;
+}
+
+.SignUp {
+  height: 100vh;
+  max-width: unset;
+}
+
+.SignUp .header {
+  padding-top: 200px;
+  text-align: center;
+}
+
+/* signUpForm */
+.SignUpForm-container {
+  padding: 40px;
+  width: 700px;
+  margin: 15px auto;
+}
+
+.input select,
+select option {
+  text-transform: uppercase;
+}
+
+body {
+  margin: 0;
+}
+
+.signForm-title {
+  font-size: 2rem;
+  font-weight: bold;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 20px;
+}
+
+.signForm-field + .signForm-field {
+  margin-top: 10px;
+}
+
+.field-label {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  margin-top: 0.2em;
+}
+
+.field-label.optional {
+  justify-content: flex-start;
+}
+
+.field_error {
+  color: var(--point-red);
+  opacity: 0;
+}
+
+.signForm-field.invalid .field_error {
+  opacity: 1;
+}
+
+.signForm-field.invalid .input {
+  box-shadow: inset 0 0 0 2px var(--point-red), 0 0 0 2px var(--point-red);
+}
+
+.sr-only {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  clip: rect(0, 0, 0, 0);
+}
+
+.form {
+}
+
+.form-fieldset {
+  padding: 10px;
+}
+
+.form-fieldset + .form-fieldset {
+  margin-top: 20px;
+}
+
+/* ruleForm */
+
+h2,
+ol,
+li {
+  margin: 0;
+  padding: 0;
+}
+
+ol {
+  list-style: none;
+}
+
+input,
+button {
+  all: unset;
+}
+
+.RuleForm-container {
+  padding: 40px;
+  width: 700px;
+  margin: 15px auto;
+}
+
+.form-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.form-header button {
+  color: white;
+  background: var(--point-color);
+}
+
+.RuleForm-container button {
+  font-size: 1rem;
+  margin-right: 10px;
+}
+
+.form-contents {
+  min-height: 400px;
+}
+.input {
+  box-shadow: inset 0 0 2px #222;
+  border-radius: 8px;
+  height: 48px;
+  font-size: 24px;
+  line-height: 35px;
+  transition: all 0.2s;
+}
+.input:focus-within {
+  box-shadow: inset 0 0 0 2px var(--point-color), 0 0 0 2px var(--point-color);
+}
+
+.input.invalid {
+  box-shadow: inset 0 0 0 2px var(--point-red), 0 0 0 2px var(--point-red);
+}
+
+.input input,
+.input select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6.5px 14px;
+}
+
+.field {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.field span,
+.field div {
+  flex-basis: 30px;
+}
+
+.field span {
+  font-size: 24px;
+  text-align: center;
+}
+
+.field div:nth-child(2) {
+  flex-grow: 2;
+}
+
+.field div:nth-child(3) {
+  flex-grow: 4;
+}
+
+.field-remove-btn {
+  color: white;
+  background: var(--point-red);
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+}
