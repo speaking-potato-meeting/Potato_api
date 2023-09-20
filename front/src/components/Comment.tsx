@@ -99,8 +99,11 @@ const Comment = (): JSX.Element => {
 
     try {
       const response = await axios.put(`http://127.0.0.1:8000/api/comments/${id}`, {
+        user_id: 2,
         text: newEditText,
+        timestamp: "2023-09-21"
       });
+      console.log(response)
       const updatedComments = comments.map((comment) => {
         if (comment.id === id) {
           return {
@@ -196,7 +199,7 @@ const Comment = (): JSX.Element => {
           <li key={comment.id}>
             <div className='comment-profile-timestamp-box'>
               <div className='comment-profile-box'>
-                <img className='comment-pf-pic' src='../public/images/yang.jpeg' alt="프로필 사진" />
+                <img className='comment-pf-pic' src='../images/yang.jpeg' alt="프로필 사진" />
                 {/* 일단 user 말고 comment.id로 하겠음 */}
                 <p className='comment-name'>{comment.id}</p>
               </div>
