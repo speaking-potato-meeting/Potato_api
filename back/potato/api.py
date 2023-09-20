@@ -22,11 +22,10 @@ class commentIn(Schema):
     text: str
 
 #댓글
-class commentOut(Schema):
-    id: int = None
-    user_id: int = None
-    timestamp: date = None
+class CommentOut(Schema):
+    user_id: int
     text: str
+    timestamp: date 
 
 #유저
 class CreateUserSchema(Schema):
@@ -55,10 +54,13 @@ def create_Comment(request, payload: commentIn):
     return {"id": comment.id, "timestamp": comment.timestamp}
 
 #댓글조회
-@api.get('/comments/{comment_id}', response=commentOut)
-def get_Comment(request, comment_id: int):
-    comment = get_object_or_404(Comment, id=comment_id)
-    return comment
+@api.get('/comments/{comment_id}')
+def get_comment(request, comment_id: int):
+    try:
+        comment = Comment.objects.get(id=comment_id)
+        return {"username": comment.user.username , "text":comment.text , "timestamp": comment.timestamp }
+    except Comment.DoesNotExist:
+        return {"message": "Comment not found"}, 404
 
 #댓글수정
 @api.put("/comments/{comment_id}")
