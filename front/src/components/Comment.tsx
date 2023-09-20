@@ -7,10 +7,6 @@ import axios from 'axios';
 const dateNow = new Date();
 const today = dateNow.toISOString().slice(0, 10);
 
-// 통신 성공!!!!!!!!!!!!!!!!!!!!!!!!!!
-// const response = await axios.get('http://127.0.0.1:8000/api/comments/2');
-// console.log(response);
-
 const Comment = (): JSX.Element => {
   // text를 받아오는 고런..
   const [newText, setNewText] = useState('');
@@ -41,7 +37,7 @@ const Comment = (): JSX.Element => {
   }, []);
 
   
-  const createComment = async () => {
+  const createCommentSubmit = async () => {
     // 유효성 검사 (댓글 내용 비어있는지)
     if (newText.length === 0) {
       if (CommentTextInput.current) {
@@ -71,43 +67,96 @@ const Comment = (): JSX.Element => {
     }
   };
 
-  // 나 이제 수정 시작한다??
-  const editCommentSubmit = async (id: number, text: string) => {
-    setEditingCommentId(id);
-    setNewEditText(text);
-    // 안먹힘..
-    // if (CommentEditTextInput.current) {
-    //   CommentEditTextInput.current.focus();
-    // }
+  // 수정버튼을 누를 때 호출되는 함수
+  const editCommentSubmit = (id: number, text: string) => {
+    if (editingCommentId === id) {
+      // 이미 수정 중인 상태면 수정을 취소하고 읽기 모드로 변경
+      setEditingCommentId(null);
+      setNewEditText('');
+    } else {
+      // 수정 중이 아니면 해당 댓글을 수정 모드로 변경
+      setEditingCommentId(id);
+      setNewEditText(text);
+    }
   };
 
   // 댓글 수정시 실행함수
-  const handleConfirmEdit = () => {
-    // 댓글 수정 유효성 검사 (댓글 내용이 비어있거나 수정 대상 댓글이 없으면 수정하지 않음)
+  const handleConfirmEdit = (id: number) => {
     if (newEditText.length === 0 || editingCommentId === null) {
-      if (CommentEditTextInput.current) {
-        CommentEditTextInput.current.focus();
-      }
+      // 댓글 내용이 비어있거나 수정 대상 댓글이 없으면 수정하지 않음
       return;
     }
-  
-    const updatedComments = comments.map((comment) => {
-      if (comment.id === editingCommentId) {
-        return {
-          ...comment,
-          // 새로 받을 text
-          text: newEditText,
-          // 수정된 시간
-          timestamp: new Date(),
-        };
-      }
-      return comment;
-    });
-
-    setComments(updatedComments);
-    setNewEditText('');
-    setEditingCommentId(null);
+    // 수정된 내용을 백엔드로 전송하고 상태를 업데이트
+    updateComment(id, newEditText);
   };
+
+  // 댓글 수정 함수
+  const updateComment = async (id: number, text: string) => {
+    if (text.length === 0 || id === null) {
+      // 댓글 내용이 비어있거나 수정 대상 댓글이 없으면 수정하지 않음
+      return;
+    }
+
+    try {
+      const response = await axios.put(`http://127.0.0.1:8000/api/comments/${id}`, {
+        text: newEditText,
+      });
+      const updatedComments = comments.map((comment) => {
+        if (comment.id === id) {
+          return {
+            ...comment,
+            text: response.data.text,
+            timestamp: new Date(),
+          };
+        }
+        return comment;
+      });
+      setComments(updatedComments);
+      setNewEditText('');
+      setEditingCommentId(null);
+    } catch (error) {
+      console.error('댓글 수정 중 오류 발생:', error);
+    }
+  };
+
+  // // 나 이제 수정 시작한다??
+  // const editCommentSubmit = (id: number, text: string) => {
+  //   setEditingCommentId(id);
+  //   setNewEditText(text);
+  //   // 안먹힘..
+  //   // if (CommentEditTextInput.current) {
+  //   //   CommentEditTextInput.current.focus();
+  //   // }
+  // };
+
+
+  // // 댓글 수정시 실행함수
+  // const handleConfirmEdit = () => {
+  //   // 댓글 수정 유효성 검사 (댓글 내용이 비어있거나 수정 대상 댓글이 없으면 수정하지 않음)
+  //   if (newEditText.length === 0 || editingCommentId === null) {
+  //     if (CommentEditTextInput.current) {
+  //       CommentEditTextInput.current.focus();
+  //     }
+  //     return;
+  //   }
+  
+  //   const updatedComments = comments.map((comment) => {
+  //     if (comment.id === editingCommentId) {
+  //       return {
+  //         ...comment,
+  //         // 새로 받을 text
+  //         text: newEditText,
+  //         // 수정된 시간
+  //         timestamp: new Date(),
+  //       };
+  //     }
+  //     return comment;
+  //   });
+
+  //   setComments(updatedComments);
+  //   setNewEditText('');
+  //   setEditingCommentId(null);
+  // };
 
   const deleteCommentSubmit = async (id: number) => {
     try {
@@ -176,8 +225,8 @@ const Comment = (): JSX.Element => {
                   <p className='comment-text'>{comment.text}</p>
                 </div>
               )}
-              <div>
-                {editingCommentId === comment.id ? (
+              <div className='comment-btn-container'>
+                {/* {editingCommentId === comment.id ? (
                   // 수정 모드 일때
                   <div>
                     <button onClick={handleConfirmEdit}>확인</button>
@@ -190,7 +239,14 @@ const Comment = (): JSX.Element => {
                     <button onClick={() => editCommentSubmit(comment.id, comment.text)}>수정</button>
                     <button onClick={() => deleteCommentSubmit(comment.id)}>삭제</button>
                   </div>
-                )}
+                )} */}
+                <button className='comment-btn' onClick={() => editCommentSubmit(comment.id, comment.text)}>
+                  {editingCommentId === comment.id ? "취소" : "수정"}
+                </button>
+                <button className='comment-btn' onClick={() => handleConfirmEdit(comment.id)}>
+                  확인
+                </button>
+                <button className='comment-btn' onClick={() => deleteCommentSubmit(comment.id)}>삭제</button>
               </div>
             </div>
 
@@ -207,7 +263,7 @@ const Comment = (): JSX.Element => {
           value={newText}
           onChange={(e) => setNewText(e.target.value)}
         />
-        <button onClick={createComment}>
+        <button onClick={createCommentSubmit}>
           댓글 생성
         </button>
       </div>

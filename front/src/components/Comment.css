@@ -16,6 +16,7 @@
   border-radius: 1em;
   padding: 0.7em;
   margin: 0.85rem;
+  min-width: 600px;
 }
 
 /* 프로필 사진과 작성자와 timestamp를 묶은 */
@@ -59,8 +60,10 @@
 
 /* 댓글 수정 모드시 나타나는 input */
 .comment-edit-input {
+  display: block;
   font-family: 'Dovemayo_gothic';
-  width: 650px;
+  width: 400px;
+  /* max-width: 430px; */
   height: 22px;
   font-size: 16px;
   margin: 0.4rem 1rem;
@@ -72,6 +75,14 @@
   margin-top: 1.5rem;
   display: flex;
   justify-content: center;
+}
+
+.comment-btn-container {
+  display: flex;
+}
+
+.comment-btn {
+  flex-shrink: 0;
 }
 
 /* 댓글 생성 input */
