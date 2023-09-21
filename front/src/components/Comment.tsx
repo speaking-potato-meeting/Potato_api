@@ -101,9 +101,8 @@ const Comment = (): JSX.Element => {
       const response = await axios.put(`http://127.0.0.1:8000/api/comments/${id}`, {
         user_id: 2,
         text: newEditText,
-        timestamp: "2023-09-21"
+        timestamp: new Date().toISOString().slice(0, 10)
       });
-      console.log(response)
       const updatedComments = comments.map((comment) => {
         if (comment.id === id) {
           return {
@@ -121,45 +120,6 @@ const Comment = (): JSX.Element => {
       console.error('댓글 수정 중 오류 발생:', error);
     }
   };
-
-  // // 나 이제 수정 시작한다??
-  // const editCommentSubmit = (id: number, text: string) => {
-  //   setEditingCommentId(id);
-  //   setNewEditText(text);
-  //   // 안먹힘..
-  //   // if (CommentEditTextInput.current) {
-  //   //   CommentEditTextInput.current.focus();
-  //   // }
-  // };
-
-
-  // // 댓글 수정시 실행함수
-  // const handleConfirmEdit = () => {
-  //   // 댓글 수정 유효성 검사 (댓글 내용이 비어있거나 수정 대상 댓글이 없으면 수정하지 않음)
-  //   if (newEditText.length === 0 || editingCommentId === null) {
-  //     if (CommentEditTextInput.current) {
-  //       CommentEditTextInput.current.focus();
-  //     }
-  //     return;
-  //   }
-  
-  //   const updatedComments = comments.map((comment) => {
-  //     if (comment.id === editingCommentId) {
-  //       return {
-  //         ...comment,
-  //         // 새로 받을 text
-  //         text: newEditText,
-  //         // 수정된 시간
-  //         timestamp: new Date(),
-  //       };
-  //     }
-  //     return comment;
-  //   });
-
-  //   setComments(updatedComments);
-  //   setNewEditText('');
-  //   setEditingCommentId(null);
-  // };
 
   const deleteCommentSubmit = async (id: number) => {
     try {
