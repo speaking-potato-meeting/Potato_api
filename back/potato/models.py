@@ -54,7 +54,7 @@ class Rule(models.Model):
 class TodoList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
 
