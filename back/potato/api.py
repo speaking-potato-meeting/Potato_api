@@ -87,14 +87,6 @@ def create_Comment(request, payload: commentIn):
         #오류 로깅
         logger.exception("An error occurred: %s", e)
         return HttpResponseServerError("서버 오류 발생")
-    
-#댓글생성
-@api.post("/comments")
-def create_Comment(request, payload: commentIn):
-    user = User.objects.get(id=payload.user_id)  # Fetch the User instance
-    comment = Comment.objects.create(user=user, text=payload.text)
-    return {"id": comment.id, "timestamp": comment.timestamp}
-
 
 # 전체 댓글 목록을 가져오는 엔드포인트
 @api.get("/comments/")
