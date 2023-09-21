@@ -3,6 +3,8 @@ distlib==0.3.6
 Django==3.2.13
 django-ninja==0.22.2
 filelock==3.12.2
+mysqlclient==2.2.0
+Pillow==10.0.1
 platformdirs==3.7.0
 pydantic==1.10.12
 pytz==2023.3.post1
