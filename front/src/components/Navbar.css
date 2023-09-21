@@ -1,7 +1,7 @@
 /* navbar 전체 영역 */
 .nav_nav {
   padding: 1.5rem 0;
-  margin-bottom: 1rem;
+  margin: 0 10rem 1rem;
   display: flex;
   justify-content: space-between;
   /* position: sticky;

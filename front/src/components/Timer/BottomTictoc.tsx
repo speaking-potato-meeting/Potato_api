@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect,  } from 'react';
+import { useLocation } from "react-router-dom";
 import { BsFillPlayCircleFill, BsFillPauseCircleFill } from 'react-icons/bs';
-import './Tictoc.css';
+import './BottomTictoc.css'
 
-const today_is = new Date().toISOString().slice(0, 10);
-
-const Tictoc = () => {
+const BottomTictoc = () => {
   // 시작 시간
   const [startTime, setStartTime] = useState<Date | null>(null);
   // 공부한 시간 (재생 한번당)
@@ -134,19 +133,20 @@ const Tictoc = () => {
   // 저장된 시간 포맷에~
   const formattedTime = millisecondsToTime(elapsedTime);
 
-  return (
-    <div className='tictoc'>
-      <h1 className='today-is'>{today_is}</h1>
-      {elapsedTime >= 0 && (
-        <h1 className='format-time'>{formattedTime.hours} : {formattedTime.minutes} : {formattedTime.seconds}</h1>
-      )}
-      {intervalId === null ? (
-        <BsFillPlayCircleFill size='140' className='tictoc-btn' onClick={startTimer}/>
-      ) : (
-        <BsFillPauseCircleFill size='140' className='tictoc-btn' onClick={timepause}/>
-      )} 
-    </div>
-  );
-};
+  let location = useLocation();
+  if (location.pathname === '/stop-watch') {
+    timepause()
+  }
 
-export default Tictoc;
+  return (
+    <div className='bottom-tictoc-box'>
+      <h1 className='bottom-tictoc-time'>{formattedTime.hours} : {formattedTime.minutes} : {formattedTime.seconds}</h1>
+      <div className='bottom-tictoc-btns'>
+        <BsFillPlayCircleFill color='rgb(10, 83, 202)' size='50' className='bottom-tictoc-btn' onClick={startTimer}/>
+        <BsFillPauseCircleFill color='rgb(10, 83, 202)' size='50' className='bottom-tictoc-btn' onClick={timepause}/>
+      </div>
+    </div>
+  )
+}
+
+export default BottomTictoc
