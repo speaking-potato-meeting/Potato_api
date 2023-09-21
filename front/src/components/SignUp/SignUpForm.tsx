@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import { signup, getUser } from "../../api/signup";
+import type { formProps } from "../../components/SignUp/RuleForm";
 
-export default function SignUpForm() {
+export default function SignUpForm({ onClick }: formProps) {
   const focusPrivateLabel = useRef("name");
   const mbtiList = [
     "istj",
@@ -116,6 +117,7 @@ export default function SignUpForm() {
       console.log(userInfo);
       return;
     }
+    onClick();
     return;
   };
 
@@ -301,7 +303,9 @@ export default function SignUpForm() {
             </div>
           </div>
         </fieldset>
-        <button type="submit">다음으로</button>
+        <button type="submit" onClick={onClick}>
+          다음으로
+        </button>
       </form>
     </>
   );

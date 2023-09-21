@@ -1,6 +1,6 @@
 import { User } from "../types";
 
-const BASE_URL = "http://localhost:8000";
+export const BASE_URL = "http://localhost:8000";
 
 export async function signup(args: FormData) {
   const bodyData: User | {} = {};
