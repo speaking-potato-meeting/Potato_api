@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from datetime import date
 # , Group, Permission
 # Create your models here.
 
@@ -25,21 +26,24 @@ class User(AbstractUser):
     )
     username = models.CharField(max_length=20,unique=True)
     #unique=True 중복x
-    password = models.CharField(max_length=20)
+    password = models.CharField(max_length=200)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=50)
-    github = models.CharField(max_length=80)
+    github = models.URLField()
+    blog = models.URLField(blank=True)
     MBTI = models.CharField(max_length=4, choices=MBTI_CHOICES, default='')
-    postion = models.CharField(max_length=20)
+    position = models.CharField(max_length=20)
     cdt = models.DateTimeField(auto_now_add=True)
-    individual_rule = models.TextField(null=True, blank=True)
+    # individual_rule = models.TextField(null=True, blank=True)
     #변경
-    birth = models.DateField(null=True)
+    birth = models.DateField()
+    # profile_image = models.ImageField()
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    profile_image = models.ImageField(upload_to="profile_images/")
 
 
 class Rule(models.Model):
@@ -83,3 +87,10 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     text = models.TextField(null=True, blank=True)
     
+# 스터디타임의 타입 정수형인지 문자형인지 정수형
+class Timer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField(default=date.today)
+    studyTime = models.TextField(default=True)
+
+
