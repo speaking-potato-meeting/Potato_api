@@ -14,7 +14,8 @@ h3 {
 }
 
 select,
-fieldset {
+fieldset,
+button {
   all: unset;
 }
 
@@ -37,6 +38,22 @@ fieldset {
   padding: 40px;
   width: 700px;
   margin: 15px auto;
+}
+
+.SignUpForm-container .form-footer {
+  padding-top: 40px;
+}
+
+.SignUpForm-container button[type="submit"] {
+  background-color: var(--point-color);
+  color: white;
+  padding: 0 90px;
+  height: 48px;
+  display: inline-flex;
+  font-size: 1.4rem;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .input select,
@@ -90,9 +107,6 @@ body {
   height: 1px;
   margin: -1px;
   clip: rect(0, 0, 0, 0);
-}
-
-.form {
 }
 
 .form-fieldset {
