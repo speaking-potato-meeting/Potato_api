@@ -2,8 +2,8 @@ from ninja import NinjaAPI, File, Schema, Router, Path
 from ninja.files import UploadedFile
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
-from .models import Comment,User,Timer
-from datetime import date
+from .models import Comment,User,Timer,TodoList
+from datetime import date, datetime
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseServerError
 from pydantic import BaseModel
@@ -47,6 +47,14 @@ class CreateUserSchema(Schema):
     github: str
     blog: Optional[HttpUrl] 
     # individual_rule: str
+
+#To-do-list
+class TodoListSchema(Schema):
+    user_id: int
+    title: str
+    date: date  
+    description: str
+    is_active: bool
 
 #로그인/로그아웃   
 class LoginInput(Schema):
@@ -94,7 +102,6 @@ def get_all_comments(request):
     comments = Comment.objects.all()
     comment_data = [{"id": comment.id, "text": comment.text, "timestamp": comment.timestamp} for comment in comments]
     return comment_data
-
 
 #댓글조회
 @api.get('/comments/{comment_id}')
@@ -277,3 +284,50 @@ def logout_user(request):
         return {"message": "성공"}
     else:
         raise HttpError(401, "실패")
+
+#TodoList생성
+@api.post("/todolist/", response=TodoListSchema)
+def create_todolist(request, data: TodoListSchema):
+    todo = TodoList(
+        user_id=data.user_id,
+        title=data.title,
+        date=data.date,
+        description=data.description,
+        is_active=data.is_active
+    )
+    todo.save()
+    return todo
+
+#TodoList조회
+@api.get("/todolist/{todo_id}", response=TodoListSchema)
+def get_todolist(request, todo_id: int):
+    try:
+        todo = TodoList.objects.get(id=todo_id)
+        return todo
+    except TodoList.DoesNotExist:
+        return {"message": "실패"}, 404
+
+#TodoList수정
+@api.put("/todolist/{todo_id}", response=TodoListSchema)
+def update_todolist(request, todo_id: int, data: TodoListSchema):
+    try:
+        todo = TodoList.objects.get(id=todo_id)
+        todo.user_id = data.user_id
+        todo.title = data.title
+        todo.date = data.date
+        todo.description = data.description
+        todo.is_active = data.is_active
+        todo.save()
+        return todo
+    except TodoList.DoesNotExist:
+        return {"message": "실패"}, 404
+
+#TodoList삭제
+@api.delete("/todolist/{todo_id}")
+def delete_todolist(request, todo_id: int):
+    try:
+        todo = TodoList.objects.get(id=todo_id)
+        todo.delete()
+        return {"message": "성공"}
+    except TodoList.DoesNotExist:
+        return {"message": "실패"}, 404
