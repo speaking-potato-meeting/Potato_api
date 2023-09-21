@@ -12,7 +12,6 @@ const SignUp = () => {
     if (currentState === "rule") return setCurrentState("signup");
   };
 
-  const form = "signupForm";
   return (
     <section className="SignUp">
       <header className="header">

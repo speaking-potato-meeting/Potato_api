@@ -32,6 +32,7 @@ export default function Login() {
 
       const getUserResponse = await getUser();
       // if (getUserResponse)
+      console.log("로그인한 유저입니다.", getUserResponse);
     }
   }
   return (
