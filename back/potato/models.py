@@ -45,7 +45,6 @@ class User(AbstractUser):
     is_superuser = models.BooleanField(default=False)
     profile_image = models.ImageField(upload_to='profile_images/')
 
-
 class Rule(models.Model):
     all_rule = models.TextField(null=True, blank=True)
     time = models.IntegerField(default=30)

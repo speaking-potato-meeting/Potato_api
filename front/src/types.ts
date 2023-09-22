@@ -1,9 +1,10 @@
 export interface commentType {
-  id: number;
-  name: string;
-  text: string;
-  timestamp: Date;
-  pf_pic: string;
+  id: number,
+  // username: string,
+  user_id: number,
+  text: string,
+  timestamp: Date,
+  // pf_pic: string,
 }
 
 export interface User {
