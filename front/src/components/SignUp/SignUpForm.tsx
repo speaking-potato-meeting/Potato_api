@@ -108,17 +108,27 @@ export default function SignUpForm({ onClick }: formProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(e.currentTarget);
+
     const formData = new FormData(e.currentTarget);
     formData.delete("password_confirm");
-    formData.append("individual_rule", "");
-    const signupRes = await signup(formData);
-    if (signupRes === "success") {
-      const userInfo = await getUser();
-      console.log(userInfo);
-      return;
+
+    for (let [name, value] of formData) {
+      if (name !== "blog" && !value) {
+        console.log(name, value);
+        console.log("로그인 실패");
+        return;
+      }
     }
+    formData.append("individual_rule", "");
+
+    // const signupRes = await signup(formData);
+    // if (signupRes === "success") {
+    //   const userInfo = await getUser();
+    //   console.log(userInfo);
+    //   return;
+    // }
     onClick();
-    return;
+    console.log("로그인");
   };
 
   return (
@@ -303,9 +313,7 @@ export default function SignUpForm({ onClick }: formProps) {
             </div>
           </div>
         </fieldset>
-        <button type="submit" onClick={onClick}>
-          다음으로
-        </button>
+        <button type="submit">다음으로</button>
       </form>
     </>
   );

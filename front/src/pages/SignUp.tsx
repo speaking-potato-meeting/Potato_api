@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { RuleForm } from "../components/SignUp/RuleForm";
 import SignUpForm from "../components/SignUp/SignUpForm";
 
@@ -12,23 +12,51 @@ const SignUp = () => {
     if (currentState === "rule") return setCurrentState("signup");
   };
 
+  const ruleFormRef = useRef(null);
+  const signupFormRef = useRef(null);
+
+  function handleScrollRuleForm() {
+    ruleFormRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "start",
+    });
+  }
+
+  function handleScrollSignupForm() {
+    signupFormRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "end",
+    });
+  }
+
   return (
     <section className="SignUp">
-      <header className="header">
-        <h2>
-          말하는 감자 이용을 위해 <strong>개인 벌금 규칙</strong> 작성이
-          필요합니다.
-        </h2>
-      </header>
-      {currentState === "signup" ? (
-        <div className="RuleForm-container">
-          <RuleForm onClick={onChangeForm} />
-        </div>
-      ) : (
-        <div className="SignUpForm-container">
-          <SignUpForm onClick={onChangeForm} />
-        </div>
-      )}
+      {/* <header className="header"></header> */}
+      <ul
+        style={{
+          display: "flex",
+          width: "800px",
+          overflowX: "hidden",
+          gap: "40px",
+        }}
+      >
+        <li ref={signupFormRef}>
+          <div className="SignUpForm-container">
+            <SignUpForm onClick={handleScrollRuleForm} />
+          </div>
+        </li>
+        <li ref={ruleFormRef}>
+          <div className="RuleForm-container">
+            <h2 className="form-title">
+              말하는 감자 이용을 위해 <strong>개인 벌금 규칙</strong> 작성이
+              필요합니다.
+            </h2>
+            <RuleForm onClick={handleScrollSignupForm} />
+          </div>
+        </li>
+      </ul>
     </section>
   );
 };

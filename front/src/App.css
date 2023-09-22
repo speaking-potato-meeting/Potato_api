@@ -7,6 +7,7 @@
 /* SignUp */
 
 /* reset */
+h1,
 h3 {
   font-size: 10px;
   margin: 0;
@@ -25,7 +26,6 @@ fieldset {
 
 .SignUp {
   height: 100vh;
-  max-width: unset;
 }
 
 .SignUp .header {
@@ -37,7 +37,6 @@ fieldset {
 .SignUpForm-container {
   padding: 40px;
   width: 700px;
-  margin: 15px auto;
 }
 
 .SignUpForm-container .form-footer {
@@ -136,9 +135,8 @@ button {
 }
 
 .RuleForm-container {
-  padding: 40px;
   width: 700px;
-  margin: 15px auto;
+  margin-top: 200px;
 }
 
 .form-header {
@@ -159,7 +157,8 @@ button {
 }
 
 .form-contents {
-  min-height: 400px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 .input {
   box-shadow: inset 0 0 2px #222;
