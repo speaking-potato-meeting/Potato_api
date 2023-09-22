@@ -25,9 +25,8 @@ class User(AbstractUser):
         ('ENTJ', 'ENTJ'),
     )
     username = models.CharField(max_length=20,unique=True)
-    #unique=True 중복x
     password = models.CharField(max_length=200)
-    email = models.EmailField()
+    birth = models.DateField()
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=50)
     github = models.URLField()
@@ -35,41 +34,38 @@ class User(AbstractUser):
     MBTI = models.CharField(max_length=4, choices=MBTI_CHOICES, default='')
     position = models.CharField(max_length=20)
     cdt = models.DateTimeField(auto_now_add=True)
-    # individual_rule = models.TextField(null=True, blank=True)
-    #변경
-    birth = models.DateField()
-    # profile_image = models.ImageField()
+    total_fee = models.IntegerField()
+    individual_rule = models.TextField(null=True, blank=True)
+    week_studytime = models.IntegerField()
+    penalty = models.IntegerField()
+    immunity = models.IntegerField()
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    profile_image = models.ImageField(upload_to="profile_images/")
+    profile_image = models.ImageField(upload_to='profile_images/')
 
 
 class Rule(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     all_rule = models.TextField(null=True, blank=True)
-    #변경
     time = models.IntegerField(default=30)
 
 
 class TodoList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
-    date = models.DateTimeField()
     description = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
 
 
 class Money(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
     money = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
+    individual_rule_content = models.TextField(default="개인 벌금 규칙 내용입니다.")
 
 
-# Study 보충필요
-class Study(models.Model):
+class StudyTimer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     study = models.IntegerField(default=0)
@@ -77,20 +73,13 @@ class Study(models.Model):
 
 
 class Schedule(models.Model):
-    start_date = models.DateTimeField()
+    start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True, blank=True)
     schedule = models.CharField(max_length=100)
-    is_active = models.BooleanField(default=True)
+    is_holiday = models.BooleanField(default=True)
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     text = models.TextField(null=True, blank=True)
-    
-# 스터디타임의 타입 정수형인지 문자형인지 정수형
-class Timer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField(default=date.today)
-    studyTime = models.TextField(default=True)
-
-
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
