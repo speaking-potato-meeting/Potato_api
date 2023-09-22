@@ -49,7 +49,8 @@ export default function SignUpForm({ onClick }: formProps) {
   const onValidate = (
     word: string,
     value?: string | FormDataEntryValue
-  ): void => {
+  ): string | void => {
+    value = (value as string).trim();
     switch (word) {
       case "email":
         {
@@ -59,6 +60,9 @@ export default function SignUpForm({ onClick }: formProps) {
               email: value ? "" : "아이디는 필수 입력 값입니다.",
             };
           });
+          if (!value) {
+            return "invalid";
+          }
         }
         break;
 
@@ -70,6 +74,10 @@ export default function SignUpForm({ onClick }: formProps) {
               password: value ? "" : "비밀번호 설정은 필수 입력 값입니다.",
             };
           });
+
+          if (!value) {
+            return "invalid";
+          }
         }
         break;
 
@@ -89,6 +97,9 @@ export default function SignUpForm({ onClick }: formProps) {
               private: value ? "" : "이름, 생일, 지역은 필수 입력 값입니다.",
             };
           });
+          if (!value) {
+            return "invalid";
+          }
         }
         break;
 
@@ -100,8 +111,12 @@ export default function SignUpForm({ onClick }: formProps) {
               phone: value ? "" : "전화번호는 필수 입력 값입니다.",
             };
           });
+          if (!value) {
+            return "invalid";
+          }
         }
         break;
+
       case "position":
         {
           setErrors((prev) => {
@@ -110,6 +125,9 @@ export default function SignUpForm({ onClick }: formProps) {
               position: value ? "" : "직무는 필수 입력 값입니다.",
             };
           });
+          if (!value) {
+            return "invalid";
+          }
         }
         break;
       case "github":
@@ -120,6 +138,9 @@ export default function SignUpForm({ onClick }: formProps) {
               github: value ? "" : "github 주소는 필수 입력 값입니다.",
             };
           });
+          if (!value) {
+            return "invalid";
+          }
         }
         break;
     }
@@ -145,9 +166,15 @@ export default function SignUpForm({ onClick }: formProps) {
     const formData = new FormData(e.currentTarget);
     formData.delete("password_confirm");
 
+    let valid = true;
+
+    // 유효성 검사(메시지 출력)
     for (let [name, value] of formData) {
-      onValidate(name, value);
+      if (onValidate(name, value)) {
+        valid = false;
+      }
     }
+    valid && onClick();
   };
 
   return (
