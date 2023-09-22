@@ -38,12 +38,11 @@ class User(AbstractUser):
     # individual_rule = models.TextField(null=True, blank=True)
     #변경
     birth = models.DateField()
-    # profile_image = models.ImageField()
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    profile_image = models.ImageField(upload_to="profile_images/")
+    # profile_image = models.ImageField(upload_to="profile_images/")
 
 
 class Rule(models.Model):

@@ -9,15 +9,14 @@ from django.http import HttpResponseServerError
 from pydantic import BaseModel
 import logging
 import os
-
-router = Router()
 # from django.contrib.auth.models import User
 from django.http import Http404
-from datetime import date
 from typing import Optional
 from pydantic.networks import HttpUrl
 from django.contrib.auth import authenticate, login, logout
 from ninja.errors import HttpError
+from django.http import HttpResponse
+
 api  = NinjaAPI()
 logger = logging.getLogger(__name__)
 
@@ -60,17 +59,17 @@ class TodoListSchema(Schema):
 class LoginInput(Schema):
     username: str
     password: str
-    email: str
-    phone: str
-    address: str
-    github: str
-    postion: str
-    individual_rule: str
-    birth: date
-    is_admin: bool
-    is_active: bool
-    is_staff: bool
-    is_superuser: bool
+    # email: str
+    # phone: str
+    # address: str
+    # github: str
+    # postion: str
+    # individual_rule: str
+    # birth: date
+    # is_admin: bool
+    # is_active: bool
+    # is_staff: bool
+    # is_superuser: bool
 
 class TimerIn(Schema):
     user_id: int
@@ -272,7 +271,8 @@ def login_user(request, data: LoginInput):
     user = authenticate(request, username=data.username, password=data.password)
     if user is not None:
         login(request, user)
-        return {"message": "성공"}
+        request.session['user_id'] = user.id 
+        return HttpResponse("Login successful")
     else:
         raise HttpError(401, "실패")
     
