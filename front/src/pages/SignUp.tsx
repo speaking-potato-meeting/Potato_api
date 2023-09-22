@@ -39,7 +39,7 @@ const SignUp = () => {
           display: "flex",
           width: "800px",
           overflowX: "hidden",
-          gap: "40px",
+          gap: "60px",
         }}
       >
         <li ref={signupFormRef}>
