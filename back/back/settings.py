@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'potato',
-    'corsheaders', # CORS 관련 추가
+    'back',
+    'accounts',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [

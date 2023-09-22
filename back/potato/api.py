@@ -1,3 +1,10 @@
+
+from ninja import NinjaAPI, Schema
+from .models import User,StudyTimer
+from datetime import date
+from django.shortcuts import get_object_or_404
+from accounts.api import router as accounts_router
+from schedule.api import router as schedule_router
 from ninja import NinjaAPI, File, Schema, Router, Path
 from ninja.files import UploadedFile
 from django.forms import model_to_dict
@@ -18,35 +25,10 @@ from ninja.errors import HttpError
 from django.http import HttpResponse
 
 api  = NinjaAPI()
-logger = logging.getLogger(__name__)
 
 
-#댓글
-class commentIn(Schema):
-    # user_id: int = None
-    # timestamp: date = None
-    text: str
-
-#댓글
-class CommentOut(Schema):
-    user_id: int
-    text: str
-    timestamp: date 
-
-#유저
-class CreateUserSchema(Schema):
-    email: str
-    password: str
-    username: str
-    birth: date
-    address: str
-    phone: str
-    MBTI: str
-    position: str
-    github: str
-    blog: Optional[HttpUrl] 
-    # individual_rule: str
-
+api.add_router("/accounts/", accounts_router)
+api.add_router("/schedule/", schedule_router)  
 #To-do-list
 class TodoListSchema(Schema):
     user_id: int
@@ -76,6 +58,7 @@ class TimerIn(Schema):
     username: str
     studyTime: str
     date: date
+
 
 class UserInfo(BaseModel):
     user_id: int
@@ -145,12 +128,12 @@ def delete_User(request,user_id: int):
 @api.post('/timer')
 def create_Timer(request, payload: TimerIn):
     user = User.objects.get(id=payload.user_id)
-    time = Timer.objects.create(user=user, studyTime=payload.studyTime)
+    time = StudyTimer.objects.create(user=user, studyTime=payload.studyTime)
     return {"id":user.id, "studyTime": time.studyTime}
 
 @api.put('/timer/{user_id}')
 def update_Timer(request, user_id: int, payload: TimerIn):
-    time = get_object_or_404(Timer, id=user_id)
+    time = get_object_or_404(StudyTimer, id=user_id)
     time.studyTime = payload.studyTime
     time.save()
     return {"studyTime": time.studyTime}
