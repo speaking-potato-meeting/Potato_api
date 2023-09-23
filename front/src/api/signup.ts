@@ -1,13 +1,16 @@
 import { User } from "../types";
+import type { RuleFormData } from "../types";
 
 export const BASE_URL = "http://localhost:8000";
 
-export async function signup(args: FormData) {
-  const bodyData: User | {} = {};
+export async function signup(formData: FormData, rules: RuleFormData[]) {
+  const bodyData: User = {} as User;
 
-  for (let [name, value] of args) {
+  for (let [name, value] of formData) {
     bodyData[name] = value;
   }
+
+  bodyData["individual_rule"] = rules;
 
   const response = await fetch(`${BASE_URL}/api/create-user`, {
     method: "POST",

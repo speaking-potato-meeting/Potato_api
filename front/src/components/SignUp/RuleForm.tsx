@@ -1,11 +1,7 @@
 import { useRef, useState } from "react";
+import { signup } from "../../api/signup";
 
-type Rule = {
-  [key: string]: number | string;
-  fee: number | string;
-  rule: string;
-  error: string;
-};
+import type { Rule, RuleFormData } from "../../types";
 
 export type formProps = {
   onClick: () => void;
@@ -102,7 +98,7 @@ export function RuleForm({ onClick, signUpData }: formProps) {
     setInputFields(data);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     /* validate는 금액, 규칙 중 한 가지만 비었을 때 여부를 저장합니다. */
@@ -141,13 +137,23 @@ export function RuleForm({ onClick, signUpData }: formProps) {
 
     // 제출할 때
     if (validate) {
-      const nextState = validateForm.reduce((prev: Rule[], f: Rule) => {
-        if (f.fee && f.rule) {
-          return [...prev, f];
-        }
-        return prev;
-      }, []);
-      // console.log(nextState);
+      const ruleFormData = validateForm.reduce(
+        (prev: RuleFormData[], f: RuleFormData) => {
+          if (f.fee && f.rule) {
+            return [
+              ...prev,
+              {
+                fee: f.fee,
+                rule: f.rule,
+              },
+            ];
+          }
+          return prev;
+        },
+        []
+      );
+      const signUpResponse = await signup(signUpData, ruleFormData);
+      console.log(signUpResponse);
     }
 
     if (!validate) {
