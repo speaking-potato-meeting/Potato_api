@@ -6,7 +6,7 @@ export async function signup(args: FormData) {
   const bodyData: User | {} = {};
 
   for (let [name, value] of args) {
-    bodyData[name] = value; // key1 = value1, then key2 = value2
+    bodyData[name] = value;
   }
 
   const response = await fetch(`${BASE_URL}/api/create-user`, {

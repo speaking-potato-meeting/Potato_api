@@ -8,11 +8,12 @@ type Rule = {
 
 export type formProps = {
   onClick: () => void;
+  signUpData: FormData;
 };
 
 type inputMap = Map<number, HTMLInputElement>;
 
-export function RuleForm({ onClick }: formProps) {
+export function RuleForm({ onClick, signUpData }: formProps) {
   const [inputFields, setInputFields] = useState<Rule[]>([
     { fee: "", rule: "" },
   ]);
