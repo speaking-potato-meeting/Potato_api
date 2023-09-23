@@ -219,7 +219,7 @@ button {
   color: white;
   background: var(--point-red);
 }
-.field-remove-btn.disabled {
+.field-remove-btn[disabled] {
   opacity: 0;
   cursor: default;
 }

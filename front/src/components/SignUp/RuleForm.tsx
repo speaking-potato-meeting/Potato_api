@@ -191,10 +191,11 @@ export function RuleForm({ onClick, signUpData }: formProps) {
                 </div>
                 <button
                   type="button"
-                  className={`field-remove-btn${idx === 0 ? " disabled" : ""}`}
+                  className="field-remove-btn"
                   onClick={() => {
                     removeFields(idx);
                   }}
+                  disabled={idx === 0 ? true : undefined}
                 >
                   -
                 </button>
