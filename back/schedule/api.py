@@ -10,25 +10,18 @@ logger = logging.getLogger(__name__)
 
 class commentIn(Schema):
     user_id: int
-    # user =1
     timestamp: date
-    # timestamp = datetime.now()
     text: str
-    # text = "확인"
-
+    schedule_id:int
 
 class commentOut(Schema):
     id: int
-    # id=1
     user_id: int
-    # user =1
     timestamp: date
-    # timestamp = datetime.now()
     text: str
-    # text = "확인1"
 
 
-@router.post("/comments")
+@router.post("/comments",tags=["댓글"])
 def create_Comment(request, payload: commentIn):
     try:
         user = User.objects.get(id=payload.user_id)  # Fetch the User instance
@@ -39,19 +32,19 @@ def create_Comment(request, payload: commentIn):
         logger.exception("An error occurred: %s", e)
         return HttpResponseServerError("서버 오류 발생")
     
-@router.get('/comments/{comment_id}', response=commentOut)
+@router.get('/comments/{comment_id}', response=commentOut,tags=["댓글"])
 def get_Comment(request, comment_id: int):
     comment = get_object_or_404(Comment, id=comment_id)
     return comment
 
 # 전체 댓글 목록을 가져오는 엔드포인트
-@router.get("/comments/")
+@router.get("/comments/",tags=["댓글"])
 def get_all_comments(request):
     comments = Comment.objects.all()
     comment_data = [{"id": comment.id, "text": comment.text, "timestamp": comment.timestamp} for comment in comments]
     return comment_data
 
-@router.put("/comments/{comment_id}")
+@router.put("/comments/{comment_id}",tags=["댓글"])
 def update_Comment(request,comment_id: int, payload: commentIn):
     comment = get_object_or_404(Comment, id=comment_id)
     comment.user_id = payload.user_id
@@ -60,7 +53,7 @@ def update_Comment(request,comment_id: int, payload: commentIn):
     comment.save()
     return {"success" : True}
 
-@router.delete("/comments/{comment_id}")
+@router.delete("/comments/{comment_id}",tags=["댓글"])
 def delete_Comment(request,comment_id: int):
     comment = get_object_or_404(Comment, id=comment_id)
     comment.delete()

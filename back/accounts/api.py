@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 #유저
+
 class CreateUserSchema(Schema):
     first_name: str
     username: str
@@ -27,29 +28,27 @@ class CreateUserSchema(Schema):
     MBTI: str
     position: str
     blog: Optional[HttpUrl]
+    total_fee : int 
+    week_studytime:int
+    penalty:int
+    immunity:int
+    # profile_image:
     # individual_rule: str
 
 #로그인/로그아웃   
 class LoginInput(Schema):
     username: str
     password: str
-    email: str
-    phone: str
-    address: str
-    github: str
-    postion: str
-    individual_rule: str
-    birth: date
-    is_admin: bool
-    is_active: bool
-    is_staff: bool
-    is_superuser: bool
-
-class TimerIn(Schema):
-    user_id: int
-    username: str
-    studyTime: str
-    date: date
+    # phone: str
+    # address: str
+    # github: str
+    # postion: str
+    # individual_rule: str
+    # birth: date
+    # is_admin: bool
+    # is_active: bool
+    # is_staff: bool
+    # is_superuser: bool
 
 class UserInfo(BaseModel):
     user_id: int
@@ -103,11 +102,12 @@ def get_user_info(request, user_id: int = Path(..., description="User ID")):
     }
 
     return user_data
+
 #회원가입
-@router.post("/create-user")
+@router.post("/create-user", tags=["회원가입"])
 def create_user(request, data: CreateUserSchema):
     user = User.objects.create_user(
-        email=data.email,
+        first_name=data.first_name,
         password=data.password,
         username=data.username,
         birth = data.birth,
@@ -117,47 +117,53 @@ def create_user(request, data: CreateUserSchema):
         position = data.position,
         github = data.github,
         blog = data.blog,
+        total_fee = data.total_fee,
+        week_studytime = data.week_studytime,
+        penalty = data.penalty,
+        immunity = data.immunity,
+        # profile_image:
         # individual_rule = data.individual_rule,
     )
     user.save()
     return {"message": "성공"}
 
 #회원조회
-@router.get("/get-user/{user_id}")
+@router.get("/get-user/{user_id}",tags=["회원가입"])
 def get_user(request, user_id: int):
     try:
         user = User.objects.get(id=user_id)
 
         serialized_user = {
+            "first_name":user.first_name,
             "username": user.username,
-            "email": user.email,
             "phone": user.phone,
             "address": user.address,
             "github": user.github,
             "blog": user.blog,
             "MBTI": user.MBTI,
             "position": user.position,
-            # "individual_rule": user.individual_rule,
             "birth": user.birth.strftime('%Y-%m-%d'),
+            # "individual_rule": user.individual_rule,
         }
         return serialized_user
     except User.DoesNotExist:
         return {"message": "실패"}, 404
     
 #회원수정
-@router.put("/update-user/{user_id}")
+@router.put("/update-user/{user_id}", tags=["회원가입"])
 def update_user(request, user_id: int, data: CreateUserSchema):
     try:
         user = User.objects.get(id=user_id)
+        user.first_name= data.first_name
         user.username = data.username
         user.password=data.password
-        user.email = data.email
         user.phone = data.phone
         user.address = data.address
         user.github = data.github
         user.blog = data.blog
         user.MBTI = data.MBTI
         user.position = data.position
+        # user.profile_image=data
         # user.individual_rule = data.individual_rule
         user.birth = data.birth
         user.save()
@@ -166,7 +172,7 @@ def update_user(request, user_id: int, data: CreateUserSchema):
         return {"message": "실패"}, 404
     
 #회원탈퇴    
-@router.delete("/delete-user/{user_id}")
+@router.delete("/delete-user/{user_id}", tags=["회원가입"])
 def delete_user(request, user_id: int):
     try:
         user = User.objects.get(id=user_id)
@@ -176,17 +182,20 @@ def delete_user(request, user_id: int):
         return {"message": "실패"}, 404
 
 #로그인
-@router.post("/login")
+@router.post("/login", tags=["로그인/로그아웃"])
 def login_user(request, data: LoginInput):
     user = authenticate(request, username=data.username, password=data.password)
+
     if user is not None:
+
         login(request, user)
+
         return {"message": "성공"}
     else:
         raise HttpError(401, "실패")
     
 #로그아웃
-@router.post("/logout")
+@router.post("/logout", tags=["로그인/로그아웃"])
 def logout_user(request):
     if request.user.is_authenticated:
         logout(request)
