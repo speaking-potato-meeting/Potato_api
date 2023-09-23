@@ -4,6 +4,7 @@ type Rule = {
   [key: string]: number | string;
   fee: number | string;
   rule: string;
+  error: string;
 };
 
 export type formProps = {
@@ -15,7 +16,12 @@ type inputMap = Map<number, HTMLInputElement>;
 
 export function RuleForm({ onClick, signUpData }: formProps) {
   const [inputFields, setInputFields] = useState<Rule[]>([
-    { fee: "", rule: "" },
+    {
+      fee: "3000원",
+      rule: "매일 2시간 이상 공부(안하면 결석 처리)",
+      error: "",
+    },
+    { fee: "", rule: "", error: "" },
   ]);
 
   const feeRef = useRef<inputMap | null>(null);
@@ -29,7 +35,6 @@ export function RuleForm({ onClick, signUpData }: formProps) {
 
     if (target.className === "invalid") {
       if (target.value.length === 0) {
-        console.log(target.value, "이거 왜 안 머겅?");
         target.parentElement!.classList.add("invalid");
       }
       if (target.value.length > 0) {
@@ -44,7 +49,7 @@ export function RuleForm({ onClick, signUpData }: formProps) {
   };
 
   const addFields = () => {
-    let newField = { fee: "", rule: "" };
+    let newField = { fee: "", rule: "", error: "" };
 
     setInputFields([...inputFields, newField]);
   };
@@ -126,7 +131,6 @@ export function RuleForm({ onClick, signUpData }: formProps) {
       })
       .filter((value): value is Rule => value !== undefined);
 
-    console.log(validateForm);
     if (focusNode.node) {
       focusNode.node.focus();
     }
@@ -147,8 +151,8 @@ export function RuleForm({ onClick, signUpData }: formProps) {
           {inputFields.map((input, idx) => {
             return (
               <li key={idx} className="field">
-                <span>{`${idx + 1}.`}</span>
-                <div className="input">
+                <span>{idx === 0 ? "" : `${idx}.`}</span>
+                <div className={`input${idx === 0 ? " disabled" : ""}`}>
                   <input
                     ref={(node) => {
                       const map: inputMap = getMap(node?.name ?? "fee");
@@ -163,10 +167,11 @@ export function RuleForm({ onClick, signUpData }: formProps) {
                     placeholder="금액"
                     value={input.fee}
                     onChange={(e) => handleFormChange(idx, e)}
+                    disabled={idx === 0 ? true : undefined}
                   />
                 </div>
 
-                <div className="input">
+                <div className={`input${idx === 0 ? " disabled" : ""}`}>
                   <input
                     type="text"
                     name="rule"
@@ -181,11 +186,12 @@ export function RuleForm({ onClick, signUpData }: formProps) {
                       }
                       map.delete(idx);
                     }}
+                    disabled={idx === 0 ? true : undefined}
                   />
                 </div>
                 <button
                   type="button"
-                  className="field-remove-btn"
+                  className={`field-remove-btn${idx === 0 ? " disabled" : ""}`}
                   onClick={() => {
                     removeFields(idx);
                   }}
