@@ -1,7 +1,8 @@
 import { BASE_URL } from "./signup";
+import type { User } from "../types";
 
 export async function login(args: { username: string; password: string }) {
-  const loginRes = await fetch(`${BASE_URL}/api/login`, {
+  const loginRes = await fetch(`${BASE_URL}/api/accounts/login`, {
     method: "POST",
     body: JSON.stringify(args),
   });
@@ -9,6 +10,7 @@ export async function login(args: { username: string; password: string }) {
   if (loginRes.ok) {
     const data = await loginRes.json();
     if (data.message === "성공") {
+      console.log(data.message);
       return "success";
     }
     console.log(`Error: ${data.message}`);
@@ -16,11 +18,17 @@ export async function login(args: { username: string; password: string }) {
   }
 }
 
-export async function getUser() {
-  const getUserRes = await fetch(`${BASE_URL}/api/get-user/3`);
+export async function getCurrentUserInfo(): Promise<{
+  user_id: number;
+  username: string;
+} | null> {
+  const getUserRes = await fetch(`${BASE_URL}/api/accounts/users/3`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+      // credentials: "include",
+    },
+  });
 
-  if (getUserRes.ok) {
-    const data = await getUserRes.json();
-    return data && data;
-  }
+  return getUserRes.ok ? getUserRes.json() : null;
 }
