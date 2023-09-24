@@ -1,26 +1,30 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useOutletContext } from "react-router-dom";
 import Navbar from "../Navbar";
 import { NavbarContent } from "../../router";
-import { useEffect } from "react";
-import { getUser } from "../../api/signup";
+import { useState } from "react";
+import type { User } from "../../types";
 
-type GeneralLayoutProps = {};
+type ContextType = {
+  userProfile: { user_id: number; username: string } | null;
+  setUserProfile: (user: { user_id: number; username: string }) => void;
+};
 
 export default function GeneralLayout() {
-  const fetchUser = async () => {
-    const userRes = await getUser();
-    return userRes;
+  const [userProfile, setUserProfile] = useState<{
+    user_id: number;
+    username: string;
+  } | null>();
+  const onSetUser = (args) => {
+    setUserProfile(args);
   };
-
-  let currentPath = useLocation();
-  useEffect(() => {
-    fetchUser();
-  }, [currentPath]);
 
   return (
     <>
-      <Navbar NavbarContent={NavbarContent} />
-      <Outlet />
+      <Navbar NavbarContent={NavbarContent} userProfile={userProfile} />
+      <Outlet context={[onSetUser]} />
     </>
   );
+}
+export function useUser() {
+  return useOutletContext<ContextType>();
 }
