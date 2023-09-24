@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 from ninja.errors import HttpError
 import logging
 import os
-
+from django.contrib.auth.hashers import make_password #해시화
 router = Router()
 logger = logging.getLogger(__name__)
 
@@ -18,9 +18,9 @@ logger = logging.getLogger(__name__)
 #유저
 
 class CreateUserSchema(Schema):
-    first_name: str
     username: str
     password: str
+    first_name: str
     birth: date
     address: str
     github: str
@@ -107,9 +107,9 @@ def get_user_info(request, user_id: int = Path(..., description="User ID")):
 @router.post("/create-user", tags=["회원가입"])
 def create_user(request, data: CreateUserSchema):
     user = User.objects.create_user(
-        first_name=data.first_name,
-        password=data.password,
         username=data.username,
+        password=data.password,
+        first_name=data.first_name,
         birth = data.birth,
         address = data.address,
         phone = data.phone,
@@ -134,8 +134,8 @@ def get_user(request, user_id: int):
         user = User.objects.get(id=user_id)
 
         serialized_user = {
-            "first_name":user.first_name,
             "username": user.username,
+            "first_name":user.first_name,
             "phone": user.phone,
             "address": user.address,
             "github": user.github,
@@ -152,11 +152,14 @@ def get_user(request, user_id: int):
 #회원수정
 @router.put("/update-user/{user_id}", tags=["회원가입"])
 def update_user(request, user_id: int, data: CreateUserSchema):
+    
     try:
         user = User.objects.get(id=user_id)
-        user.first_name= data.first_name
+        if data.password:#수정시 비밀번호 해시화
+            hashed_password = make_password(data.password)
+            user.password = hashed_password
         user.username = data.username
-        user.password=data.password
+        user.first_name= data.first_name
         user.phone = data.phone
         user.address = data.address
         user.github = data.github

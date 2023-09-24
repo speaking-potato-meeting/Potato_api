@@ -80,7 +80,7 @@ def get_todolist(request, todo_id: int):
 def update_todolist(request, todo_id: int, data: TodoListSchema):
     try:
         todo = TodoList.objects.get(id=todo_id)
-        todo.user = data.user_id
+        todo.user_id = data.user_id
         todo.title = data.title
         todo.description = data.description
         todo.is_active = data.is_active
