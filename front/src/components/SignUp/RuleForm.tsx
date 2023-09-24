@@ -1,17 +1,27 @@
 import { useRef, useState } from "react";
+import { signup } from "../../api/signup";
 
-type Rule = {
-  [key: string]: number | string;
-  fee: number | string;
-  rule: string;
+import type { Rule, RuleFormData } from "../../types";
+
+export type formProps = {
+  onClick: () => void;
+  signUpData: FormData;
 };
 
 type inputMap = Map<number, HTMLInputElement>;
 
-export function RuleForm() {
+export function RuleForm({ onClick, signUpData }: formProps) {
   const [inputFields, setInputFields] = useState<Rule[]>([
-    { fee: "", rule: "" },
+    {
+      fee: "3000원",
+      rule: "매일 2시간 이상 공부(안하면 결석 처리)",
+      error: "",
+    },
+    { fee: "", rule: "", error: "" },
   ]);
+
+  /* 한 번 유효성 검사를 거쳤는지 확인하는 검사 모드 state입니다. */
+  const [validateMode, setValidateMode] = useState<boolean>(false);
 
   const feeRef = useRef<inputMap | null>(null);
   const ruleRef = useRef<inputMap | null>(null);
@@ -22,25 +32,31 @@ export function RuleForm() {
   ) => {
     const { target } = event;
 
-    if (target.className === "invalid") {
-      if (target.value.length === 0) {
-        console.log(target.value, "이거 왜 안 머겅?");
-        target.parentElement!.classList.add("invalid");
-      }
-      if (target.value.length > 0) {
-        target.parentElement!.classList.remove("invalid");
-      }
-    }
+    target.parentElement!.classList.remove("invalid");
 
     let data = [...inputFields];
 
     data[idx][`${target.name}`] = target.value;
+    data[idx]["error"] = "";
     setInputFields(data);
   };
 
   const addFields = () => {
-    let newField = { fee: "", rule: "" };
+    let newField = { fee: "", rule: "", error: "" };
 
+    /* 새로운 규칙 추가 시, 노드의 모든 invalid class를 제거합니다. */
+    /* 검사 모드를 종료합니다. */
+    const feeMap = getMap("fee");
+    const ruleMap = getMap("rule");
+
+    feeMap.forEach((v, k) => {
+      v.parentElement!.classList.remove("invalid");
+    });
+    ruleMap.forEach((v, k) => {
+      v.parentElement!.classList.remove("invalid");
+    });
+
+    setValidateMode(false);
     setInputFields([...inputFields, newField]);
   };
 
@@ -55,7 +71,6 @@ export function RuleForm() {
       if (!feeRef.current) {
         feeRef.current = new Map();
       }
-
       return feeRef.current;
     }
 
@@ -64,70 +79,108 @@ export function RuleForm() {
         ruleRef.current = new Map();
       }
     }
-
     return ruleRef.current as inputMap;
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement, Element>,
+    idx: number
+  ) => {
+    let data = [...inputFields];
+
+    if (!e.target.value.trim()) {
+      data[idx][`${e.target.name}`] = "";
+
+      if (validateMode) {
+        e.target.parentElement!.classList.add("invalid");
+      }
+    }
+    setInputFields(data);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    let focusNode: {
-      idx: number | null;
-      node: HTMLInputElement | null;
-    } = { idx: null, node: null };
-    const validateForm = inputFields
-      .map((f, idx) => {
-        // 1. 금액 & 규칙 모두 적지 않았을 경우
-        // if (!f.fee && !f.rule) return f;
 
-        // 2. 규칙은 적었는데 금액은 적지 않은 경우
-        if (!f.fee) {
-          console.log(`${idx}번째 금액 값이 비었습니다.`);
-          const map = getMap("fee");
-          const node = map.get(idx);
-          if (node) {
-            node.classList.add("invalid");
-            node.parentElement!.classList.add("invalid");
-            if (!focusNode.node) {
-              focusNode = {
-                idx,
-                node,
-              };
-              focusNode = focusNode.idx < idx ? focusNode : { idx, node };
-              console.log(focusNode);
-            }
-            // node.focus();
-          }
-          // return f;
-        }
+    /* validate는 금액, 규칙 중 한 가지만 비었을 때 여부를 저장합니다. */
+    let validate = true;
 
-        // 3. 금액은 적었는데 규칙은 적지 않은 경우
-        if (!f.rule) {
-          console.log(`${idx}번째의 규칙 값이 비었습니다.`);
-          const map = getMap("rule");
-          const node = map.get(idx);
-          if (node) {
-            node.classList.add("invalid");
-            node.parentElement!.classList.add("invalid");
-            if (!focusNode.node) {
-              focusNode = {
-                idx,
-                node,
-              };
-              focusNode = focusNode.idx < idx ? focusNode : { idx, node };
-            }
-          }
-        }
+    // 금액, 규칙 둘 다 쓴 경우
+    const validateForm = inputFields.map((f, idx) => {
+      if (!f.fee && !f.rule) {
         return f;
-      })
-      .filter((value): value is Rule => value !== undefined);
+      }
 
-    console.log(validateForm);
-    if (focusNode.node) {
-      focusNode.node.focus();
+      // 1. 규칙은 적었는데 금액은 적지 않은 경우
+      if (!f.fee) {
+        console.log(`${idx}번째 금액 값만 비었습니다.`);
+        validate = false;
+        const map = getMap("fee");
+        const node = map.get(idx);
+        if (node) {
+          node.parentElement!.classList.add("invalid");
+        }
+      }
+
+      // 2. 금액은 적었는데 규칙은 적지 않은 경우
+      if (!f.rule) {
+        console.log(`${idx}번째 규칙 값만 비었습니다.`);
+        validate = false;
+        const map = getMap("rule");
+        const node = map.get(idx);
+        if (node) {
+          node.parentElement!.classList.add("invalid");
+        }
+      }
+
+      return f;
+    });
+
+    // 제출할 때
+    if (validate) {
+      const ruleFormData = validateForm.reduce(
+        (prev: RuleFormData[], f: RuleFormData) => {
+          if (f.fee && f.rule) {
+            return [
+              ...prev,
+              {
+                fee: f.fee,
+                rule: f.rule,
+              },
+            ];
+          }
+          return prev;
+        },
+        []
+      );
+      const signUpResponse = await signup(signUpData, ruleFormData);
+      console.log(signUpResponse);
     }
 
-    setInputFields(validateForm);
+    if (!validate) {
+      const nextState = validateForm.map((f) => {
+        if (!f.fee && !f.rule) {
+          return {
+            ...f,
+            error: "invalid",
+          };
+        }
+        return f;
+      });
+
+      const focusNodeIndex = validateForm.findIndex((f) => !f.fee || !f.rule);
+      getFocus(focusNodeIndex, validateForm[focusNodeIndex]);
+
+      setValidateMode(true);
+      setInputFields(nextState);
+    }
   };
+
+  function getFocus(idx: number, field: Rule) {
+    const map = getMap(field.fee ? "rule" : "fee");
+    const node = map.get(idx);
+
+    node?.focus();
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -142,8 +195,13 @@ export function RuleForm() {
           {inputFields.map((input, idx) => {
             return (
               <li key={idx} className="field">
-                <span>{`${idx + 1}.`}</span>
-                <div className="input">
+                <span>{idx === 0 ? "" : `${idx}.`}</span>
+                <div
+                  className={
+                    `input${idx === 0 ? " disabled" : ""}` +
+                    `${validateMode && input.error ? " invalid" : ""}`
+                  }
+                >
                   <input
                     ref={(node) => {
                       const map: inputMap = getMap(node?.name ?? "fee");
@@ -158,10 +216,17 @@ export function RuleForm() {
                     placeholder="금액"
                     value={input.fee}
                     onChange={(e) => handleFormChange(idx, e)}
+                    disabled={idx === 0 ? true : undefined}
+                    onBlur={(e) => handleBlur(e, idx)}
                   />
                 </div>
 
-                <div className="input">
+                <div
+                  className={
+                    `input${idx === 0 ? " disabled" : ""}` +
+                    `${validateMode && input.error ? " invalid" : ""}`
+                  }
+                >
                   <input
                     type="text"
                     name="rule"
@@ -176,6 +241,8 @@ export function RuleForm() {
                       }
                       map.delete(idx);
                     }}
+                    disabled={idx === 0 ? true : undefined}
+                    onBlur={(e) => handleBlur(e, idx)}
                   />
                 </div>
                 <button
@@ -184,6 +251,8 @@ export function RuleForm() {
                   onClick={() => {
                     removeFields(idx);
                   }}
+                  disabled={idx === 0 ? true : undefined}
+                  tabIndex={2}
                 >
                   -
                 </button>
@@ -193,6 +262,9 @@ export function RuleForm() {
         </ol>
       </div>
       <div className="form-footer">
+        <button type="button" onClick={onClick}>
+          이전으로
+        </button>
         <button type="submit">말하는 감자되기</button>
       </div>
     </form>

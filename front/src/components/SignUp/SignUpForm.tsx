@@ -1,8 +1,14 @@
 import { useState, useRef } from "react";
 import { signup, getUser } from "../../api/signup";
 
-export default function SignUpForm() {
+type Prop = {
+  onClick: () => void;
+  onSignUp: (args: FormData) => void;
+};
+
+export default function SignUpForm({ onClick, onSignUp }: Prop) {
   const focusPrivateLabel = useRef("name");
+  // const [];
   const mbtiList = [
     "istj",
     "isfj",
@@ -35,7 +41,7 @@ export default function SignUpForm() {
   });
 
   const [errors, setErrors] = useState({
-    email: "",
+    username: "",
     password: "",
     password_confirm: "",
     private: "",
@@ -44,100 +50,157 @@ export default function SignUpForm() {
     github: "",
   });
 
-  // handleBlur 핸들링이 최소 7번 중복인데 해결방법은?
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
-    const { name, value } = e.target;
-
-    switch (name) {
+  const onValidate = (
+    word: string,
+    value?: string | FormDataEntryValue
+  ): string | void => {
+    value = (value as string).trim();
+    switch (word) {
       case "email":
-        setErrors({
-          ...errors,
-          email: value ? "" : "아이디는 필수 입력 값입니다.",
-        });
+        {
+          setErrors((prev) => {
+            return {
+              ...prev,
+              email: value ? "" : "아이디는 필수 입력 값입니다.",
+            };
+          });
+          if (!value) {
+            return "invalid";
+          }
+        }
         break;
 
       case "password":
-        setErrors({
-          ...errors,
-          password: value ? "" : "비밀번호 설정은 필수 입력 값입니다.",
-        });
+        {
+          setErrors((prev) => {
+            return {
+              ...prev,
+              password: value ? "" : "비밀번호 설정은 필수 입력 값입니다.",
+            };
+          });
+
+          if (!value) {
+            return "invalid";
+          }
+        }
         break;
+
       case "password_confirm":
         {
           /* 비밀번호 재확인을 어떻게 검사할 것인가? => 제어 컴포넌트로 다룰 것인가? */
         }
         break;
-      case "username":
+
+      case "first_name":
       case "birth":
       case "address":
         {
-          setErrors({
-            ...errors,
-            private: value ? "" : "이름, 생일, 지역은 필수 입력 값입니다.",
+          setErrors((prev) => {
+            return {
+              ...prev,
+              private: value ? "" : "이름, 생일, 지역은 필수 입력 값입니다.",
+            };
           });
+          if (!value) {
+            return "invalid";
+          }
         }
         break;
+
       case "phone":
         {
-          setErrors({
-            ...errors,
-            phone: value ? "" : "전화번호는 필수 입력 값입니다.",
+          setErrors((prev) => {
+            return {
+              ...prev,
+              phone: value ? "" : "전화번호는 필수 입력 값입니다.",
+            };
           });
+          if (!value) {
+            return "invalid";
+          }
         }
         break;
+
       case "position":
         {
-          setErrors({
-            ...errors,
-            position: value ? "" : "직무는 필수 입력 값입니다.",
+          setErrors((prev) => {
+            return {
+              ...prev,
+              position: value ? "" : "직무는 필수 입력 값입니다.",
+            };
           });
+          if (!value) {
+            return "invalid";
+          }
         }
         break;
       case "github":
         {
-          setErrors({
-            ...errors,
-            github: value ? "" : "github 주소는 필수 입력 값입니다.",
+          setErrors((prev) => {
+            return {
+              ...prev,
+              github: value ? "" : "github 주소는 필수 입력 값입니다.",
+            };
           });
+          if (!value) {
+            return "invalid";
+          }
         }
         break;
+    }
+  };
+
+  // handleBlur 핸들링이 최소 7번 중복인데 해결방법은?
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+    const { name, value } = e.target;
+    onValidate(name, value);
+    if (name === "phone") {
+      e.target.value = value
+        .replace(/[^0-9]/g, "")
+        .replace(
+          /(^02.{0}|^01.{1}|[0-9]{3,4})([0-9]{3,4})([0-9]{4})/g,
+          "$1-$2-$3"
+        );
     }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(e.currentTarget);
+
     const formData = new FormData(e.currentTarget);
     formData.delete("password_confirm");
-    formData.append("individual_rule", "");
-    const signupRes = await signup(formData);
-    if (signupRes === "success") {
-      const userInfo = await getUser();
-      console.log(userInfo);
-      return;
+
+    let valid = true;
+
+    // 유효성 검사(메시지 출력)
+    for (let [name, value] of formData) {
+      if (onValidate(name, value)) {
+        valid = false;
+      }
     }
-    return;
+    valid && onClick();
+    onSignUp(formData);
   };
 
   return (
     <>
-      <form className="form" onSubmit={handleSubmit}>
+      <form className="form" onSubmit={(e) => handleSubmit(e)}>
         <h1 className="signForm-title">회원가입</h1>
 
         <fieldset className="form-fieldset">
           <legend>
             <span className="sr-only">계정 정보</span>
           </legend>
-          <div className={`signForm-field${errors.email ? " invalid" : ""}`}>
+          <div className={`signForm-field${errors.username ? " invalid" : ""}`}>
             <label htmlFor="field_id" className="field-label">
               <span className="field-label-txt">아이디</span>
-              <span className="field_error">{errors.email}</span>
+              <span className="field_error">{errors.username}</span>
             </label>
             <div className="input">
               <input
                 id="field_id"
                 type="text"
-                name="email"
+                name="username"
                 onBlur={handleBlur}
               />
             </div>
@@ -197,8 +260,8 @@ export default function SignUpForm() {
                   <input
                     type="text"
                     placeholder="이름"
-                    id="field_username"
-                    name="username"
+                    id="field_first_name"
+                    name="first_name"
                     onBlur={handleBlur}
                   />
                 </div>
@@ -239,6 +302,7 @@ export default function SignUpForm() {
                 type="text"
                 name="phone"
                 onBlur={handleBlur}
+                maxLength={14}
               />
             </div>
           </div>

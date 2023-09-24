@@ -16,10 +16,8 @@ import GeneralLayout from "./components/Layout/GeneralLayout";
 
 const routerData = [
   {
-    id: 0,
     path: "/",
     element: <GeneralLayout />,
-    withAuthorization: false,
     children: [
       {
         path: "",
@@ -60,7 +58,6 @@ const routerData = [
     ],
   },
   {
-    id: 1,
     path: "account/",
     element: <Account />,
     children: [
@@ -80,25 +77,40 @@ const routerData = [
   },
 ];
 
-export const ReactRouterObject: RemixRouter = createBrowserRouter(
-  routerData.map((router) => {
-    if (router.withAuthorization) {
+function checkAuthorize(routerData) {
+  const newRouter = routerData.map((router) => {
+    if (router.children) {
+      const newChild = router.children.map((r) => {
+        if (r.withAuthorization) {
+          return {
+            path: r.path,
+            element: <Root>{r.element}</Root>,
+            label: r.label,
+          };
+        }
+        return {
+          path: r.path,
+          element: r.element,
+          label: r.label,
+        };
+      });
       return {
-        path: router.path,
-        element: <Root>{router.element}</Root>,
-        children: router.children,
-      };
-    } else {
-      return {
-        path: router.path,
-        element: router.element,
-        children: router.children,
+        ...router,
+        children: newChild,
       };
     }
-  })
+    return router;
+  });
+  return newRouter;
+}
+
+console.log(checkAuthorize(routerData));
+
+export const ReactRouterObject: RemixRouter = createBrowserRouter(
+  checkAuthorize(routerData)
 );
 
-type NavbarElement = {
+export type NavbarElement = {
   path: string;
   label: string;
 };
@@ -128,6 +140,5 @@ export const NavbarContent: NavbarElement[] = routerData.reduce(
 //       label: r.label,
 //     }));
 //   }
-//   return [];
+//   return [].flat();
 // });
-// .flat();
