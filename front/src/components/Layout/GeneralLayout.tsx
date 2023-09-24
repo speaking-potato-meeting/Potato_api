@@ -4,8 +4,6 @@ import { NavbarContent } from "../../router";
 import { useState } from "react";
 import type { User } from "../../types";
 
-type GeneralLayoutProps = {};
-
 type ContextType = {
   userProfile: { user_id: number; username: string } | null;
   setUserProfile: (user: { user_id: number; username: string }) => void;
@@ -15,7 +13,7 @@ export default function GeneralLayout() {
   const [userProfile, setUserProfile] = useState<{
     user_id: number;
     username: string;
-  }>();
+  } | null>();
   const onSetUser = (args) => {
     setUserProfile(args);
   };
