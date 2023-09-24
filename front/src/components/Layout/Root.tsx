@@ -1,6 +1,7 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { getCurrentUserInfo } from "../../api/login";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useUser } from "./GeneralLayout";
 // import type {User} from '../../types'
 
 interface RootProps {
@@ -8,11 +9,11 @@ interface RootProps {
 }
 
 const Root = ({ children }: RootProps) => {
-  const [userProfile, setUserProfile] = useState<{
-    user_id: number;
-    username: string;
-  }>();
   const navigate = useNavigate();
+  // const { setUserProfile } = useUser();
+  const [onSetUser] = useOutletContext<{ user_id: number; username: string }>();
+  console.log(onSetUser);
+
   const fetchUserProfile = async () => {
     const userProfileResponse = await getCurrentUserInfo();
 
@@ -23,7 +24,7 @@ const Root = ({ children }: RootProps) => {
       );
     }
 
-    setUserProfile(userProfileResponse);
+    onSetUser(userProfileResponse);
   };
 
   useEffect(() => {

@@ -110,7 +110,7 @@ export const ReactRouterObject: RemixRouter = createBrowserRouter(
   checkAuthorize(routerData)
 );
 
-type NavbarElement = {
+export type NavbarElement = {
   path: string;
   label: string;
 };
