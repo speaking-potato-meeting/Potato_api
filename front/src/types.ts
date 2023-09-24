@@ -20,16 +20,24 @@ export type RuleFormData = {
 };
 
 export interface User {
-  [key: string]: string | RuleFormData;
+  [key: string]: string | number | RuleFormData[];
+  first_name: string;
   username: string;
   password: string;
-  email: string;
-  phone: string;
+  birth: string;
   address: string;
   github: string;
-  blog: string;
+  phone: string;
   MBTI: string;
   position: string;
-  individual_rule: RuleFormData[];
-  birth: string;
+  total_fee: number;
+  week_studytime: number;
+  penalty: number;
+  immunity: number;
+  // individual_rule: RuleFormData[];
+  // is_admin: boolean;
+  // is_active: boolean;
+  // is_staff: boolean;
+  // is_superuser: boolean;
+  // profile_image: string;
 }

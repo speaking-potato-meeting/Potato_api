@@ -41,7 +41,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
   });
 
   const [errors, setErrors] = useState({
-    email: "",
+    username: "",
     password: "",
     password_confirm: "",
     private: "",
@@ -91,7 +91,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
         }
         break;
 
-      case "username":
+      case "first_name":
       case "birth":
       case "address":
         {
@@ -182,16 +182,6 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
     onSignUp(formData);
   };
 
-  // const handleClick = (e) => {
-  //   e.preventDefault();
-  //   console.log(e.target);
-
-  // const formData = new FormData(e.currentTarget);
-  // for (let [name, value] of formData) {
-  //   console.log(name, value);
-  // }
-  // };
-
   return (
     <>
       <form className="form" onSubmit={(e) => handleSubmit(e)}>
@@ -201,16 +191,16 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
           <legend>
             <span className="sr-only">계정 정보</span>
           </legend>
-          <div className={`signForm-field${errors.email ? " invalid" : ""}`}>
+          <div className={`signForm-field${errors.username ? " invalid" : ""}`}>
             <label htmlFor="field_id" className="field-label">
               <span className="field-label-txt">아이디</span>
-              <span className="field_error">{errors.email}</span>
+              <span className="field_error">{errors.username}</span>
             </label>
             <div className="input">
               <input
                 id="field_id"
                 type="text"
-                name="email"
+                name="username"
                 onBlur={handleBlur}
               />
             </div>
@@ -270,8 +260,8 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
                   <input
                     type="text"
                     placeholder="이름"
-                    id="field_username"
-                    name="username"
+                    id="field_first_name"
+                    name="first_name"
                     onBlur={handleBlur}
                   />
                 </div>

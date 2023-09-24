@@ -4,15 +4,19 @@ import type { RuleFormData } from "../types";
 export const BASE_URL = "http://localhost:8000";
 
 export async function signup(formData: FormData, rules: RuleFormData[]) {
-  const bodyData: User = {} as User;
+  const bodyData: Partial<User> = {};
 
   for (let [name, value] of formData) {
-    bodyData[name] = value;
+    bodyData[name] = value as string;
   }
 
-  bodyData["individual_rule"] = rules;
+  // bodyData["individual_rule"] = rules;
+  bodyData["total_fee"] = 0;
+  bodyData["week_studytime"] = 0;
+  // bodyData["penalty"] = 0;
+  // bodyData["immunity"] = 0;
 
-  const response = await fetch(`${BASE_URL}/api/create-user`, {
+  const response = await fetch(`${BASE_URL}/api/accounts/create-user`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
@@ -20,12 +24,22 @@ export async function signup(formData: FormData, rules: RuleFormData[]) {
     body: JSON.stringify(bodyData),
   });
 
-  if (response.ok) {
-    const data = await response.json();
-    if (data.message === "성공") {
-      return "success";
+  const responseData = await response.json();
+
+  try {
+    console.log("실행");
+    if (response.ok) {
+      const data = await response.json();
+      if (data.message === "성공") {
+        return "success";
+      }
     }
-    return "fail";
+    throw new Error();
+  } catch (error) {
+    const errorMsg = responseData.detail;
+    errorMsg.map((error) => {
+      console.log(`${error.loc[2]} ${error.msg}`);
+    });
   }
 }
 
