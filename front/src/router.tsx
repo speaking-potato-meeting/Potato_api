@@ -105,6 +105,9 @@ type NavbarElement = {
 
 export const NavbarContent: NavbarElement[] = routerData.reduce(
   (prev, router) => {
+    /* 로그인, 회원가입 페이지 사이드바에서 제외 */
+    if (router.path === "account/") return prev;
+
     if (router.children) {
       const childArr = router.children.map((r) => {
         return {
