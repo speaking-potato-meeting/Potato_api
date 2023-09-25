@@ -1,14 +1,26 @@
 import { useState, useRef } from "react";
-import { signup, getUser } from "../../api/signup";
 
 type Prop = {
   onClick: () => void;
   onSignUp: (args: FormData) => void;
 };
 
+type passwordInput = {
+  [key: string]: { value: string; error: string };
+  password: { value: string; error: string };
+  password_confirm: { value: string; error: string };
+};
+
+type ErrorTypes = {
+  username: string;
+  private: string;
+  phone: string;
+  position: string;
+  github: string;
+  blog: string;
+};
 export default function SignUpForm({ onClick, onSignUp }: Prop) {
   const focusPrivateLabel = useRef("name");
-  // const [];
   const mbtiList = [
     "istj",
     "isfj",
@@ -28,77 +40,147 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
     "entj",
   ].sort((a, b) => a.localeCompare(b));
 
-  // inputField를 제어 컴포넌트로 다룰 것인가?
-  const [inputFields, setInputFields] = useState({
-    email: "",
-    password: "",
-    password_confirm: "",
-    username: "",
-    birth: "",
-    address: "",
-    position: "",
-    github: "",
+  const [passwordInput, setPasswordInput] = useState<passwordInput>({
+    password: { value: "", error: "" },
+    password_confirm: { value: "", error: "" },
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<ErrorTypes>({
     username: "",
-    password: "",
-    password_confirm: "",
     private: "",
     phone: "",
     position: "",
     github: "",
+    blog: "",
   });
 
   const onValidate = (
     word: string,
     value?: string | FormDataEntryValue
   ): string | void => {
-    value = (value as string).trim();
+    (!!value && (value as string).trim()) ?? "";
     switch (word) {
-      case "email":
+      case "username":
         {
           setErrors((prev) => {
             return {
               ...prev,
-              email: value ? "" : "아이디는 필수 입력 값입니다.",
+              username: value ? "" : "아이디는 필수 입력 값입니다.",
             };
           });
           if (!value) {
             return "invalid";
           }
-        }
-        break;
-
-      case "password":
-        {
-          setErrors((prev) => {
-            return {
-              ...prev,
-              password: value ? "" : "비밀번호 설정은 필수 입력 값입니다.",
-            };
-          });
-
-          if (!value) {
-            return "invalid";
-          }
-        }
-        break;
-
-      case "password_confirm":
-        {
-          /* 비밀번호 재확인을 어떻게 검사할 것인가? => 제어 컴포넌트로 다룰 것인가? */
         }
         break;
 
       case "first_name":
+        {
+          setErrors((prev) => {
+            let message = "이름은 필수 입력 값입니다.";
+            const prevMsgs = prev.private;
+
+            const hasBirth = prevMsgs.match(/생일/g);
+            const hasAddress = prevMsgs.match(/지역/g);
+
+            if (hasBirth && hasAddress) {
+              message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            } else if (hasBirth) {
+              message = "이름, 생일은 필수 입력 값입니다.";
+            } else if (hasAddress) {
+              message = "이름, 지역은 필수 입력 값입니다.";
+            } else {
+              // message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            }
+            console.log(message);
+
+            return {
+              ...prev,
+              private: value ? "" : message,
+            };
+          });
+          if (!value) {
+            return "invalid";
+          }
+        }
+        break;
       case "birth":
+        {
+          setErrors((prev) => {
+            let message = "생일은 필수 입력 값입니다.";
+            const prevMsgs = prev.private;
+
+            const hasName = prevMsgs.match(/이름/g);
+            const hasAddress = prevMsgs.match(/지역/g);
+
+            if (hasName && hasAddress) {
+              message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            } else if (hasName) {
+              message = "이름, 생일은 필수 입력 값입니다.";
+            } else if (hasAddress) {
+              message = "이름, 주소는 필수 입력 값입니다.";
+            } else {
+              // message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            }
+
+            return {
+              ...prev,
+              private: value ? "" : message,
+            };
+          });
+
+          // 사용자 입력값은 모두 숫자만 받는다.(나머지는 ""처리)
+          let val = value.replace(/\D/g, "");
+          let leng = val.length;
+
+          // 출력할 결과 변수
+          let result = "";
+
+          // 5개일때 - 20221 : 바로 출력
+          if (leng < 6) result = val;
+          // 6~7일 때 - 202210 : 2022-101으로 출력
+          else if (leng < 8) {
+            result += val.substring(0, 4);
+            result += "-";
+            result += val.substring(4);
+            // 8개 일 때 - 2022-1010 : 2022-10-10으로 출력
+          } else {
+            result += val.substring(0, 4);
+            result += "-";
+            result += val.substring(4, 6);
+            result += "-";
+            result += val.substring(6);
+          }
+          return result;
+        }
+        if (!value) {
+          return "invalid";
+        }
+        break;
+
       case "address":
         {
           setErrors((prev) => {
+            let message = "지역은 필수 입력 값입니다.";
+            const prevMsgs = prev.private;
+
+            const hasName = prevMsgs.match(/이름/g);
+            const hasBirth = prevMsgs.match(/생일/g);
+
+            if (hasName && hasBirth) {
+              message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            } else if (hasName) {
+              message = "이름, 지역은 필수 입력 값입니다.";
+            } else if (hasBirth) {
+              message = "생일, 지역은 필수 입력 값입니다.";
+            } else {
+              // message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            }
+            console.log(message);
+
             return {
               ...prev,
-              private: value ? "" : "이름, 생일, 지역은 필수 입력 값입니다.",
+              private: value ? "" : message,
             };
           });
           if (!value) {
@@ -109,15 +191,21 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
 
       case "phone":
         {
+          if (!value) {
+            return "invalid";
+          }
           setErrors((prev) => {
             return {
               ...prev,
               phone: value ? "" : "전화번호는 필수 입력 값입니다.",
             };
           });
-          if (!value) {
-            return "invalid";
-          }
+          return (value as string)
+            .replace(/[^0-9]/g, "")
+            .replace(
+              /(^02.{0}|^01.{1}|[0-9]{3,4})([0-9]{3,4})([0-9]{4})/g,
+              "$1-$2-$3"
+            );
         }
         break;
 
@@ -135,32 +223,104 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
         }
         break;
       case "github":
+        let message = "";
+        const RegExp =
+          /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+        if (!RegExp.test(value)) {
+          message = "올바른 주소를 입력해주세요.";
+        }
         {
           setErrors((prev) => {
             return {
               ...prev,
-              github: value ? "" : "github 주소는 필수 입력 값입니다.",
+              github: value ? message : "github 주소는 필수 입력 값입니다.",
             };
           });
+
           if (!value) {
             return "invalid";
           }
         }
         break;
+      case "blog": {
+        let message = "";
+        const RegExp =
+          /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+        if (!RegExp.test(value)) {
+          message = "올바른 주소를 입력해주세요.";
+        }
+        setErrors((prev) => {
+          return {
+            ...prev,
+            blog: value ? message : "",
+          };
+        });
+      }
     }
+  };
+
+  const handleConfirmFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newInput = { ...passwordInput };
+
+    const { name, value } = e.target;
+
+    newInput[name].value = value;
+
+    setPasswordInput((prev) => {
+      const { password, password_confirm: confirm } = prev;
+
+      // 1. 비밀번호 입력할 때,
+      if (name === "password") {
+        if (password.error) {
+          newInput["password"].error = "";
+        }
+        if (confirm.value !== value && value) {
+          newInput["password_confirm"].error = "비밀번호가 일치하지 않습니다.";
+        }
+        if (confirm.value === value) {
+          newInput["password_confirm"].error = "비밀번호가 일치합니다.";
+        }
+
+        if (value === "" && value !== confirm.value) {
+          newInput["password_confirm"].error = "비밀번호가 일치하지 않습니다.";
+        }
+      }
+
+      // 2. 비밀번호 재확인을 입력할 때,
+      if (name === "password_confirm") {
+        if (password.value !== value) {
+          newInput["password_confirm"].error = "비밀번호가 일치하지 않습니다.";
+        }
+        if (password.value === value) {
+          newInput["password_confirm"].error = "비밀번호가 일치합니다.";
+        }
+      }
+
+      return newInput;
+    });
   };
 
   // handleBlur 핸들링이 최소 7번 중복인데 해결방법은?
   const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
     const { name, value } = e.target;
-    onValidate(name, value);
-    if (name === "phone") {
-      e.target.value = value
-        .replace(/[^0-9]/g, "")
-        .replace(
-          /(^02.{0}|^01.{1}|[0-9]{3,4})([0-9]{3,4})([0-9]{4})/g,
-          "$1-$2-$3"
-        );
+    const validateResult = onValidate(name, value);
+    if (
+      (name === "phone" || name === "birth") &&
+      validateResult !== "invalid"
+    ) {
+      e.target.value = validateResult as string;
+    }
+
+    if (name === "password" && !value) {
+      setPasswordInput({
+        ...passwordInput,
+        password: {
+          ...passwordInput.password,
+          error: "비밀번호는 필수 입력 값입니다.",
+        },
+      });
     }
   };
 
@@ -174,7 +334,12 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
 
     // 유효성 검사(메시지 출력)
     for (let [name, value] of formData) {
-      if (onValidate(name, value)) {
+      if (
+        onValidate(name, value) === "invalid" ||
+        !passwordInput.password.value.trim() ||
+        passwordInput.password.value !== passwordInput.password_confirm.value
+      ) {
+        console.log(`${name}값에서 오류가 났습니다.`);
         valid = false;
       }
     }
@@ -206,10 +371,16 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
             </div>
           </div>
 
-          <div className={`signForm-field${errors.password ? " invalid" : ""}`}>
+          <div
+            className={`signForm-field${
+              passwordInput.password.error ? " invalid" : ""
+            }`}
+          >
             <label htmlFor="field_pw" className="field-label">
               <span className="field-label-txt">비밀번호</span>
-              <span className="field_error">{errors.password}</span>
+              <span className="field_error">
+                {passwordInput.password.error}
+              </span>
             </label>
             <div className="input">
               <input
@@ -217,19 +388,38 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
                 type="password"
                 name="password"
                 onBlur={handleBlur}
+                value={passwordInput.password.value}
+                onChange={handleConfirmFormChange}
               />
             </div>
           </div>
 
-          <div className="signForm-field">
+          <div
+            className={`signForm-field${
+              passwordInput.password.value
+                ? passwordInput.password.value ===
+                  passwordInput.password_confirm.value
+                  ? " valid"
+                  : " invalid"
+                : passwordInput.password.value ===
+                  passwordInput.password_confirm.value
+                ? ""
+                : " invalid"
+            }`}
+          >
             <label htmlFor="field_confirm" className="field-label">
-              비밀번호 확인
+              <span className="field-label-txt"> 비밀번호 확인</span>
+              <span className="field_error">
+                {passwordInput.password_confirm.error}
+              </span>
             </label>
             <div className="input">
               <input
                 id="field_confirm"
                 type="password"
                 name="password_confirm"
+                value={passwordInput.password_confirm.value}
+                onChange={handleConfirmFormChange}
               />
             </div>
           </div>
@@ -269,8 +459,9 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
               <div style={{ gridColumn: "auto / span 4" }} className="l_col_4">
                 <div className="input">
                   <input
+                    maxLength={10}
                     type="text"
-                    placeholder="생년월일"
+                    placeholder="생일(8자리)"
                     id="field_birth"
                     name="birth"
                     onBlur={handleBlur}
@@ -355,13 +546,20 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
               />
             </div>
           </div>
-          <div className="signForm-field">
+          <div className={`signForm-field${errors.blog ? " invalid" : ""}`}>
             <label htmlFor="field_blog" className="field-label optional">
-              블로그 주소
-              <span>(선택)</span>
+              <span className="field-label-txt">
+                블로그주소<span>(선택)</span>
+              </span>
+              <span className="field_error">{errors.blog}</span>
             </label>
             <div className="input">
-              <input id="field_blog" type="text" name="blog" />
+              <input
+                id="field_blog"
+                type="text"
+                name="blog"
+                onBlur={handleBlur}
+              />
             </div>
           </div>
         </fieldset>

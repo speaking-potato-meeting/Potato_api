@@ -13,7 +13,7 @@ type inputMap = Map<number, HTMLInputElement>;
 export function RuleForm({ onClick, signUpData }: formProps) {
   const [inputFields, setInputFields] = useState<Rule[]>([
     {
-      fee: "3000원",
+      fee: "3000",
       rule: "매일 2시간 이상 공부(안하면 결석 처리)",
       error: "",
     },
@@ -35,6 +35,12 @@ export function RuleForm({ onClick, signUpData }: formProps) {
     target.parentElement!.classList.remove("invalid");
 
     let data = [...inputFields];
+
+    if (target.name === "fee") {
+      const regex = /[^0-9]/g; // 숫자가 아닌 문자열을 선택하는 정규식
+      const result = regex.test(target.value);
+      if (result) return;
+    }
 
     data[idx][`${target.name}`] = target.value;
     data[idx]["error"] = "";
@@ -213,11 +219,12 @@ export function RuleForm({ onClick, signUpData }: formProps) {
                     }}
                     type="text"
                     name="fee"
-                    placeholder="금액"
+                    placeholder="금액(원)"
                     value={input.fee}
                     onChange={(e) => handleFormChange(idx, e)}
                     disabled={idx === 0 ? true : undefined}
                     onBlur={(e) => handleBlur(e, idx)}
+                    maxLength={7}
                   />
                 </div>
 

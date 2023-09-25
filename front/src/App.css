@@ -91,6 +91,11 @@ body {
   opacity: 0;
 }
 
+.signForm-field.valid .field_error {
+  opacity: 1;
+  color: var(--point-success);
+}
+
 .signForm-field.invalid .field_error,
 .SignUpForm-container form.invalid .field_error {
   opacity: 1;

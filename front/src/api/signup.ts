@@ -1,6 +1,12 @@
 import { User } from "../types";
 import type { RuleFormData } from "../types";
 
+type errorType = {
+  loc: string[];
+  msg: string;
+  type: string;
+};
+
 export const BASE_URL = "http://localhost:8000";
 
 export async function signup(formData: FormData, rules: RuleFormData[]) {
@@ -13,8 +19,8 @@ export async function signup(formData: FormData, rules: RuleFormData[]) {
   // bodyData["individual_rule"] = rules;
   bodyData["total_fee"] = 0;
   bodyData["week_studytime"] = 0;
-  // bodyData["penalty"] = 0;
-  // bodyData["immunity"] = 0;
+  bodyData["penalty"] = 0;
+  bodyData["immunity"] = 0;
 
   const response = await fetch(`${BASE_URL}/api/accounts/create-user`, {
     method: "POST",
@@ -29,15 +35,14 @@ export async function signup(formData: FormData, rules: RuleFormData[]) {
   try {
     console.log("실행");
     if (response.ok) {
-      const data = await response.json();
-      if (data.message === "성공") {
+      if (responseData.message === "성공") {
         return "success";
       }
     }
     throw new Error();
   } catch (error) {
     const errorMsg = responseData.detail;
-    errorMsg.map((error) => {
+    errorMsg.map((error: errorType) => {
       console.log(`${error.loc[2]} ${error.msg}`);
     });
   }
