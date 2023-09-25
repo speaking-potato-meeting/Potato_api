@@ -10,9 +10,9 @@ type passwordConfirmMessage = {
 };
 
 type passwordInput = {
-  [key: string]: string;
-  password: "";
-  password_confirm: "";
+  [key: string]: { value: string; error: string };
+  password: { value: string; error: string };
+  password_confirm: { value: string; error: string };
 };
 
 type ErrorTypes = {
@@ -26,8 +26,6 @@ type ErrorTypes = {
 };
 export default function SignUpForm({ onClick, onSignUp }: Prop) {
   const focusPrivateLabel = useRef("name");
-  const passwordRef = useRef<string | null>(null);
-
   const mbtiList = [
     "istj",
     "isfj",
@@ -48,8 +46,8 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
   ].sort((a, b) => a.localeCompare(b));
 
   const [passwordInput, setPasswordInput] = useState<passwordInput>({
-    password: "",
-    password_confirm: "",
+    password: { value: "", error: "" },
+    password_confirm: { value: "", error: "" },
   });
 
   const [errors, setErrors] = useState<ErrorTypes>({
@@ -82,37 +80,6 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
           if (!value) {
             return "invalid";
           }
-        }
-        break;
-
-      case "password":
-        {
-          setErrors((prev) => {
-            return {
-              ...prev,
-              password: value ? "" : "비밀번호 설정은 필수 입력 값입니다.",
-            };
-          });
-
-          if (!value) {
-            return "invalid";
-          }
-        }
-        break;
-
-      case "password_confirm":
-        {
-          setErrors((prev) => {
-            const confirmState =
-              value === "비밀번호가 일치합니다" ? true : false;
-            return {
-              ...prev,
-              password_confirm: {
-                message: value,
-                state: value === "invalid" ? null : confirmState,
-              },
-            };
-          });
         }
         break;
 
@@ -176,28 +143,42 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
   };
 
   const handleConfirmFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // onValidate("password_confirm", e.target.value);
     const newInput = { ...passwordInput };
 
-    newInput[e.target.name] = e.target.value;
+    const { name, value } = e.target;
+
+    newInput[name].value = value;
 
     setPasswordInput((prev) => {
-      console.log(prev.password, prev.password_confirm, e.target.value);
-      if (
-        prev.password !== e.target.value ||
-        prev.password_confirm !== e.target.value
-      ) {
-        onValidate("password_confirm", "비밀번호가 일치하지 않습니다");
+      const { password, password_confirm: confirm } = prev;
+
+      // 1. 비밀번호 입력할 때,
+      if (name === "password") {
+        if (password.error) {
+          newInput["password"].error = "";
+        }
+        if (confirm.value !== value && value) {
+          newInput["password_confirm"].error = "비밀번호가 일치하지 않습니다.";
+        }
+        if (confirm.value === value) {
+          newInput["password_confirm"].error = "비밀번호가 일치합니다.";
+        }
+
+        if (value === "" && value !== confirm.value) {
+          newInput["password_confirm"].error = "비밀번호가 일치하지 않습니다.";
+        }
       }
-      if (
-        prev.password === e.target.value ||
-        prev.password_confirm === e.target.value
-      ) {
-        onValidate("password_confirm", "비밀번호가 일치합니다");
+
+      // 2. 비밀번호 재확인을 입력할 때,
+      if (name === "password_confirm") {
+        if (password.value !== value) {
+          newInput["password_confirm"].error = "비밀번호가 일치하지 않습니다.";
+        }
+        if (password.value === value) {
+          newInput["password_confirm"].error = "비밀번호가 일치합니다.";
+        }
       }
-      if (prev.password === "" && e.target.value === "") {
-        onValidate("password_confirm", "invalid");
-      }
+
       return newInput;
     });
   };
@@ -215,8 +196,14 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
         );
     }
 
-    if (name === "password") {
-      passwordRef.current = value;
+    if (name === "password" && !value) {
+      setPasswordInput({
+        ...passwordInput,
+        password: {
+          ...passwordInput.password,
+          error: "비밀번호는 필수 입력 값입니다.",
+        },
+      });
     }
   };
 
@@ -230,7 +217,11 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
 
     // 유효성 검사(메시지 출력)
     for (let [name, value] of formData) {
-      if (onValidate(name, value)) {
+      if (
+        onValidate(name, value) ||
+        !passwordInput.password.value.trim() ||
+        passwordInput.password.value !== passwordInput.password_confirm.value
+      ) {
         valid = false;
       }
     }
@@ -262,10 +253,16 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
             </div>
           </div>
 
-          <div className={`signForm-field${errors.password ? " invalid" : ""}`}>
+          <div
+            className={`signForm-field${
+              passwordInput.password.error ? " invalid" : ""
+            }`}
+          >
             <label htmlFor="field_pw" className="field-label">
               <span className="field-label-txt">비밀번호</span>
-              <span className="field_error">{errors.password}</span>
+              <span className="field_error">
+                {passwordInput.password.error}
+              </span>
             </label>
             <div className="input">
               <input
@@ -273,7 +270,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
                 type="password"
                 name="password"
                 onBlur={handleBlur}
-                value={passwordInput.password}
+                value={passwordInput.password.value}
                 onChange={handleConfirmFormChange}
               />
             </div>
@@ -281,9 +278,13 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
 
           <div
             className={`signForm-field${
-              errors.password_confirm.state
-                ? " valid"
-                : errors.password_confirm.state === null
+              passwordInput.password.value
+                ? passwordInput.password.value ===
+                  passwordInput.password_confirm.value
+                  ? " valid"
+                  : " invalid"
+                : passwordInput.password.value ===
+                  passwordInput.password_confirm.value
                 ? ""
                 : " invalid"
             }`}
@@ -291,7 +292,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
             <label htmlFor="field_confirm" className="field-label">
               <span className="field-label-txt"> 비밀번호 확인</span>
               <span className="field_error">
-                {errors.password_confirm.message}
+                {passwordInput.password_confirm.error}
               </span>
             </label>
             <div className="input">
@@ -299,7 +300,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
                 id="field_confirm"
                 type="password"
                 name="password_confirm"
-                value={passwordInput.password_confirm}
+                value={passwordInput.password_confirm.value}
                 onChange={handleConfirmFormChange}
               />
             </div>
