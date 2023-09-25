@@ -4,10 +4,6 @@ type Prop = {
   onClick: () => void;
   onSignUp: (args: FormData) => void;
 };
-type passwordConfirmMessage = {
-  message: string;
-  state: boolean | null;
-};
 
 type passwordInput = {
   [key: string]: { value: string; error: string };
@@ -61,7 +57,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
   const onValidate = (
     word: string,
     value?: string | FormDataEntryValue
-  ): string => {
+  ): string | void => {
     (!!value && (value as string).trim()) ?? "";
     switch (word) {
       case "username":
@@ -79,37 +75,112 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
         break;
 
       case "first_name":
-      case "birth": {
-        // 사용자 입력값은 모두 숫자만 받는다.(나머지는 ""처리)
-        let val = value.replace(/\D/g, "");
-        let leng = val.length;
+        {
+          setErrors((prev) => {
+            let message = "이름은 필수 입력 값입니다.";
+            const prevMsgs = prev.private;
 
-        // 출력할 결과 변수
-        let result = "";
+            const hasBirth = prevMsgs.match(/생일/g);
+            const hasAddress = prevMsgs.match(/지역/g);
 
-        // 5개일때 - 20221 : 바로 출력
-        if (leng < 6) result = val;
-        // 6~7일 때 - 202210 : 2022-101으로 출력
-        else if (leng < 8) {
-          result += val.substring(0, 4);
-          result += "-";
-          result += val.substring(4);
-          // 8개 일 때 - 2022-1010 : 2022-10-10으로 출력
-        } else {
-          result += val.substring(0, 4);
-          result += "-";
-          result += val.substring(4, 6);
-          result += "-";
-          result += val.substring(6);
+            if (hasBirth && hasAddress) {
+              message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            } else if (hasBirth) {
+              message = "이름, 생일은 필수 입력 값입니다.";
+            } else if (hasAddress) {
+              message = "이름, 지역은 필수 입력 값입니다.";
+            } else {
+              // message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            }
+            console.log(message);
+
+            return {
+              ...prev,
+              private: value ? "" : message,
+            };
+          });
+          if (!value) {
+            return "invalid";
+          }
         }
-        return result;
-      }
+        break;
+      case "birth":
+        {
+          setErrors((prev) => {
+            let message = "생일은 필수 입력 값입니다.";
+            const prevMsgs = prev.private;
+
+            const hasName = prevMsgs.match(/이름/g);
+            const hasAddress = prevMsgs.match(/지역/g);
+
+            if (hasName && hasAddress) {
+              message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            } else if (hasName) {
+              message = "이름, 생일은 필수 입력 값입니다.";
+            } else if (hasAddress) {
+              message = "이름, 주소는 필수 입력 값입니다.";
+            } else {
+              // message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            }
+
+            return {
+              ...prev,
+              private: value ? "" : message,
+            };
+          });
+
+          // 사용자 입력값은 모두 숫자만 받는다.(나머지는 ""처리)
+          let val = value.replace(/\D/g, "");
+          let leng = val.length;
+
+          // 출력할 결과 변수
+          let result = "";
+
+          // 5개일때 - 20221 : 바로 출력
+          if (leng < 6) result = val;
+          // 6~7일 때 - 202210 : 2022-101으로 출력
+          else if (leng < 8) {
+            result += val.substring(0, 4);
+            result += "-";
+            result += val.substring(4);
+            // 8개 일 때 - 2022-1010 : 2022-10-10으로 출력
+          } else {
+            result += val.substring(0, 4);
+            result += "-";
+            result += val.substring(4, 6);
+            result += "-";
+            result += val.substring(6);
+          }
+          return result;
+        }
+        if (!value) {
+          return "invalid";
+        }
+        break;
+
       case "address":
         {
           setErrors((prev) => {
+            let message = "지역은 필수 입력 값입니다.";
+            const prevMsgs = prev.private;
+
+            const hasName = prevMsgs.match(/이름/g);
+            const hasBirth = prevMsgs.match(/생일/g);
+
+            if (hasName && hasBirth) {
+              message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            } else if (hasName) {
+              message = "이름, 지역은 필수 입력 값입니다.";
+            } else if (hasBirth) {
+              message = "생일, 지역은 필수 입력 값입니다.";
+            } else {
+              // message = "이름, 생일, 지역은 필수 입력 값입니다.";
+            }
+            console.log(message);
+
             return {
               ...prev,
-              private: "주소는 필수 입력 값입니다.",
+              private: value ? "" : message,
             };
           });
           if (!value) {
@@ -188,7 +259,6 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
         });
       }
     }
-    return "invalid";
   };
 
   const handleConfirmFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -240,7 +310,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
       (name === "phone" || name === "birth") &&
       validateResult !== "invalid"
     ) {
-      e.target.value = validateResult;
+      e.target.value = validateResult as string;
     }
 
     if (name === "password" && !value) {
@@ -265,10 +335,11 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
     // 유효성 검사(메시지 출력)
     for (let [name, value] of formData) {
       if (
-        onValidate(name, value) ||
+        onValidate(name, value) === "invalid" ||
         !passwordInput.password.value.trim() ||
         passwordInput.password.value !== passwordInput.password_confirm.value
       ) {
+        console.log(`${name}값에서 오류가 났습니다.`);
         valid = false;
       }
     }
@@ -388,7 +459,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
               <div style={{ gridColumn: "auto / span 4" }} className="l_col_4">
                 <div className="input">
                   <input
-                    maxLength={8}
+                    maxLength={10}
                     type="text"
                     placeholder="생일(8자리)"
                     id="field_birth"
