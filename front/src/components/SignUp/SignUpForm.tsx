@@ -84,13 +84,37 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
         break;
 
       case "first_name":
-      case "birth":
+      case "birth": {
+        // 사용자 입력값은 모두 숫자만 받는다.(나머지는 ""처리)
+        let val = value.replace(/\D/g, "");
+        let leng = val.length;
+
+        // 출력할 결과 변수
+        let result = "";
+
+        // 5개일때 - 20221 : 바로 출력
+        if (leng < 6) result = val;
+        // 6~7일 때 - 202210 : 2022-101으로 출력
+        else if (leng < 8) {
+          result += val.substring(0, 4);
+          result += "-";
+          result += val.substring(4);
+          // 8개 일 때 - 2022-1010 : 2022-10-10으로 출력
+        } else {
+          result += val.substring(0, 4);
+          result += "-";
+          result += val.substring(4, 6);
+          result += "-";
+          result += val.substring(6);
+        }
+        return result;
+      }
       case "address":
         {
           setErrors((prev) => {
             return {
               ...prev,
-              private: value ? "" : "이름, 생일, 지역은 필수 입력 값입니다.",
+              private: "주소는 필수 입력 값입니다.",
             };
           });
           if (!value) {
@@ -194,7 +218,10 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
   const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
     const { name, value } = e.target;
     const validateResult = onValidate(name, value);
-    if (name === "phone" && validateResult !== "invalid") {
+    if (
+      (name === "phone" || name === "birth") &&
+      validateResult !== "invalid"
+    ) {
       e.target.value = validateResult;
     }
 
@@ -343,8 +370,9 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
               <div style={{ gridColumn: "auto / span 4" }} className="l_col_4">
                 <div className="input">
                   <input
+                    maxLength={8}
                     type="text"
-                    placeholder="생년월일"
+                    placeholder="생일(8자리)"
                     id="field_birth"
                     name="birth"
                     onBlur={handleBlur}
