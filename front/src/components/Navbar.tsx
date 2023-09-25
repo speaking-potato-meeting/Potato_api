@@ -1,18 +1,27 @@
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 import type { NavbarElement } from "../router";
+import { logout } from "../api/login";
 
 type Prop = {
   NavbarContent: NavbarElement[];
   userProfile?: { user_id: number; username: string };
+  onSetUser: (args: string | null) => void;
 };
 
-const Navbar = ({ NavbarContent, userProfile }: Prop) => {
+const Navbar = ({ NavbarContent, userProfile, onSetUser }: Prop) => {
   const navbarLists = () => {
     /* 유저 프로필이 있을 때, */
     if (userProfile) return NavbarContent;
 
     return NavbarContent.filter((r) => !r.withAuth);
+  };
+
+  const logoutHandler = async () => {
+    const logoutResult = await logout();
+    if (logoutResult === null) return;
+
+    onSetUser(null);
   };
   return (
     <nav className="nav_nav">
@@ -38,7 +47,9 @@ const Navbar = ({ NavbarContent, userProfile }: Prop) => {
         </li>
         <li>
           {userProfile ? (
-            <></>
+            <div>
+              <button onClick={logoutHandler}>로그아웃</button>
+            </div>
           ) : (
             <>
               <Link className="nav_a" to={"/account/signup"}>

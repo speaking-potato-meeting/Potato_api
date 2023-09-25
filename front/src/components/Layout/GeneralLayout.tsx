@@ -39,13 +39,17 @@ export default function GeneralLayout({
     fetchUserProfile();
   }, [children]);
 
-  const onSetUser = (args) => {
+  const onSetUser = (args: string | null) => {
     setUserProfile(args);
   };
 
   return (
     <>
-      <Navbar NavbarContent={NavbarContent} userProfile={userProfile} />
+      <Navbar
+        NavbarContent={NavbarContent}
+        userProfile={userProfile}
+        onSetUser={onSetUser}
+      />
       <Outlet context={[userProfile, onSetUser]} />
     </>
   );
