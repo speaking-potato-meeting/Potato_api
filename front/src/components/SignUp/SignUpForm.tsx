@@ -66,7 +66,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
   const onValidate = (
     word: string,
     value?: string | FormDataEntryValue
-  ): string | void => {
+  ): string => {
     (!!value && (value as string).trim()) ?? "";
     switch (word) {
       case "username":
@@ -101,15 +101,21 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
 
       case "phone":
         {
+          if (!value) {
+            return "invalid";
+          }
           setErrors((prev) => {
             return {
               ...prev,
               phone: value ? "" : "전화번호는 필수 입력 값입니다.",
             };
           });
-          if (!value) {
-            return "invalid";
-          }
+          return (value as string)
+            .replace(/[^0-9]/g, "")
+            .replace(
+              /(^02.{0}|^01.{1}|[0-9]{3,4})([0-9]{3,4})([0-9]{4})/g,
+              "$1-$2-$3"
+            );
         }
         break;
 
@@ -140,6 +146,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
         }
         break;
     }
+    return "invalid";
   };
 
   const handleConfirmFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,14 +193,9 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
   // handleBlur 핸들링이 최소 7번 중복인데 해결방법은?
   const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
     const { name, value } = e.target;
-    onValidate(name, value);
-    if (name === "phone") {
-      e.target.value = value
-        .replace(/[^0-9]/g, "")
-        .replace(
-          /(^02.{0}|^01.{1}|[0-9]{3,4})([0-9]{3,4})([0-9]{4})/g,
-          "$1-$2-$3"
-        );
+    const validateResult = onValidate(name, value);
+    if (name === "phone" && validateResult !== "invalid") {
+      e.target.value = validateResult;
     }
 
     if (name === "password" && !value) {
