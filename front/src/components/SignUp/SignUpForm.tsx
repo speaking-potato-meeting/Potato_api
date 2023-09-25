@@ -1,14 +1,33 @@
 import { useState, useRef } from "react";
-import { signup, getUser } from "../../api/signup";
 
 type Prop = {
   onClick: () => void;
   onSignUp: (args: FormData) => void;
 };
+type passwordConfirmMessage = {
+  message: string;
+  state: boolean | null;
+};
 
+type passwordInput = {
+  [key: string]: string;
+  password: "";
+  password_confirm: "";
+};
+
+type ErrorTypes = {
+  username: string;
+  password: string;
+  password_confirm: passwordConfirmMessage;
+  private: string;
+  phone: string;
+  position: string;
+  github: string;
+};
 export default function SignUpForm({ onClick, onSignUp }: Prop) {
   const focusPrivateLabel = useRef("name");
-  // const [];
+  const passwordRef = useRef<string | null>(null);
+
   const mbtiList = [
     "istj",
     "isfj",
@@ -28,22 +47,18 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
     "entj",
   ].sort((a, b) => a.localeCompare(b));
 
-  // inputField를 제어 컴포넌트로 다룰 것인가?
-  const [inputFields, setInputFields] = useState({
-    email: "",
+  const [passwordInput, setPasswordInput] = useState<passwordInput>({
     password: "",
     password_confirm: "",
-    username: "",
-    birth: "",
-    address: "",
-    position: "",
-    github: "",
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<ErrorTypes>({
     username: "",
     password: "",
-    password_confirm: "",
+    password_confirm: {
+      message: "",
+      state: null,
+    },
     private: "",
     phone: "",
     position: "",
@@ -54,14 +69,14 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
     word: string,
     value?: string | FormDataEntryValue
   ): string | void => {
-    value = (value as string).trim();
+    (!!value && (value as string).trim()) ?? "";
     switch (word) {
-      case "email":
+      case "username":
         {
           setErrors((prev) => {
             return {
               ...prev,
-              email: value ? "" : "아이디는 필수 입력 값입니다.",
+              username: value ? "" : "아이디는 필수 입력 값입니다.",
             };
           });
           if (!value) {
@@ -87,7 +102,17 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
 
       case "password_confirm":
         {
-          /* 비밀번호 재확인을 어떻게 검사할 것인가? => 제어 컴포넌트로 다룰 것인가? */
+          setErrors((prev) => {
+            const confirmState =
+              value === "비밀번호가 일치합니다" ? true : false;
+            return {
+              ...prev,
+              password_confirm: {
+                message: value,
+                state: value === "invalid" ? null : confirmState,
+              },
+            };
+          });
         }
         break;
 
@@ -150,6 +175,33 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
     }
   };
 
+  const handleConfirmFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // onValidate("password_confirm", e.target.value);
+    const newInput = { ...passwordInput };
+
+    newInput[e.target.name] = e.target.value;
+
+    setPasswordInput((prev) => {
+      console.log(prev.password, prev.password_confirm, e.target.value);
+      if (
+        prev.password !== e.target.value ||
+        prev.password_confirm !== e.target.value
+      ) {
+        onValidate("password_confirm", "비밀번호가 일치하지 않습니다");
+      }
+      if (
+        prev.password === e.target.value ||
+        prev.password_confirm === e.target.value
+      ) {
+        onValidate("password_confirm", "비밀번호가 일치합니다");
+      }
+      if (prev.password === "" && e.target.value === "") {
+        onValidate("password_confirm", "invalid");
+      }
+      return newInput;
+    });
+  };
+
   // handleBlur 핸들링이 최소 7번 중복인데 해결방법은?
   const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
     const { name, value } = e.target;
@@ -161,6 +213,10 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
           /(^02.{0}|^01.{1}|[0-9]{3,4})([0-9]{3,4})([0-9]{4})/g,
           "$1-$2-$3"
         );
+    }
+
+    if (name === "password") {
+      passwordRef.current = value;
     }
   };
 
@@ -217,19 +273,34 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
                 type="password"
                 name="password"
                 onBlur={handleBlur}
+                value={passwordInput.password}
+                onChange={handleConfirmFormChange}
               />
             </div>
           </div>
 
-          <div className="signForm-field">
+          <div
+            className={`signForm-field${
+              errors.password_confirm.state
+                ? " valid"
+                : errors.password_confirm.state === null
+                ? ""
+                : " invalid"
+            }`}
+          >
             <label htmlFor="field_confirm" className="field-label">
-              비밀번호 확인
+              <span className="field-label-txt"> 비밀번호 확인</span>
+              <span className="field_error">
+                {errors.password_confirm.message}
+              </span>
             </label>
             <div className="input">
               <input
                 id="field_confirm"
                 type="password"
                 name="password_confirm"
+                value={passwordInput.password_confirm}
+                onChange={handleConfirmFormChange}
               />
             </div>
           </div>
