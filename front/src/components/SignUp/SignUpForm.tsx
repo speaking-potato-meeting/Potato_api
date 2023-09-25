@@ -17,12 +17,11 @@ type passwordInput = {
 
 type ErrorTypes = {
   username: string;
-  password: string;
-  password_confirm: passwordConfirmMessage;
   private: string;
   phone: string;
   position: string;
   github: string;
+  blog: string;
 };
 export default function SignUpForm({ onClick, onSignUp }: Prop) {
   const focusPrivateLabel = useRef("name");
@@ -52,15 +51,11 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
 
   const [errors, setErrors] = useState<ErrorTypes>({
     username: "",
-    password: "",
-    password_confirm: {
-      message: "",
-      state: null,
-    },
     private: "",
     phone: "",
     position: "",
     github: "",
+    blog: "",
   });
 
   const onValidate = (
@@ -157,18 +152,41 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
         }
         break;
       case "github":
+        let message = "";
+        const RegExp =
+          /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+        if (!RegExp.test(value)) {
+          message = "올바른 주소를 입력해주세요.";
+        }
         {
           setErrors((prev) => {
             return {
               ...prev,
-              github: value ? "" : "github 주소는 필수 입력 값입니다.",
+              github: value ? message : "github 주소는 필수 입력 값입니다.",
             };
           });
+
           if (!value) {
             return "invalid";
           }
         }
         break;
+      case "blog": {
+        let message = "";
+        const RegExp =
+          /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+        if (!RegExp.test(value)) {
+          message = "올바른 주소를 입력해주세요.";
+        }
+        setErrors((prev) => {
+          return {
+            ...prev,
+            blog: value ? message : "",
+          };
+        });
+      }
     }
     return "invalid";
   };
@@ -457,13 +475,20 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
               />
             </div>
           </div>
-          <div className="signForm-field">
+          <div className={`signForm-field${errors.blog ? " invalid" : ""}`}>
             <label htmlFor="field_blog" className="field-label optional">
-              블로그 주소
-              <span>(선택)</span>
+              <span className="field-label-txt">
+                블로그주소<span>(선택)</span>
+              </span>
+              <span className="field_error">{errors.blog}</span>
             </label>
             <div className="input">
-              <input id="field_blog" type="text" name="blog" />
+              <input
+                id="field_blog"
+                type="text"
+                name="blog"
+                onBlur={handleBlur}
+              />
             </div>
           </div>
         </fieldset>
