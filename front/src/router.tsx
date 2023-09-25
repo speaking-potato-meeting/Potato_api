@@ -104,7 +104,7 @@ function checkAuthorize(routerData) {
   return newRouter;
 }
 
-console.log(checkAuthorize(routerData));
+// console.log(checkAuthorize(routerData));
 
 export const ReactRouterObject: RemixRouter = createBrowserRouter(
   checkAuthorize(routerData)
@@ -113,6 +113,7 @@ export const ReactRouterObject: RemixRouter = createBrowserRouter(
 export type NavbarElement = {
   path: string;
   label: string;
+  withAuth: boolean;
 };
 
 export const NavbarContent: NavbarElement[] = routerData.reduce(
@@ -125,6 +126,7 @@ export const NavbarContent: NavbarElement[] = routerData.reduce(
         return {
           path: router.path + r.path,
           label: r.label,
+          withAuth: r.withAuthorization,
         };
       });
       return prev.concat(childArr);

@@ -8,10 +8,16 @@ type Prop = {
 };
 
 const Navbar = ({ NavbarContent, userProfile }: Prop) => {
+  const navbarLists = () => {
+    /* 유저 프로필이 있을 때, */
+    if (userProfile) return NavbarContent;
+
+    return NavbarContent.filter((r) => !r.withAuth);
+  };
   return (
     <nav className="nav_nav">
       <ul className="nav_ul">
-        {NavbarContent.map((router, idx) => (
+        {navbarLists().map((router, idx) => (
           <li key={idx} className="nav_li">
             <Link className="nav_a" to={router.path}>
               {router.label}
