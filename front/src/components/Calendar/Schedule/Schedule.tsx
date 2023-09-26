@@ -1,5 +1,4 @@
 import { ISchedule } from "../Calendar";
-import "./style.css";
 import { useDraggable } from "@dnd-kit/core";
 import { useShowModal } from "./useShowModal";
 import type { scheduleSetter } from "../DateBox";

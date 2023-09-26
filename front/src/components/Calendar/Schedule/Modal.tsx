@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useShowModal } from "./useShowModal";
 import type { scheduleSetter } from "../DateBox";
+import "./schedule.css";
 
 export interface ModalProps {
   id?: number;
@@ -46,24 +47,23 @@ export default function Modal({
 
   const ModalContent = () => {
     return (
-      <section
-        style={{
-          width: "100%",
-          maxWidth: "500px",
-          backgroundColor: "#fff",
-          padding: "10px",
-        }}
-      >
-        <h1
-          suppressContentEditableWarning={true}
-          ref={focusRef}
-          contentEditable={true}
-          placeholder={"제목없음"}
-          style={{ outline: "none" }}
-        >
+      <section className="eventWindow">
+        <header className="eventWindow-header">
+          <h1
+            suppressContentEditableWarning={true}
+            ref={focusRef}
+            contentEditable={true}
+            placeholder={"제목없음"}
+          ></h1>
+          <div className="eventWindow-date">
+            <p>📆 날짜: {makeScheduleDate()}</p>
+          </div>
+        </header>
+        <div className="eventWindow-contents">
+          <h1></h1>
           {content ? content : null}
-        </h1>
-        <div>📆 날짜: {makeScheduleDate()}</div>
+        </div>
+        <footer className="eventWindow-footer"></footer>
       </section>
     );
   };
@@ -87,30 +87,10 @@ export default function Modal({
 
   return (
     <div
+      className="modal"
       onClick={(e) => e.target === e.currentTarget && closeModal()}
-      style={{
-        position: "fixed",
-        inset: "0",
-        backgroundColor: "#22222231",
-        display: "flex",
-        alignItems: "center",
-        zIndex: "10",
-      }}
     >
-      <div
-        style={{
-          width: "50vw",
-          height: "80vw",
-          maxHeight: "800px",
-          margin: "auto",
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: "white",
-          borderRadius: "20px",
-        }}
-      >
-        <ModalContent />
-      </div>
+      <ModalContent />
     </div>
   );
 }
