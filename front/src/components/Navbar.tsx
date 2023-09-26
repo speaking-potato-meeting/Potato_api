@@ -10,13 +10,6 @@ type Prop = {
 };
 
 const Navbar = ({ NavbarContent, userProfile, onSetUser }: Prop) => {
-  const navbarLists = () => {
-    /* 유저 프로필이 있을 때, */
-    if (userProfile) return NavbarContent;
-
-    return NavbarContent.filter((r) => !r.withAuth);
-  };
-
   const logoutHandler = async () => {
     const logoutResult = await logout();
     if (logoutResult === null) return;
@@ -26,7 +19,7 @@ const Navbar = ({ NavbarContent, userProfile, onSetUser }: Prop) => {
   return (
     <nav className="nav_nav">
       <ul className="nav_ul">
-        {navbarLists().map((router, idx) => (
+        {NavbarContent.map((router, idx) => (
           <li key={idx} className="nav_li">
             <Link className="nav_a" to={router.path}>
               {router.label}
