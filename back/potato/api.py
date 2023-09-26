@@ -1,4 +1,3 @@
-
 from ninja import NinjaAPI, Schema
 from .models import User,StudyTimer,TodoList
 from django.shortcuts import get_object_or_404

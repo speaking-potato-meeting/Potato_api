@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'potato',
     'back',
     'accounts',
+    'schedule',
     'corsheaders',
 ]
 
@@ -155,9 +156,9 @@ LOGGING = {
     },
 }
 
-
-CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:3000"
 ]
