@@ -18,21 +18,38 @@ export default function GeneralLayout({
   const [userProfile, setUserProfile] = useState<{
     user_id: number;
     username: string;
-  } | null>();
+  } | null>(null);
 
-  const navigate = useNavigate();
+  const authUser = {
+    user_id: 3,
+    username: "도은호",
+  };
+
+  const navbarLists = () => {
+    /* 유저 프로필이 있을 때, */
+    if (userProfile) return NavbarContent;
+
+    return NavbarContent.filter((r) => !r.withAuth);
+  };
 
   const fetchUserProfile = async () => {
     const userProfileResponse = await getCurrentUserInfo();
 
-    if (userProfileResponse === null) {
-      return (
-        confirm("로그인이 필요합니다. 로그인 하시겠습니까?") &&
-        navigate("/account/login")
-      );
-    }
+    // if (userProfileResponse === null) {
+    //   return (
+    //     confirm("로그인이 필요합니다. 로그인 하시겠습니까?") &&
+    //     navigate("/account/login")
+    //   );
+    // }
 
-    setUserProfile(userProfileResponse);
+    /* 테스트 유저 */
+    if (
+      userProfileResponse &&
+      userProfileResponse.user_id === authUser.user_id &&
+      userProfileResponse.username === authUser.username
+    ) {
+      setUserProfile(userProfileResponse);
+    }
   };
 
   useEffect(() => {
@@ -46,11 +63,11 @@ export default function GeneralLayout({
   return (
     <>
       <Navbar
-        NavbarContent={NavbarContent}
+        NavbarContent={navbarLists()}
         userProfile={userProfile}
         onSetUser={onSetUser}
       />
-      <Outlet context={[userProfile, onSetUser]} />
+      <Outlet context={{ userProfile, onSetUser }} />
     </>
   );
 }

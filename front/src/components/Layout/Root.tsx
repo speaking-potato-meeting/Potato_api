@@ -9,14 +9,14 @@ interface RootProps {
 }
 
 const Root = ({ children }: RootProps) => {
-  // const { setUserProfile } = useUser();
-  const [userProfile, onSetUser] = useOutletContext<{
-    user_id: number;
-    username: string;
+  const { userProfile } = useOutletContext<{
+    userProfile: { user_id: number; username: string };
+    onSetUser: () => void;
   }>();
-  // console.log(onSetUser);
-  // console.log(userProfile);
-  console.log(useOutletContext());
+
+  const navigate = useNavigate();
+
+  if (userProfile === null) return <>Loading...</>;
 
   return (
     <div>
