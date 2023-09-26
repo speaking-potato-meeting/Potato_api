@@ -33,18 +33,28 @@ class TimerIn(Schema):
     study: int
     is_active: bool
 
+class TimerOut(Schema):
+    study: int
+    is_active: bool
+
+# 타이머 생성
 @api.post('/timer',tags=["타이머"])
 def create_Timer(request, payload: TimerIn):
     user = User.objects.get(id=payload.user_id)
-    time = StudyTimer.objects.create(user=user, studyTime=payload.study)
+    time = StudyTimer.objects.create(user=user, study=payload.study)
     return {"id":user.id, "studyTime": time.study}
 
-@api.put('/timer/{user_id}',tags=["타이머"])
-def update_Timer(request, user_id: int, payload: TimerIn):
-    time = get_object_or_404(StudyTimer, id=user_id)
-    time.study = payload.study
-    time.save()
-    return {"study": time.study}
+# 타이머 수정
+@api.put('/timer/{timer_id}', tags=["타이머"])
+def update_Timer(request, timer_id: int, payload: TimerOut):
+    try:
+        timer = StudyTimer.objects.get(id=timer_id)
+        timer.study = payload.study
+        timer.save()
+        
+        return {"id": timer.user.id, "studyTime": timer.study}
+    except StudyTimer.DoesNotExist:
+        return {"message": "실패"}, 404
 
 # @api.post("/upload_image/{user_id}")
 # def upload(request, file: UploadedFile = File(...)):

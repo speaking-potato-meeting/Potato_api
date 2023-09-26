@@ -26,7 +26,7 @@ class User(AbstractUser):
     )
     username = models.CharField(max_length=20,unique=True)
     password = models.CharField(max_length=200)
-    birth = models.DateField()
+    birth = models.DateField(null=True)
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=50)
     github = models.URLField()
