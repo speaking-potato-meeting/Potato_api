@@ -35,13 +35,6 @@ export default function GeneralLayout({
   const fetchUserProfile = async () => {
     const userProfileResponse = await getCurrentUserInfo();
 
-    // if (userProfileResponse === null) {
-    //   return (
-    //     confirm("로그인이 필요합니다. 로그인 하시겠습니까?") &&
-    //     navigate("/account/login")
-    //   );
-    // }
-
     /* 테스트 유저 */
     if (
       userProfileResponse &&

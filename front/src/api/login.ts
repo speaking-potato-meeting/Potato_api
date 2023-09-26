@@ -25,7 +25,7 @@ export async function getCurrentUserInfo(): Promise<{
   user_id: number;
   username: string;
 } | null> {
-  const getUserRes = await fetch(`${BASE_URL}/api/accounts/users/3`, {
+  const getUserRes = await fetch(`${BASE_URL}/api/accounts/users/4`, {
     method: "GET",
     credentials: "include",
     headers: {
