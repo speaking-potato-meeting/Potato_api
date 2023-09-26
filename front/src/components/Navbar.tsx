@@ -1,17 +1,63 @@
 import { Link } from "react-router-dom";
 import "./Navbar.css";
+import type { NavbarElement } from "../router";
+import { logout } from "../api/login";
 
-const Navbar = ({ NavbarContent }) => {
+type Prop = {
+  NavbarContent: NavbarElement[];
+  userProfile?: { user_id: number; username: string };
+  onSetUser: (args: string | null) => void;
+};
+
+const Navbar = ({ NavbarContent, userProfile, onSetUser }: Prop) => {
+  const navbarLists = () => {
+    /* 유저 프로필이 있을 때, */
+    if (userProfile) return NavbarContent;
+
+    return NavbarContent.filter((r) => !r.withAuth);
+  };
+
+  const logoutHandler = async () => {
+    const logoutResult = await logout();
+    if (logoutResult === null) return;
+
+    onSetUser(null);
+  };
   return (
     <nav className="nav_nav">
       <ul className="nav_ul">
-        {NavbarContent.map((router, idx) => (
+        {navbarLists().map((router, idx) => (
           <li key={idx} className="nav_li">
             <Link className="nav_a" to={router.path}>
               {router.label}
             </Link>
           </li>
         ))}
+        <li>
+          {userProfile ? (
+            <>{userProfile.username}님, 환영합니다.</>
+          ) : (
+            <>
+              {" "}
+              <Link className="nav_a" to={"/account/login"}>
+                로그인
+              </Link>
+            </>
+          )}
+        </li>
+        <li>
+          {userProfile ? (
+            <div>
+              <button onClick={logoutHandler}>로그아웃</button>
+            </div>
+          ) : (
+            <>
+              <Link className="nav_a" to={"/account/signup"}>
+                회원가입
+              </Link>
+            </>
+          )}
+        </li>
       </ul>
     </nav>
   );

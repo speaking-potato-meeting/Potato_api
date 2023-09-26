@@ -1,21 +1,43 @@
 export interface commentType {
   id: number;
-  name: string;
+  // username: string,
+  user_id: number;
   text: string;
   timestamp: Date;
-  pf_pic: string;
+  // pf_pic: string,
 }
 
+export type Rule = {
+  [key: string]: number | string;
+  fee: number | string;
+  rule: string;
+  error: string;
+};
+
+export type RuleFormData = {
+  fee: Rule["fee"];
+  rule: Rule["rule"];
+};
+
 export interface User {
+  [key: string]: string | number | RuleFormData[];
+  first_name: string;
   username: string;
   password: string;
-  email: string;
-  phone: string;
+  birth: string;
   address: string;
   github: string;
-  blog: string;
+  phone: string;
   MBTI: string;
   position: string;
-  individual_rule: string;
-  birth: string;
+  total_fee: number;
+  week_studytime: number;
+  penalty: number;
+  immunity: number;
+  // individual_rule: RuleFormData[];
+  // is_admin: boolean;
+  // is_active: boolean;
+  // is_staff: boolean;
+  // is_superuser: boolean;
+  // profile_image: string;
 }

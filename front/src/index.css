@@ -19,6 +19,8 @@
   --point-color: rgba(0, 0, 0, 0.7);
   --point-red: rgba(300, 0, 0, 0.4);
   --background-color: rgba(0, 0, 0, 0.2);
+  --disabled-color: #f2f2f2;
+  --point-success: rgba(0, 150, 0, 0.7);
 }
 
 a {
