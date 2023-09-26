@@ -23,18 +23,14 @@ class CreateUserSchema(Schema):
     first_name: str
     birth: date
     address: str
-    github: str
+    github: Optional[HttpUrl]
     phone: str
     MBTI: str
     position: str
     blog: Optional[HttpUrl]
-    total_fee : int 
-    week_studytime:int
-    penalty:int
-    immunity:int
+    individual_rule: str
     # profile_image:
-    # individual_rule: str
-
+    
 #로그인/로그아웃   
 class LoginInput(Schema):
     username: str
@@ -55,20 +51,6 @@ class UserInfo(BaseModel):
     username: str
 users = []
 
-
-
-@router.get("/user/{user_id}")
-def get_user(request, user_id: int):
-    # 사용자 정보를 데이터베이스에서 가져오는 로직을 구현하세요.
-    user = {"id": user_id, "username": "example_user"}  # 예시 데이터
-    return user
-
-@router.delete('/user/{user_id}')
-def delete_User(request,user_id: int):
-    user =  get_object_or_404(User, id=user_id)
-    user.delete()
-    return {"success": True}
-
 #유저 이미지파일
 @router.post("/user/{user_id}/upload")
 def upload_photo(request, user_id: int, file: UploadedFile = File(...)):
@@ -88,20 +70,20 @@ def upload_photo(request, user_id: int, file: UploadedFile = File(...)):
 
     return {"message": "Image uploaded Successfully"}
 
-@router.get("/users/{user_id}", response=UserInfo)
-def get_user_info(request, user_id: int = Path(..., description="User ID")):
-    try:
-        user = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return 404, {"error":"User not found"}
+# @router.get("/users/{user_id}", response=UserInfo)
+# def get_user_info(request, user_id: int = Path(..., description="User ID")):
+#     try:
+#         user = User.objects.get(id=user_id)
+#     except User.DoesNotExist:
+#         return 404, {"error":"User not found"}
 
-    user_data = {
-        "user_id": user_id,
-        "username": user.username,
-        "email": user.email,
-    }
+#     user_data = {
+#         "user_id": user_id,
+#         "username": user.username,
+#         "email": user.email,
+#     }
 
-    return user_data
+#     return user_data
 
 #회원가입
 @router.post("/create-user", tags=["회원가입"])
@@ -117,15 +99,25 @@ def create_user(request, data: CreateUserSchema):
         position = data.position,
         github = data.github,
         blog = data.blog,
-        total_fee = data.total_fee,
-        week_studytime = data.week_studytime,
-        penalty = data.penalty,
-        immunity = data.immunity,
-        # profile_image:
-        # individual_rule = data.individual_rule,
+        individual_rule = data.individual_rule,
+        # profile_image:,
     )
     user.save()
-    return {"message": "성공"}
+    user_data = {
+        "id": user.id,
+        "username": user.username,
+        "first_name": user.first_name,
+        "birth": user.birth,
+        "address": user.address,
+        "phone": user.phone,
+        "MBTI": user.MBTI,
+        "position": user.position,
+        "github": user.github,
+        "blog": user.blog,
+        "individual_rule": user.individual_rule,
+        # Add other fields as needed
+    }
+    return user_data
 
 #회원조회
 @router.get("/get-user/{user_id}",tags=["회원가입"])
@@ -134,6 +126,7 @@ def get_user(request, user_id: int):
         user = User.objects.get(id=user_id)
 
         serialized_user = {
+            "id":user.id,
             "username": user.username,
             "first_name":user.first_name,
             "phone": user.phone,
@@ -143,7 +136,8 @@ def get_user(request, user_id: int):
             "MBTI": user.MBTI,
             "position": user.position,
             "birth": user.birth.strftime('%Y-%m-%d'),
-            # "individual_rule": user.individual_rule,
+            "individual_rule": user.individual_rule,
+            # profile_image:,
         }
         return serialized_user
     except User.DoesNotExist:
@@ -166,11 +160,27 @@ def update_user(request, user_id: int, data: CreateUserSchema):
         user.blog = data.blog
         user.MBTI = data.MBTI
         user.position = data.position
-        # user.profile_image=data
-        # user.individual_rule = data.individual_rule
+        user.individual_rule = data.individual_rule
         user.birth = data.birth
+        # user.profile_image=data
         user.save()
-        return {"message": "성공"}
+
+        user_data = {
+        "id": user.id,
+        "password": user.password,
+        "username": user.username,
+        "first_name": user.first_name,
+        "birth": user.birth,
+        "address": user.address,
+        "phone": user.phone,
+        "MBTI": user.MBTI,
+        "position": user.position,
+        "github": user.github,
+        "blog": user.blog,
+        "individual_rule": user.individual_rule,
+         # user.profile_image=data
+        }
+        return user_data
     except User.DoesNotExist:
         return {"message": "실패"}, 404
     
@@ -179,8 +189,11 @@ def update_user(request, user_id: int, data: CreateUserSchema):
 def delete_user(request, user_id: int):
     try:
         user = User.objects.get(id=user_id)
+        data_user={
+            "user_id":user.id
+        }
         user.delete()
-        return {"message": "성공"}
+        return data_user
     except User.DoesNotExist:
         return {"message": "실패"}, 404
 
@@ -188,12 +201,12 @@ def delete_user(request, user_id: int):
 @router.post("/login", tags=["로그인/로그아웃"])
 def login_user(request, data: LoginInput):
     user = authenticate(request, username=data.username, password=data.password)
-
     if user is not None:
-
         login(request, user)
-
-        return {"message": "성공"}
+        user={
+            "user_id":user.id
+        }
+        return user
     else:
         raise HttpError(401, "실패")
     
@@ -201,7 +214,10 @@ def login_user(request, data: LoginInput):
 @router.post("/logout", tags=["로그인/로그아웃"])
 def logout_user(request):
     if request.user.is_authenticated:
+        user={
+            "user_id":request.user.id
+        }
         logout(request)
-        return {"message": "성공"}
+        return user
     else:
         raise HttpError(401, "실패")
