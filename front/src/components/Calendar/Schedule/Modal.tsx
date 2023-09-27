@@ -6,16 +6,16 @@ import Comment from "../../Comment";
 
 export interface ModalProps {
   id?: number;
-  date: string;
-  content: string;
+  date: Date;
   scheduleSetter?: scheduleSetter;
+  content: string;
 }
 
 export default function Modal({
   id,
   date,
-  content,
   scheduleSetter,
+  content,
 }: ModalProps) {
   const { onClose } = useShowModal();
   const scrollRef = useRef<number>(0);
@@ -37,7 +37,7 @@ export default function Modal({
 
   function makeScheduleDate(): string | null {
     if (date) {
-      const scheduleDate = new Date(Date.parse(date));
+      const scheduleDate = new Date(date);
       return `${scheduleDate.getFullYear()}년 ${
         scheduleDate.getMonth() + 1
       }월 ${scheduleDate.getDate()}일`;
@@ -55,13 +55,15 @@ export default function Modal({
             ref={focusRef}
             contentEditable={true}
             placeholder={"제목없음"}
-          ></h1>
+          >
+            {content ? content : null}
+          </h1>
           <div className="eventWindow-date">
             <p>📆 날짜: {makeScheduleDate()}</p>
           </div>
         </header>
         <div className="eventWindow-contents">
-          {content ? <Comment /> : null}
+          <Comment />
         </div>
         <footer className="eventWindow-footer"></footer>
       </section>

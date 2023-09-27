@@ -2,6 +2,14 @@ import { BASE_URL } from "./signup";
 
 type scheduleResponse = "success" | "fail";
 
+export interface ISchedule {
+  id: number;
+  start_date: string;
+  end_date: string;
+  schedule: string;
+  is_holiday: boolean;
+}
+
 export const createSchedule = async (args: {
   date: string;
   content: string;
@@ -37,11 +45,31 @@ export const createSchedule = async (args: {
   }
 };
 
+export const getSchedule = async (): Promise<ISchedule | scheduleResponse> => {
+  const getScheduleRes = await fetch(`${BASE_URL}/api/schedule/schedules/1/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+    },
+  });
+
+  try {
+    if (getScheduleRes.ok) {
+      const httpResponse = await getScheduleRes.json();
+      return httpResponse ? httpResponse : "fail";
+    }
+    throw new Error("서버 에러 발생");
+  } catch (error) {
+    console.log(error);
+    return "fail";
+  }
+};
+
 export const updateSchedule = async (args: {
   date: string;
   content: string;
 }): Promise<scheduleResponse> => {
-  const createScheduleRes = await fetch(
+  const updateScheduleRes = await fetch(
     `${BASE_URL}/api/schedule/schedules/2/`,
     {
       method: "POST",
@@ -59,8 +87,8 @@ export const updateSchedule = async (args: {
   );
 
   try {
-    if (createScheduleRes.ok) {
-      const httpResponse = await createScheduleRes.json();
+    if (updateScheduleRes.ok) {
+      const httpResponse = await updateScheduleRes.json();
       if (httpResponse.success) {
         return "success";
       }

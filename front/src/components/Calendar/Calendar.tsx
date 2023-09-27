@@ -1,8 +1,9 @@
-import { createSchedule } from "../../api/schedule";
+import { createSchedule, getSchedule } from "../../api/schedule";
 import { getDays } from "../../utils/getDays";
 import DateBox from "./DateBox";
 import DateController from "./DateController";
 import "./style.css";
+import type { ISchedule } from "../../api/schedule";
 
 import {
   DndContext,
@@ -15,12 +16,6 @@ import {
 } from "@dnd-kit/core";
 
 import { useState, useEffect } from "react";
-
-export interface ISchedule {
-  id: number;
-  date: string;
-  contents: contents[];
-}
 
 export type contents = {
   id: number;
@@ -37,13 +32,12 @@ export function WeekBox({ name }: WeekBoxProps) {
 
 /* 일정 가져오는 함수 */
 const getAllSchedules = async (): Promise<ISchedule[] | null> => {
-  const getRes = await fetch("/mockSchedule.json", {
-    method: "GET",
-  });
+  const tmpArr = []; // 임시 적용 배열(getAllSchedule api 생기면 삭제 예정)
+  const getRes = await getSchedule();
 
-  if (getRes.ok) {
-    const getScheduleData = await getRes.json();
-    return getScheduleData.res;
+  if (getRes !== "fail") {
+    tmpArr.push(getRes as ISchedule);
+    return tmpArr;
   }
 
   return null;
@@ -284,8 +278,8 @@ export default function Calendar() {
               key={idx}
               day={day}
               nowDate={nowDate}
-              schedule={allSchedule?.find((s) => {
-                const scheduleDate = new Date(Date.parse(s.date));
+              schedule={allSchedule?.filter((s) => {
+                const scheduleDate = new Date(Date.parse(s.start_date));
                 return (
                   day.getFullYear() === scheduleDate.getFullYear() &&
                   day.getMonth() === scheduleDate.getMonth() &&

@@ -7,12 +7,12 @@
   list-style: none;
 }
 
-.schedule button {
+.schedule-modal-btn {
+  margin: 0;
   background: transparent;
   border: none;
   display: inline-block;
   width: 100%;
-  margin-bottom: 6px;
   cursor: pointer;
 
   padding: 0;
@@ -21,17 +21,23 @@
     rgba(15, 15, 15, 0.1) 0px 2px 4px;
 }
 
-.schedule button:hover {
+.schedule-modal-btn + .schedule-modal-btn {
+  margin-top: 5px;
+}
+
+.schedule-modal-btn:hover {
   background: var(--hover-background--default);
 }
 
-.schedule__content {
+.schedule-content {
   height: 20px;
   margin: auto;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: 0.3px;
   color: black;
   text-align: left;
 
