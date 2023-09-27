@@ -1,3 +1,4 @@
+import { createSchedule } from "../../api/schedule";
 import { getDays } from "../../utils/getDays";
 import DateBox from "./DateBox";
 import DateController from "./DateController";
@@ -34,6 +35,7 @@ export function WeekBox({ name }: WeekBoxProps) {
   return <div className={"weekBox"}>{name}</div>;
 }
 
+/* 일정 가져오는 함수 */
 const getAllSchedules = async (): Promise<ISchedule[] | null> => {
   const getRes = await fetch("/mockSchedule.json", {
     method: "GET",
@@ -64,10 +66,14 @@ export default function Calendar() {
     return timeString;
   }
 
-  const addNewSchedule = (date: string, content: string) => {
+  const addNewSchedule = async (date: string, content: string) => {
     let newSchedule: ISchedule;
 
     date = dateToString(date);
+
+    const responseMsg = await createSchedule({ date, content });
+
+    if (responseMsg === "fail") return;
 
     // 추가하고자 하는 날짜 객체 가져오기
     const toAddDate = allSchedule.find((s) => s.date === date);

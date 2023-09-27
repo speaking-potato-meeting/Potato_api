@@ -1,0 +1,112 @@
+.schedule {
+  transform: translateY(50px);
+  padding: 0 6px;
+}
+
+.schedule li {
+  list-style: none;
+}
+
+.schedule button {
+  background: transparent;
+  border: none;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 6px;
+  cursor: pointer;
+
+  padding: 0;
+  border-radius: 6px;
+  box-shadow: rgba(15, 15, 15, 0.1) 0px 0px 0px 1px,
+    rgba(15, 15, 15, 0.1) 0px 2px 4px;
+}
+
+.schedule button:hover {
+  background: var(--hover-background--default);
+}
+
+.schedule__content {
+  height: 20px;
+  margin: auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  color: black;
+  text-align: left;
+
+  padding: 5px;
+}
+
+/* 제목없음 */
+h1:empty:after {
+  content: attr(placeholder);
+  color: gray;
+}
+
+/* Modal */
+:root {
+  font-size: 10px;
+}
+
+body {
+  font-size: 1.6rem;
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
+}
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.2);
+  position: fixed;
+  inset: 0;
+  display: flex;
+  padding: 30px;
+  overflow: auto;
+}
+
+.eventWindow {
+  box-sizing: border-box;
+  margin: auto;
+  background: white;
+  flex-grow: 1;
+  max-width: 800px;
+  border-radius: 5px;
+  overflow: hidden;
+  padding: 40px;
+}
+
+.eventWindow-header {
+  min-height: 30px;
+  border-bottom: 2px solid #eee;
+  padding: 20px;
+}
+
+.eventWindow-header h1 {
+  font-size: 4.2rem;
+  outline: none;
+}
+
+.eventWindow-header h1:empty:after {
+  content: attr(placeholder);
+  color: gray;
+}
+
+.eventWindow-header .eventWindow-date {
+  margin: 15px 0;
+}
+
+.eventWindow-contents {
+  padding: 30px;
+  margin: 0 10px;
+}
+
+.eventWindow p {
+}
+
+.eventWindow-footer {
+  /* border-top: 4px solid #999; */
+  padding: 20px;
+}
