@@ -46,7 +46,7 @@ export const createSchedule = async (args: {
 };
 
 export const getSchedule = async (): Promise<ISchedule | scheduleResponse> => {
-  const getScheduleRes = await fetch(`${BASE_URL}/api/schedule/schedules/1/`, {
+  const getScheduleRes = await fetch(`${BASE_URL}/api/schedule/schedules/2/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
@@ -66,16 +66,17 @@ export const getSchedule = async (): Promise<ISchedule | scheduleResponse> => {
 };
 
 export const updateSchedule = async (args: {
-  date: string;
-  content: string;
+  id: number;
+  editDate: string;
+  content?: string;
 }): Promise<scheduleResponse> => {
   const updateScheduleRes = await fetch(
     `${BASE_URL}/api/schedule/schedules/2/`,
     {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify({
-        start_date: args.date,
-        end_date: args.date,
+        start_date: args.editDate,
+        end_date: args.editDate,
         schedule: args.content,
         is_holiday: false,
       }),
@@ -89,7 +90,7 @@ export const updateSchedule = async (args: {
   try {
     if (updateScheduleRes.ok) {
       const httpResponse = await updateScheduleRes.json();
-      if (httpResponse.success) {
+      if (httpResponse) {
         return "success";
       }
 

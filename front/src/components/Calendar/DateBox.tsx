@@ -3,6 +3,7 @@ import { ISchedule } from "../../api/schedule";
 
 import { useDroppable } from "@dnd-kit/core";
 import { useShowModal } from "./Schedule/useShowModal";
+import { dateToString } from "../../utils/getDays";
 
 export type scheduleSetter = {
   addNewSchedule?: (date: string, content: string) => void;
@@ -24,7 +25,7 @@ export default function DateBox({
 }: Props) {
   const { onShow } = useShowModal();
   const { isOver, setNodeRef } = useDroppable({
-    id: day.toString(),
+    id: dateToString(day.toString()),
   });
 
   const { addNewSchedule, editSchedule } = scheduleSetter;

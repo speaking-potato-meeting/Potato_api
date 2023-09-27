@@ -1,5 +1,9 @@
-import { createSchedule, getSchedule } from "../../api/schedule";
-import { getDays } from "../../utils/getDays";
+import {
+  createSchedule,
+  getSchedule,
+  updateSchedule,
+} from "../../api/schedule";
+import { dateToString, getDays } from "../../utils/getDays";
 import DateBox from "./DateBox";
 import DateController from "./DateController";
 import "./style.css";
@@ -9,7 +13,6 @@ import {
   DndContext,
   DragEndEvent,
   MouseSensor,
-  UniqueIdentifier,
   pointerWithin,
   useSensor,
   useSensors,
@@ -50,14 +53,6 @@ export default function Calendar() {
   function generateId(arr: ISchedule[] | contents[]) {
     const maxId = arr.reduce((max, obj) => (obj.id > max ? obj.id : max), 0);
     return maxId;
-  }
-
-  function dateToString(arg: UniqueIdentifier) {
-    const timeStamp = new Date(arg);
-    const timeString = `${timeStamp.getFullYear()}-${(timeStamp.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${timeStamp.getDate().toString().padStart(2, "0")}`;
-    return timeString;
   }
 
   const addNewSchedule = async (date: string, content: string) => {
@@ -107,118 +102,67 @@ export default function Calendar() {
     );
   };
 
-  const editSchedule = (contentId: number, date: string, content: string) => {
-    const editedSchedule = allSchedule
-      .find((s) => {
-        if (s.date === date) {
-          return s;
-        }
-      })
-      ?.contents.map((c) => {
-        if (c.id === contentId) {
-          return {
-            ...c,
-            content,
-          };
-        }
-        return c;
-      });
+  const editSchedule = async (id: number, date: string, content: string) => {
+    /* 특정 기간 일정 불러오는 api 만들어지기 전까지 사용할 프론트 state setter */
+    const editedSchedule = allSchedule.map((s) => {
+      if (s.id === id) {
+        return {
+          ...s,
+          start_date: date,
+          end_date: date,
+          schedule: content,
+        };
+      }
+      return s;
+    });
 
-    if (editSchedule !== undefined) {
-      setAllSchedule((prev) => {
-        const newState = prev.map((s) => {
-          if (s.date === date) {
-            return {
-              ...s,
-              contents: editedSchedule,
-            };
-          }
-          return s;
-        });
-        return newState as ISchedule[];
-      });
+    const updateScheduleResponse = await updateSchedule({
+      id,
+      editDate: date,
+      content,
+    });
+
+    if (updateScheduleResponse === "success") {
+      setAllSchedule(editedSchedule);
     }
+    return;
   };
 
-  function handleDragEnd(event: DragEndEvent) {
+  async function handleDragEnd(event: DragEndEvent) {
     const { over, active } = event;
 
     if (over) {
       // 옮기고자 하는 날짜 정보
       const { id } = active as { id: string };
       const [editId, editDate] = id.split("+");
+      console.log(over);
 
-      setAllSchedule((prev) => {
-        // 수정하고자 하는 날짜 객체 가져오기(draggable)
-        const wantEdit = prev?.find((s) => s.date === dateToString(editDate));
-        // console.log(wantEdit);
+      const scheduleContent = allSchedule.find(
+        (s) => s.id === parseInt(editId)
+      )?.schedule;
 
-        if (prev && wantEdit) {
-          // 옮기고난 후 이전 날짜 상태
-          const nextPrevSche = prev
-            .map((s) => {
-              if (s.date === dateToString(editDate)) {
-                const { contents } = s;
-                const newPrev = {
-                  ...s,
-                  contents: contents.filter((c) => c.id !== parseInt(editId)),
-                };
-                if (newPrev.contents.length < 1) {
-                  console.log(`${s.date}일에 값이 없습니다.`);
-                }
-                return newPrev;
-              }
-              return s;
-            })
-            .filter((s) => s.contents.length !== 0);
-
-          const nextState = nextPrevSche.map((s) => {
-            // 옮기고자 하는 날짜에 스케줄이 있으면
-            if (s.date === dateToString(over.id)) {
-              const { contents } = wantEdit;
-              const editContent = contents.find(
-                (c) => c.id === parseInt(editId)
-              );
-
-              return {
-                ...s,
-                contents: [
-                  ...s.contents,
-                  { ...editContent, id: generateId(s.contents) + 1 },
-                ],
-              } as ISchedule;
-            }
-            return s;
-          });
-          console.log(nextState);
-
-          // 옮기고자 하는 날짜에 스케줄이 없으면
-          if (
-            nextState.findIndex((s) => s.date === dateToString(over.id)) === -1
-          ) {
-            console.log("날짜가 없어서 이거 실행");
-            const newSchedule = [
-              ...nextState,
-              {
-                id: generateId(nextState) + 1,
-                date: dateToString(over.id),
-                contents: [
-                  {
-                    id: 0,
-                    content:
-                      wantEdit.contents.find((c) => c.id === parseInt(editId))
-                        ?.content ?? "",
-                  },
-                ],
-              },
-            ];
-            return newSchedule;
-          }
-          return nextState;
+      /* 특정 기간 일정 불러오는 api 만들어지기 전까지 사용할 프론트 state setter */
+      const editedSchedule = allSchedule.map((s) => {
+        if (s.id === parseInt(editId)) {
+          return {
+            ...s,
+            start_date: over.id as string,
+            end_date: over.id as string,
+          };
         }
-
-        return prev;
+        return s;
       });
+
+      const updateScheduleResponse = await updateSchedule({
+        id: parseInt(editId),
+        editDate: over.id as string,
+        content: scheduleContent,
+      });
+
+      if (updateScheduleResponse === "success") {
+        setAllSchedule(editedSchedule);
+      }
+      return;
     }
   }
 

@@ -1,3 +1,5 @@
+import { UniqueIdentifier } from "@dnd-kit/core";
+
 export const getDays = (nowDate: Date) => {
   const nowYear = nowDate.getFullYear();
   const nowMonth = nowDate.getMonth();
@@ -33,3 +35,11 @@ export const getDays = (nowDate: Date) => {
 
   return result;
 };
+
+export function dateToString(arg: UniqueIdentifier) {
+  const timeStamp = new Date(arg);
+  const timeString = `${timeStamp.getFullYear()}-${(timeStamp.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${timeStamp.getDate().toString().padStart(2, "0")}`;
+  return timeString;
+}

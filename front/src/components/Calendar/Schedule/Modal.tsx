@@ -6,7 +6,7 @@ import Comment from "../../Comment";
 
 export interface ModalProps {
   id?: number;
-  date: Date;
+  date: Date | string;
   scheduleSetter?: scheduleSetter;
   content: string;
 }
@@ -82,7 +82,7 @@ export default function Modal({
       const { editSchedule } = scheduleSetter;
       if (focusRef.current.textContent && editSchedule)
         if (typeof id === "number")
-          editSchedule(id, date, focusRef.current.textContent);
+          editSchedule(id, "2023-09-29", focusRef.current.textContent);
     }
     onClose();
   };
