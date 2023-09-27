@@ -103,7 +103,8 @@ h1 {
   margin: 0 10px;
 }
 
-.eventWindow p {
+.eventWindow-contents .comment {
+  margin: 0;
 }
 
 .eventWindow-footer {
