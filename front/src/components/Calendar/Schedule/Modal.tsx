@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useShowModal } from "./useShowModal";
 import type { scheduleSetter } from "../DateBox";
 import "./schedule.css";
+import Comment from "../../Comment";
 
 export interface ModalProps {
   id?: number;
@@ -60,8 +61,7 @@ export default function Modal({
           </div>
         </header>
         <div className="eventWindow-contents">
-          <h1></h1>
-          {content ? content : null}
+          {content ? <Comment /> : null}
         </div>
         <footer className="eventWindow-footer"></footer>
       </section>

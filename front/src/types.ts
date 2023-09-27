@@ -1,10 +1,11 @@
+/* commentType 수정 */
 export interface commentType {
   id: number;
-  // username: string,
-  user_id: number;
+  user_id: number; // user오면 사라질 field
+  // user: User
+  schedule_id: number;
   text: string;
   timestamp: Date;
-  // pf_pic: string,
 }
 
 export type Rule = {
