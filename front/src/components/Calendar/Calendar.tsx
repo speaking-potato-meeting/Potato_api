@@ -1,7 +1,7 @@
 import { getDays } from "../../utils/getDays";
 import DateBox from "./DateBox";
 import DateController from "./DateController";
-import "./schedule.css";
+import "./style.css";
 
 import {
   DndContext,
