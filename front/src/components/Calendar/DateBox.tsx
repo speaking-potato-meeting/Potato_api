@@ -1,8 +1,9 @@
 import Schedule from "./Schedule/Schedule";
-import { ISchedule } from "./Calendar";
+import { ISchedule } from "../../api/schedule";
 
 import { useDroppable } from "@dnd-kit/core";
 import { useShowModal } from "./Schedule/useShowModal";
+import { dateToString } from "../../utils/getDays";
 
 export type scheduleSetter = {
   addNewSchedule?: (date: string, content: string) => void;
@@ -12,7 +13,7 @@ export type scheduleSetter = {
 type Props = {
   nowDate: Date;
   day: Date;
-  schedule?: ISchedule; // 스케줄이 있을수도 없을수도
+  schedule?: ISchedule[]; // 스케줄이 있을수도 없을수도
   scheduleSetter: scheduleSetter;
 };
 
@@ -24,7 +25,7 @@ export default function DateBox({
 }: Props) {
   const { onShow } = useShowModal();
   const { isOver, setNodeRef } = useDroppable({
-    id: day.toString(),
+    id: dateToString(day.toString()),
   });
 
   const { addNewSchedule, editSchedule } = scheduleSetter;
