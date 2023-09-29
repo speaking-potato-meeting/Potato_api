@@ -109,7 +109,6 @@ const BottomTictoc = () => {
         localStorage.setItem(currentDate, studyJsonString);
       }
     }
-      
   }
 
   // 밀리초를 시, 분, 초로 변환
@@ -133,10 +132,25 @@ const BottomTictoc = () => {
   // 저장된 시간 포맷에~
   const formattedTime = millisecondsToTime(elapsedTime);
 
-  let location = useLocation();
-  if (location.pathname === '/stop-watch') {
-    timepause()
-  }
+  // 화면 상에서 bottomTictoc이 사라지게 될 경우 시간 저장하는~
+  const currentPath = useLocation();
+  const isStopWatch = currentPath.pathname === '/stop-watch';
+
+  const [bottomTictocExecuted, setBottomTictocExecuted] = useState(false);
+
+  useEffect(() => {
+    const cleanupFunction = () => {
+      if (isStopWatch && !bottomTictocExecuted) {
+        timepause()
+
+        // 함수 실행 후 상태를 변경
+        setBottomTictocExecuted(true);
+      }
+    };
+
+    // 컴포넌트가 화면에서 사라질 때 cleanupFunction 실행
+    return cleanupFunction;
+  }, [isStopWatch, bottomTictocExecuted]);
 
   return (
     <div className='bottom-tictoc-box'>
