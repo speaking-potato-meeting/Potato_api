@@ -7,6 +7,7 @@
 /* SignUp */
 
 /* reset */
+h1,
 h3 {
   font-size: 10px;
   margin: 0;
@@ -25,7 +26,6 @@ fieldset {
 
 .SignUp {
   height: 100vh;
-  max-width: unset;
 }
 
 .SignUp .header {
@@ -37,7 +37,6 @@ fieldset {
 .SignUpForm-container {
   padding: 40px;
   width: 700px;
-  margin: 15px auto;
 }
 
 .SignUpForm-container .form-footer {
@@ -92,11 +91,18 @@ body {
   opacity: 0;
 }
 
-.signForm-field.invalid .field_error {
+.signForm-field.valid .field_error {
+  opacity: 1;
+  color: var(--point-success);
+}
+
+.signForm-field.invalid .field_error,
+.SignUpForm-container form.invalid .field_error {
   opacity: 1;
 }
 
-.signForm-field.invalid .input {
+.signForm-field.invalid .input,
+.SignUpForm-container form.invalid .input {
   box-shadow: inset 0 0 0 2px var(--point-red), 0 0 0 2px var(--point-red);
 }
 
@@ -136,9 +142,8 @@ button {
 }
 
 .RuleForm-container {
-  padding: 40px;
   width: 700px;
-  margin: 15px auto;
+  margin-top: 200px;
 }
 
 .form-header {
@@ -159,7 +164,8 @@ button {
 }
 
 .form-contents {
-  min-height: 400px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 .input {
   box-shadow: inset 0 0 2px #222;
@@ -169,12 +175,17 @@ button {
   line-height: 35px;
   transition: all 0.2s;
 }
+
 .input:focus-within {
   box-shadow: inset 0 0 0 2px var(--point-color), 0 0 0 2px var(--point-color);
 }
 
 .input.invalid {
   box-shadow: inset 0 0 0 2px var(--point-red), 0 0 0 2px var(--point-red);
+}
+.input.disabled {
+  background-color: var(--disabled-color);
+  color: #a5a5a5;
 }
 
 .input input,
@@ -202,7 +213,7 @@ button {
 }
 
 .field div:nth-child(2) {
-  flex-grow: 2;
+  flex-grow: 1.5;
 }
 
 .field div:nth-child(3) {
@@ -212,6 +223,10 @@ button {
 .field-remove-btn {
   color: white;
   background: var(--point-red);
+}
+.field-remove-btn[disabled] {
+  opacity: 0;
+  cursor: default;
 }
 
 .form-footer {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login, getUser } from "../api/login";
+import { useNavigate } from "react-router-dom";
 
 const User = {
   id: "coenffl",
@@ -11,6 +12,8 @@ export default function Login() {
     username: "",
     password: "",
   });
+
+  const navigate = useNavigate();
 
   const [userName, setUserName] = useState("");
 
@@ -28,11 +31,11 @@ export default function Login() {
     const loginResponse = await login(loginForm);
 
     if (loginResponse === "success") {
-      setUserName(loginForm.username);
+      navigate("/");
 
-      const getUserResponse = await getUser();
+      // const getUserResponse = await getUser();
       // if (getUserResponse)
-      console.log("로그인한 유저입니다.", getUserResponse);
+      // console.log("로그인한 유저입니다.", getUserResponse);
     }
   }
   return (
