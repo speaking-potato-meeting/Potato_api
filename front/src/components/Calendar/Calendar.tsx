@@ -18,7 +18,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export type contents = {
   id: number;
@@ -128,6 +128,12 @@ export default function Calendar() {
     return;
   };
 
+  /* removed되고, setAllSchedule 됐는지 확인하는 flag */
+  const flagRef = useRef({
+    flag: false,
+    editState: {} as ISchedule,
+  });
+
   async function handleDragEnd(event: DragEndEvent) {
     const { over, active } = event;
 
@@ -135,45 +141,89 @@ export default function Calendar() {
       // 옮기고자 하는 날짜 정보
       const { id } = active as { id: string };
       const [editId, editDate] = id.split("+");
-      console.log(over);
 
       const scheduleContent = allSchedule.find(
         (s) => s.id === parseInt(editId)
       )?.schedule;
 
+      const toEditSchedule = allSchedule
+        .map((s) => {
+          if (s.id === parseInt(editId)) {
+            return {
+              ...s,
+              start_date: over.id as string,
+              end_date: over.id as string,
+            };
+          }
+          return;
+        })
+        .filter((s): s is ISchedule => s !== undefined);
+
+      // console.log(toEditSchedule);
+
       /* 특정 기간 일정 불러오는 api 만들어지기 전까지 사용할 프론트 state setter */
-      const editedSchedule = allSchedule.map((s) => {
-        if (s.id === parseInt(editId)) {
-          return {
-            ...s,
-            start_date: over.id as string,
-            end_date: over.id as string,
-          };
-        }
-        return s;
+      // const editedSchedule = allSchedule.map((s) => {
+      //   if (s.id === parseInt(editId)) {
+      //     return {
+      //       ...s,
+      //       start_date: over.id as string,
+      //       end_date: over.id as string,
+      //     };
+      //   }
+      //   return s;
+      // });
+
+      const removedSchedule = allSchedule.filter((s) => {
+        s.id !== parseInt(editId);
       });
 
-      const updateScheduleResponse = await updateSchedule({
-        id: parseInt(editId),
-        editDate: over.id as string,
-        content: scheduleContent,
-      });
+      setAllSchedule(removedSchedule);
 
-      if (updateScheduleResponse === "success") {
-        setAllSchedule(editedSchedule);
-      }
+      flagRef.current = {
+        flag: true,
+        editState: toEditSchedule,
+      };
       return;
     }
   }
 
   useEffect(() => {
+    const { flag, editState } = flagRef.current;
+    async function editSchedule() {
+      const updateScheduleResponse = await updateSchedule({
+        id: editState.id,
+        editDate: editState.start_date,
+        content: editState.schedule,
+      });
+
+      if (updateScheduleResponse === "success") {
+        setAllSchedule([...allSchedule, editState]);
+      }
+    }
+
+    if (flag) {
+      editSchedule();
+    }
+  }, [flagRef.current]);
+
+  useEffect(() => {
+    let ignore = false;
     async function getSchedule() {
       const scheduleResponse = await getAllSchedules();
       if (scheduleResponse === null) return;
-      setAllSchedule(scheduleResponse);
+      // !ignore && setAllSchedule(scheduleResponse);
+      if (!ignore || flagRef.current) {
+        console.log("why,,");
+        setAllSchedule(scheduleResponse);
+      }
+      // console.log("왤케 버벅거리냐 이유가 뭐냐");
     }
 
     getSchedule();
+
+    return () => {
+      ignore = true;
+    };
   }, [nowDate]);
 
   const handleMonth = (change: number): void => {
