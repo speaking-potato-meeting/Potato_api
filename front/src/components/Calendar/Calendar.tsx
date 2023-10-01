@@ -259,7 +259,7 @@ export default function Calendar() {
           <h3>
             {nowDate.getFullYear()}년 {nowDate.getMonth() + 1}월
           </h3>
-          <DateController onClick={handleMonth} />
+          <DateController onClick={handleMonth} buttonText="오늘" />
         </div>
         <div className={"weekContainer"}>
           {weeks.map((week, idx) => (

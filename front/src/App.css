@@ -136,7 +136,8 @@ ol {
   list-style: none;
 }
 
-input,
+input[type="text"],
+input[type="password"],
 button {
   all: unset;
 }
@@ -232,4 +233,106 @@ button {
 .form-footer {
   display: flex;
   justify-content: flex-end;
+}
+
+/* Admin */
+/* Customize */
+input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+/* Layouts */
+.wrapper {
+  width: 1080px;
+  margin: 0 auto;
+}
+
+/* Components */
+.admin-header {
+}
+.admin-contents {
+}
+
+.ruleCheck-container {
+  display: flex;
+  margin: 0 -20px;
+  margin-top: 40px;
+  overflow-x: auto;
+}
+
+.ruleCheck-box {
+  background-color: white;
+  flex-basis: 33.333333333%;
+  margin: 0 20px;
+}
+
+.ruleCheck-box-header,
+.ruleCheck-box-footer {
+  padding: 20px;
+  text-align: center;
+}
+.ruleCheck-box-carousel {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.img-frame {
+  overflow: hidden;
+  max-width: 350px;
+  max-height: 200px;
+}
+
+.img-frame img {
+  width: 400px;
+  height: 600px;
+}
+.ruleCheck-box-content {
+  padding: 20px;
+}
+.ruleCheck-box-content h3 {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 40px;
+}
+
+.ruleCheck-box-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+  gap: 20px;
+}
+
+.list {
+  margin: 0 50px;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.list-item input[type="checkbox"] {
+  margin-right: 0.6em;
+}
+
+.list-item input[type="checkbox"]:checked + label {
+  text-decoration: line-through;
+}
+
+.ruleCheck-box-footer h3 {
+  font-size: 25px;
+}
+.ruleCheck-box-footer-button {
+  all: unset;
+  border-radius: 20px;
+  display: inline-flex;
+  cursor: pointer;
+  background-color: var(--point-color);
+  color: white;
+  padding: 4px 10px;
 }
