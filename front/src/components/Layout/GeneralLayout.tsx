@@ -20,8 +20,8 @@ export default function GeneralLayout({}) {
 
   /* 테스트 유저 */
   const authUser = {
-    user_id: 3,
-    username: "도은호",
+    id: 3,
+    username: "plave_cbb",
   };
 
   const navbarLists = () => {

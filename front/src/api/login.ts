@@ -12,8 +12,8 @@ export async function login(args: { username: string; password: string }) {
 
   if (loginRes.ok) {
     const data = await loginRes.json();
-    if (data.message === "성공") {
-      console.log(data.message);
+    if (data) {
+      // console.log(data.message);
       return "success";
     }
     console.log(`Error: ${data.message}`);
@@ -25,7 +25,7 @@ export async function getCurrentUserInfo(): Promise<{
   user_id: number;
   username: string;
 } | null> {
-  const getUserRes = await fetch(`${BASE_URL}/api/accounts/users/4`, {
+  const getUserRes = await fetch(`${BASE_URL}/api/accounts/get-user/3`, {
     method: "GET",
     credentials: "include",
     headers: {

@@ -11,6 +11,7 @@ import { Router as RemixRouter } from "@remix-run/router/dist/router";
 import Root from "./components/Layout/Root";
 import Account from "./components/Layout/Account";
 import GeneralLayout from "./components/Layout/GeneralLayout";
+import { Admin } from "./pages/Admin";
 
 // withAuthorization: 로그인이 필요한가?
 
@@ -55,6 +56,13 @@ const routerData = [
         withAuthorization: true,
         label: "마이페이지",
       },
+      {
+        path: "admin-page",
+        element: <Admin />,
+        withAuthorization: true,
+        label: "대장님 페이지",
+        isAdminPage: true,
+      },
     ],
   },
   {
@@ -84,7 +92,11 @@ function checkAuthorize(routerData) {
         if (r.withAuthorization) {
           return {
             path: r.path,
-            element: <Root>{r.element}</Root>,
+            element: (
+              <Root isAdminPage={"isAdminPage" in router && router.isAdminPage}>
+                {r.element}
+              </Root>
+            ),
             label: r.label,
           };
         }
@@ -127,6 +139,7 @@ export const NavbarContent: NavbarElement[] = routerData.reduce(
           path: router.path + r.path,
           label: r.label,
           withAuth: r.withAuthorization,
+          isAdminOnly: "isAdminPage" in router && router.isAdminPage,
         };
       });
       return prev.concat(childArr);
