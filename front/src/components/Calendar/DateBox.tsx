@@ -5,9 +5,12 @@ import { useDroppable } from "@dnd-kit/core";
 import { useShowModal } from "./Schedule/useShowModal";
 import { dateToString } from "../../utils/getDays";
 
+type addNewSchedule = (date: string, content: string) => void;
+type editSchedule = (contentId: number, content: string, date: string) => void;
+
 export type scheduleSetter = {
-  addNewSchedule?: (date: string, content: string) => void;
-  editSchedule?: (contentId: number, content: string, date: string) => void;
+  addNewSchedule?: addNewSchedule;
+  editSchedule?: editSchedule;
 };
 
 type Props = {
@@ -43,10 +46,14 @@ export default function DateBox({
     return day.getDate();
   }
 
+  const modalDate = `${day.getFullYear()}-${
+    day.getMonth() + 1
+  }-${day.getDate()}`;
+
   const handleAdd = () => {
     onShow({
       props: {
-        date: `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`,
+        date: modalDate,
         content: "",
         scheduleSetter: { addNewSchedule },
       },
@@ -95,7 +102,7 @@ export default function DateBox({
       </span>
       {schedule && (
         <Schedule
-          day={day}
+          day={modalDate}
           schedule={schedule}
           scheduleSetter={{ editSchedule }}
         ></Schedule>

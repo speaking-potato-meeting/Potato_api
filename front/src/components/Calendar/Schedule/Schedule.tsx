@@ -4,7 +4,7 @@ import { useShowModal } from "./useShowModal";
 import type { scheduleSetter } from "../DateBox";
 
 interface Props {
-  day: Date;
+  day: string;
   schedule: ISchedule[];
   scheduleSetter: scheduleSetter;
 }
@@ -17,7 +17,7 @@ export default function Schedule({ schedule, day, scheduleSetter }: Props) {
           <ScheduleItem
             content={s.schedule}
             date={day}
-            id={`${s.id}+${day.toString()}`}
+            id={`${s.id}+${day}`}
             scheduleSetter={scheduleSetter}
           />
         </li>

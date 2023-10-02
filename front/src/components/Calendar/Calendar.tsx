@@ -113,37 +113,12 @@ export default function Calendar() {
       // 옮기고자 하는 날짜 정보
       const { id } = active as { id: string };
       const [editId, editDate] = id.split("+");
+      const toEditSchedule = allSchedule.find((s) => s.id === parseInt(editId));
 
-      const scheduleContent = allSchedule.find(
-        (s) => s.id === parseInt(editId)
-      )?.schedule;
+      if (!toEditSchedule) return;
 
-      const toEditSchedule = allSchedule
-        .map((s) => {
-          if (s.id === parseInt(editId)) {
-            return {
-              ...s,
-              start_date: over.id as string,
-              end_date: over.id as string,
-            };
-          }
-          return;
-        })
-        .filter((s): s is ISchedule => s !== undefined);
-
-      // console.log(toEditSchedule);
-
-      /* 특정 기간 일정 불러오는 api 만들어지기 전까지 사용할 프론트 state setter */
-      // const editedSchedule = allSchedule.map((s) => {
-      //   if (s.id === parseInt(editId)) {
-      //     return {
-      //       ...s,
-      //       start_date: over.id as string,
-      //       end_date: over.id as string,
-      //     };
-      //   }
-      //   return s;
-      // });
+      toEditSchedule.start_date = over.id as string;
+      toEditSchedule.end_date = over.id as string;
 
       const removedSchedule = allSchedule.filter((s) => {
         s.id !== parseInt(editId);

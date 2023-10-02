@@ -6,7 +6,7 @@ import Comment from "../../Comment";
 
 export interface ModalProps {
   id?: number;
-  date: Date | string;
+  date: string;
   scheduleSetter?: scheduleSetter;
   content: string;
 }
@@ -36,8 +36,9 @@ export default function Modal({
   }, []);
 
   function makeScheduleDate(): string | null {
-    if (date) {
-      const scheduleDate = new Date(date);
+    const inModalDay = Date.parse(date);
+    if (inModalDay) {
+      const scheduleDate = new Date(inModalDay);
       return `${scheduleDate.getFullYear()}년 ${
         scheduleDate.getMonth() + 1
       }월 ${scheduleDate.getDate()}일`;
@@ -45,6 +46,23 @@ export default function Modal({
 
     return null;
   }
+
+  const closeModal = () => {
+    if ("addSchedule" in scheduleSetter) {
+      const { addNewSchedule } = scheduleSetter;
+      if (focusRef.current.textContent && addNewSchedule) {
+        addNewSchedule(date, focusRef.current.textContent);
+      }
+    }
+
+    if ("editSchedule" in scheduleSetter) {
+      const { editSchedule } = scheduleSetter;
+      if (focusRef.current.textContent && editSchedule)
+        if (typeof id === "number")
+          editSchedule(id, date, focusRef.current.textContent);
+    }
+    onClose();
+  };
 
   const ModalContent = () => {
     return (
@@ -70,27 +88,12 @@ export default function Modal({
     );
   };
 
-  const closeModal = () => {
-    if (typeof date === "string") {
-      const { addNewSchedule } = scheduleSetter;
-      if (focusRef.current.textContent && addNewSchedule) {
-        addNewSchedule(date, focusRef.current.textContent);
-      }
-    }
-
-    if ("editSchedule" in scheduleSetter) {
-      const { editSchedule } = scheduleSetter;
-      if (focusRef.current.textContent && editSchedule)
-        if (typeof id === "number")
-          editSchedule(id, "2023-09-29", focusRef.current.textContent);
-    }
-    onClose();
-  };
-
   return (
     <div
       className="modal"
-      onClick={(e) => e.target === e.currentTarget && closeModal()}
+      onMouseDown={(e) => {
+        e.target === e.currentTarget && closeModal();
+      }}
     >
       <ModalContent />
     </div>

@@ -68,7 +68,7 @@ export const getSchedule = async (): Promise<ISchedule | scheduleResponse> => {
 export const updateSchedule = async (args: {
   id: number;
   editDate: string;
-  content?: string;
+  content: string;
 }): Promise<scheduleResponse> => {
   const updateScheduleRes = await fetch(
     `${BASE_URL}/api/schedule/schedules/2/`,
