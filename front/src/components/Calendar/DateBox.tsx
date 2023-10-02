@@ -43,7 +43,7 @@ export default function DateBox({
     return day.getDate();
   }
 
-  const handleShow = () => {
+  const handleAdd = () => {
     onShow({
       props: {
         date: `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`,
@@ -79,7 +79,7 @@ export default function DateBox({
           top: "6px",
           left: "6px",
         }}
-        onClick={handleShow}
+        onClick={handleAdd}
       >
         +
       </button>

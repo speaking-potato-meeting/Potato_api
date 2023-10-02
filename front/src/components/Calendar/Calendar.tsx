@@ -64,42 +64,14 @@ export default function Calendar() {
 
     if (responseMsg === "fail") return;
 
-    // 추가하고자 하는 날짜 객체 가져오기
-    const toAddDate = allSchedule.find((s) => s.date === date);
-
-    // 존재하는 스케줄이 없을 경우
-    if (!toAddDate) {
-      newSchedule = {
-        id: generateId(allSchedule) + 1,
-        date,
-        contents: [
-          {
-            id: 0,
-            content,
-          },
-        ],
-      };
-      return setAllSchedule([...allSchedule, newSchedule]);
-    }
-
     newSchedule = {
-      ...toAddDate,
-      contents: [
-        ...toAddDate.contents,
-        {
-          id: generateId(toAddDate.contents) + 1,
-          content,
-        },
-      ],
+      id: generateId(allSchedule) + 1,
+      start_date: date,
+      end_date: date,
+      schedule: content,
+      is_holiday: false,
     };
-    return setAllSchedule((prev) =>
-      prev.map((s) => {
-        if (s.date === newSchedule.date) {
-          return newSchedule;
-        }
-        return s;
-      })
-    );
+    return setAllSchedule([...allSchedule, newSchedule]);
   };
 
   const editSchedule = async (id: number, date: string, content: string) => {

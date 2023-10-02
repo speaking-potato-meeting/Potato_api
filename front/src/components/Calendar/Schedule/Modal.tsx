@@ -71,7 +71,7 @@ export default function Modal({
   };
 
   const closeModal = () => {
-    if ("addNewSchedule" in scheduleSetter) {
+    if (typeof date === "string") {
       const { addNewSchedule } = scheduleSetter;
       if (focusRef.current.textContent && addNewSchedule) {
         addNewSchedule(date, focusRef.current.textContent);
