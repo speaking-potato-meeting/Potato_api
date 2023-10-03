@@ -27,12 +27,14 @@ class CommentOut(Schema):
 
 class ScheduleIn(Schema):
     start_date: date
+    end_date: date
     schedule: str
     is_holiday: bool
 
-class ScheduleOut(BaseModel):
+class ScheduleOut(Schema):
     id: int
     start_date: date
+    end_date: date
     schedule: str
     is_holiday: bool
 
@@ -126,6 +128,25 @@ def get_schedule(request, schedule_id: int):
         )
     except Schedule.DoesNotExist:
         return 404, {"error": "Schedule not found"}
+
+@router.get("/schedules/", response=List[ScheduleOut])
+def get_schedules_in_date_range(request, start_date: date, end_date: date):
+    # start_date와 end_date 사이의 스케줄을 데이터베이스에서 조회
+    schedules = Schedule.objects.filter(start_date__gte=start_date, end_date__lte=end_date)
+    
+    # 조회된 스케줄을 ScheduleOut 형태로 변환하여 응답
+    schedule_list = []
+    for schedule in schedules:
+        schedule_data = {
+            "id": schedule.id,
+            "start_date": schedule.start_date,
+            "end_date": schedule.end_date,
+            "schedule": schedule.schedule,
+            "is_holiday": schedule.is_holiday,
+        }
+        schedule_list.append(ScheduleOut(**schedule_data))
+    
+    return schedule_list
 
 # 특정 스케줄 수정
 @router.put("/schedules/{schedule_id}/", tags=["스케줄"], response=ScheduleOut)

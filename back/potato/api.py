@@ -5,6 +5,7 @@ from accounts.api import router as accounts_router
 from schedule.api import router as schedule_router
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from .models import User
 from datetime import date
 from django.shortcuts import get_object_or_404
@@ -56,10 +57,11 @@ class TimerPause(Schema):
 #         return {"message": "유저 정보가 아직 없음."}
 
 # 타이머 재생 버튼
+@login_required
 @api.post('/start_studying', tags=["타이머"])
 def start_studying(request, payload: TimerStart):
     try:
-        user = User.objects.get(id=payload.user_id)
+        user = request.user
         
         # 현재 날짜에 해당 유저의 공부 기록이 있는지 확인
         today_study_timer, created = StudyTimer.objects.get_or_create(user=user, date=payload.date)
@@ -77,10 +79,11 @@ def start_studying(request, payload: TimerStart):
 
 
 # 타이머 일시 정지 버튼
+@login_required
 @api.post('/pause_studying', tags=["타이머"])
 def pause_studying(request, payload: TimerPause):
     try:
-        user = User.objects.get(id=payload.user_id)
+        user = request.user
         
         # 현재 날짜에 해당 유저의 공부 기록이 있는지 확인
         today_study_timers = StudyTimer.objects.filter(user=user, date=payload.date)
