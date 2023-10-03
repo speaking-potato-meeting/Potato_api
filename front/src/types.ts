@@ -7,6 +7,13 @@ export interface commentType {
   // pf_pic: string,
 }
 
+export interface timerType {
+  user_id: number;
+  date: Date;
+  study: number;
+  is_active: boolean;
+}
+
 export type Rule = {
   [key: string]: number | string;
   fee: number | string;
