@@ -5,9 +5,9 @@ import { useState, useEffect } from "react";
 import type { User } from "../../types";
 import { getCurrentUserInfo } from "../../api/login";
 
-type ContextType = {
-  userProfile: { user_id: number; username: string } | null;
-  setUserProfile: (user: { user_id: number; username: string }) => void;
+export type ContextType = {
+  userProfile: User | null;
+  onSetUser: (args: string | null) => void;
 };
 
 export default function GeneralLayout({}) {
