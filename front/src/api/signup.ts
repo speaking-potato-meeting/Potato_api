@@ -16,7 +16,7 @@ export async function signup(formData: FormData, rules: RuleFormData[]) {
     bodyData[name] = value as string;
   }
 
-  // bodyData["individual_rule"] = rules;
+  bodyData["individual_rule"] = rules;
   bodyData["total_fee"] = 0;
   bodyData["week_studytime"] = 0;
   bodyData["penalty"] = 0;
@@ -33,9 +33,8 @@ export async function signup(formData: FormData, rules: RuleFormData[]) {
   const responseData = await response.json();
 
   try {
-    console.log("실행");
     if (response.ok) {
-      if (responseData.message === "성공") {
+      if (responseData) {
         return "success";
       }
     }
@@ -45,6 +44,7 @@ export async function signup(formData: FormData, rules: RuleFormData[]) {
     errorMsg.map((error: errorType) => {
       console.log(`${error.loc[2]} ${error.msg}`);
     });
+    return "fail";
   }
 }
 
