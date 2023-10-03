@@ -2,6 +2,7 @@ from ninja import Schema, Router, Path, Query
 from potato.models import Comment, User, Schedule
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseServerError
+from django.contrib.auth.decorators import login_required
 from datetime import date
 from pydantic import BaseModel
 from typing import List, Optional
@@ -26,25 +27,25 @@ class CommentOut(Schema):
 
 class ScheduleIn(Schema):
     start_date: date
-    end_date: date
     schedule: str
     is_holiday: bool
 
 class ScheduleOut(BaseModel):
     id: int
     start_date: date
-    end_date: date
     schedule: str
     is_holiday: bool
 
 # 댓글 작성 (특정 스케줄에 맞춰)
 @router.post("/comments", tags=["코멘트"])
+@login_required
 def create_Comment(request, payload: CommentIn):
     schedule_id = payload.schedule_id
+    user = request.user
+
     try:
         schedule = Schedule.objects.get(id=schedule_id)
-        user_id = 2
-        comment = Comment.objects.create(text=payload.text, schedule=schedule,user_id=user_id)
+        comment = Comment.objects.create(text=payload.text, schedule=schedule,user=user)
         comment.save()
         return {"success" : True}
     except Schedule.DoesNotExist:
@@ -104,7 +105,7 @@ def delete_comment(request, comment_id: int):
 def create_schedule(request,payload:ScheduleIn):
     schedule = Schedule.objects.create(
         start_date = payload.start_date,
-        end_date = payload.end_date,
+        end_date = payload.start_date,
         schedule = payload.schedule,
         is_holiday = payload.is_holiday,
     )
@@ -119,7 +120,7 @@ def get_schedule(request, schedule_id: int):
         return ScheduleOut(
             id=schedule.id,
             start_date=schedule.start_date,
-            end_date=schedule.end_date,
+            end_date=schedule.start_date,
             schedule=schedule.schedule,
             is_holiday=schedule.is_holiday,
         )
@@ -132,7 +133,7 @@ def update_schedule(request, schedule_id: int, payload: ScheduleIn):
     try:
         schedule = Schedule.objects.get(id=schedule_id)
         schedule.start_date = payload.start_date
-        schedule.end_date = payload.end_date
+        schedule.end_date = payload.start_date
         schedule.schedule = payload.schedule
         schedule.is_holiday = payload.is_holiday
         schedule.save()
