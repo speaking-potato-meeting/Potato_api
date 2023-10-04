@@ -51,3 +51,18 @@ export interface User {
   // is_superuser: boolean;
   // profile_image: string;
 }
+
+export interface Todo {
+  id: number;
+  content: string;
+}
+
+export type ItemListProps = {
+  items: { id: number; content: string }[];
+  onDelete: (id: number) => void;
+  onUpdate: (id: number, newContent: string) => void;
+};
+
+export type EditorProps = {
+  onAdd: (text: string) => void;
+};
