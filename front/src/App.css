@@ -82,10 +82,6 @@ body {
   margin-top: 0.2em;
 }
 
-.field-label.optional {
-  justify-content: flex-start;
-}
-
 .field_error {
   color: var(--point-red);
   opacity: 0;

@@ -8,6 +8,13 @@ export interface commentType {
   timestamp: Date;
 }
 
+export interface timerType {
+  user_id: number;
+  date: Date;
+  study: number;
+  is_active: boolean;
+}
+
 export type Rule = {
   [key: string]: number | string;
   fee: number | string;
@@ -22,23 +29,40 @@ export type RuleFormData = {
 
 export interface User {
   [key: string]: string | number | RuleFormData[];
-  first_name: string;
+  id: number;
   username: string;
-  password: string;
-  birth: string;
+  first_name: string;
+  phone: string;
   address: string;
   github: string;
-  phone: string;
+  // password: string;
+  blog: string;
   MBTI: string;
   position: string;
-  total_fee: number;
-  week_studytime: number;
-  penalty: number;
-  immunity: number;
-  // individual_rule: RuleFormData[];
+  birth: string;
+  individual_rule: RuleFormData[];
+  // total_fee: number;
+  // week_studytime: number;
+  // penalty: number;
+  // immunity: number;
   // is_admin: boolean;
   // is_active: boolean;
   // is_staff: boolean;
   // is_superuser: boolean;
   // profile_image: string;
 }
+
+export interface Todo {
+  id: number;
+  content: string;
+}
+
+export type ItemListProps = {
+  items: { id: number; content: string }[];
+  onDelete: (id: number) => void;
+  onUpdate: (id: number, newContent: string) => void;
+};
+
+export type EditorProps = {
+  onAdd: (text: string) => void;
+};

@@ -41,13 +41,13 @@ const routerData = [
       {
         path: "todo",
         element: <ToDo />,
-        withAuthorization: true,
+        withAuthorization: false,
         label: "To-do ☑️",
       },
       {
         path: "stop-watch",
         element: <StopWatch />,
-        withAuthorization: true,
+        withAuthorization: false,
         label: "⏳",
       },
       {

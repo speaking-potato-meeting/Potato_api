@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { BsFillPlayCircleFill, BsFillPauseCircleFill } from 'react-icons/bs';
 import './Tictoc.css';
+import { timerType } from '../../types';
+import axios from 'axios';
 
 const today_is = new Date().toISOString().slice(0, 10);
 
@@ -11,15 +13,17 @@ const Tictoc = () => {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   // intervalId를 받아 현재 시간 측정중인지!
   const [intervalId, setIntervalId] = useState<number | null>(null);
+  // timer 시간 저장소
+  const [times, setTimes] = useState<timerType[]>([]);
 
   // 현재 날짜를 문자열로 가져옵니다.
   const currentDate = new Date().toISOString().slice(0, 10);
   // localStorage에서 해당 날짜의 데이터를 가져옵니다.
   const storedData = localStorage.getItem(currentDate);
   // 저장된 공부시간 가져오기!
-  const savedStudyTime = localStorage.getItem('studyTime');
+  // const savedStudyTime = localStorage.getItem('studyTime');
   // 문자열을 10진수 정수 number로 변환합니다.
-  const studyTime = savedStudyTime ? parseInt(savedStudyTime, 10) : 0;
+  // const studyTime = savedStudyTime ? parseInt(savedStudyTime, 10) : 0;
 
   // 저장시 중복코드가 많아서 함수로 만듦
   const updateElapsedTime = (storedData: string | null, startTime: Date | null) => {
@@ -37,7 +41,7 @@ const Tictoc = () => {
       } 
       // 없다면 방금 측정한 공부시간만을 더해준다.
       else {
-        elapsedMilliseconds += studyTime;
+        // elapsedMilliseconds += studyTime;
       }
     }
     setElapsedTime(elapsedMilliseconds);
@@ -105,9 +109,29 @@ const Tictoc = () => {
       } else {
         // 해당 날짜의 데이터가 아직 없는 경우
         // 오늘 날짜에 저장된 시간 넣어주면 됨
-        const studyData = { "username": 'coenffl', "date": currentDate, "studyTime": elapsedTime.toString() };
-        const studyJsonString = JSON.stringify(studyData);
-        localStorage.setItem(currentDate, studyJsonString);
+        try {
+          const response = axios.post('http://127.0.0.1:8000/api/timer', {
+            user_id: 1, // 임시 유저 고정
+            date: today_is.slice(0, 10),
+            study: elapsedTime,
+            is_active: false,
+          });
+
+          // POST 요청이 성공한 경우의 처리 (예: 응답 데이터 확인)
+          response.then((res) => {
+            console.log('타이머 데이터가 성공적으로 저장되었습니다.', res.data);
+          }).catch((error) => {
+            console.error('타이머 데이터 생성 중 오류 발생: ', error);
+          });
+
+        } catch (error) {
+          console.error('timer 데이터 생성 중 오류 발생: ', error)
+        }
+
+
+        // const studyData = { "user_id": 2, "studyTime": elapsedTime };
+        // const studyJsonString = JSON.stringify(studyData);
+        // localStorage.setItem(currentDate, studyJsonString);
       }
     }
       
@@ -135,17 +159,19 @@ const Tictoc = () => {
   const formattedTime = millisecondsToTime(elapsedTime);
 
   return (
-    <div className='tictoc'>
-      <h1 className='today-is'>{today_is}</h1>
-      {elapsedTime >= 0 && (
-        <h1 className='format-time'>{formattedTime.hours} : {formattedTime.minutes} : {formattedTime.seconds}</h1>
-      )}
-      {intervalId === null ? (
-        <BsFillPlayCircleFill size='140' className='tictoc-btn' onClick={startTimer}/>
-      ) : (
-        <BsFillPauseCircleFill size='140' className='tictoc-btn' onClick={timepause}/>
-      )} 
-    </div>
+    <>
+      <div className='tictoc'>
+        <h1 className='today-is'>{today_is}</h1>
+        {elapsedTime >= 0 && (
+          <h1 className='format-time'>{formattedTime.hours} : {formattedTime.minutes} : {formattedTime.seconds}</h1>
+        )}
+        {intervalId === null ? (
+          <BsFillPlayCircleFill size='140' className='tictoc-btn' onClick={startTimer}/>
+        ) : (
+          <BsFillPauseCircleFill size='140' className='tictoc-btn' onClick={timepause}/>
+        )} 
+      </div>
+    </>
   );
 };
 

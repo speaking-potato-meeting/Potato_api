@@ -5,24 +5,15 @@ import { useState, useEffect } from "react";
 import type { User } from "../../types";
 import { getCurrentUserInfo } from "../../api/login";
 
-type ContextType = {
-  userProfile: { user_id: number; username: string } | null;
-  setUserProfile: (user: { user_id: number; username: string }) => void;
+export type ContextType = {
+  userProfile: User | null;
+  onSetUser: (args: string | null) => void;
 };
 
 export default function GeneralLayout({}) {
-  const [userProfile, setUserProfile] = useState<{
-    user_id: number;
-    username: string;
-  } | null>(null);
+  const [userProfile, setUserProfile] = useState<User | null>(null);
 
   let location = useLocation();
-
-  /* 테스트 유저 */
-  const authUser = {
-    id: 3,
-    username: "plave_cbb",
-  };
 
   const navbarLists = () => {
     /* 유저 프로필이 있을 때, */
@@ -37,17 +28,9 @@ export default function GeneralLayout({}) {
     const fetchUserProfile = async () => {
       const userProfileResponse = await getCurrentUserInfo();
 
-      /* 권한 있는 사용자인지 확인하는 로직 */
-      const userInfo =
-        userProfileResponse &&
-        userProfileResponse.user_id === authUser.user_id &&
-        userProfileResponse.username === authUser.username
-          ? userProfileResponse
-          : null;
-
       /* 한 번만 상태 setter하는 로직 */
-      if (!ignore) {
-        setUserProfile(userInfo);
+      if (!ignore && userProfileResponse) {
+        setUserProfile(userProfileResponse);
       }
     };
     fetchUserProfile();
@@ -56,6 +39,8 @@ export default function GeneralLayout({}) {
       ignore = true;
     };
   }, [location]);
+
+  // if (!userProfile) return <div>정보를 불러오는 중입니다...</div>;
 
   const onSetUser = (args: string | null) => {
     setUserProfile(args);

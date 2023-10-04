@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { signup } from "../../api/signup";
 
 import type { Rule, RuleFormData } from "../../types";
+import { useNavigate } from "react-router-dom";
 
 export type formProps = {
   onClick: () => void;
@@ -25,6 +26,8 @@ export function RuleForm({ onClick, signUpData }: formProps) {
 
   const feeRef = useRef<inputMap | null>(null);
   const ruleRef = useRef<inputMap | null>(null);
+
+  const navigate = useNavigate();
 
   const handleFormChange = (
     idx: number,
@@ -159,7 +162,7 @@ export function RuleForm({ onClick, signUpData }: formProps) {
         []
       );
       const signUpResponse = await signup(signUpData, ruleFormData);
-      console.log(signUpResponse);
+      if (signUpResponse !== "fail") navigate("/");
     }
 
     if (!validate) {

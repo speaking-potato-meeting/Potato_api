@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import "./Navbar.css";
 import type { NavbarElement } from "../router";
 import { logout } from "../api/login";
+import type { User } from "../types";
 
 type Prop = {
   NavbarContent: NavbarElement[];
-  userProfile?: { user_id: number; username: string };
+  userProfile: User | null;
   onSetUser: (args: string | null) => void;
 };
 
@@ -28,7 +29,7 @@ const Navbar = ({ NavbarContent, userProfile, onSetUser }: Prop) => {
         ))}
         <li>
           {userProfile ? (
-            <>{userProfile.username}님, 환영합니다.</>
+            <>{userProfile.first_name}님, 환영합니다.</>
           ) : (
             <>
               {" "}

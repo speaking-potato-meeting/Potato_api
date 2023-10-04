@@ -5,11 +5,9 @@ from accounts.api import router as accounts_router
 from schedule.api import router as schedule_router
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from .models import User
-from datetime import date
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseServerError
-from pydantic import BaseModel
+from datetime import date, timedelta
 
 # from django.contrib.auth.models import User
 
@@ -27,34 +25,90 @@ class TodoListSchema(Schema):
     is_active: bool
 
 #타이머스키마
-class TimerIn(Schema):
+class TimerStart(Schema):
+    date : date
+    user_id: int
+
+class TimerPause(Schema):
+    user_id: int
+    date : date
+    study: int
+    
+class StudyTimerOut(Schema):
     user_id: int
     date: date
     study: int
-    is_active: bool
 
-class TimerOut(Schema):
-    study: int
-    is_active: bool
-
-# 타이머 생성
-@api.post('/timer',tags=["타이머"])
-def create_Timer(request, payload: TimerIn):
-    user = User.objects.get(id=payload.user_id)
-    time = StudyTimer.objects.create(user=user, study=payload.study)
-    return {"id":user.id, "studyTime": time.study}
-
-# 타이머 수정
-@api.put('/timer/{timer_id}', tags=["타이머"])
-def update_Timer(request, timer_id: int, payload: TimerOut):
+# 타이머 재생 버튼
+@login_required
+@api.post('/start_studying', tags=["타이머"])
+def start_studying(request, payload: TimerStart):
     try:
-        timer = StudyTimer.objects.get(id=timer_id)
-        timer.study = payload.study
-        timer.save()
+        user = request.user
         
-        return {"id": timer.user.id, "studyTime": timer.study}
-    except StudyTimer.DoesNotExist:
-        return {"message": "실패"}, 404
+        today_study_timer, created = StudyTimer.objects.get_or_create(user=user, date=payload.date)
+        
+        # is_studying을 True로 설정
+        user.is_studying = True
+        user.save()
+
+        if today_study_timer:
+            return {"message": "공부 시작", "studyTimer": {"study": today_study_timer.study}}
+        else:
+            return {"message": "공부 시작", "studyTimer": {}}
+    except User.DoesNotExist:
+        return {"message": "유저 정보가 없음."}
+    
+    
+@api.get("/study_timers/date_range/", tags=["타이머"])
+def get_study_timers_in_date_range(request, from_date: date, to_date: date):
+    # StudyTimer 모델에서 from_date와 to_date 사이의 데이터를 필터링
+    study_timers = StudyTimer.objects.filter(date__range=[from_date, to_date])
+
+    # 필터링된 결과를 StudyTimerOut 스키마에 맞게 변환하여 반환
+    study_timer_list = [
+        StudyTimerOut(
+            user_id=study_timer.user_id,
+            date=study_timer.date,
+            study=study_timer.study,
+        )
+        for study_timer in study_timers
+    ]
+    return study_timer_list
+
+
+# 타이머 일시 정지 버튼
+@login_required
+@api.post('/pause_studying', tags=["타이머"])
+def pause_studying(request, payload: TimerPause):
+    try:
+        user = request.user
+        
+        today_study_timers = StudyTimer.objects.filter(user=user, date=payload.date)
+        yesterday = payload.date - timedelta(days=1)
+        out_of_date_study_timers = StudyTimer.objects.filter(user=user, date=yesterday)
+
+        if today_study_timers.exists():
+            today_study_timer = today_study_timers.first()
+            today_study_timer.study = payload.study
+            today_study_timer.save()
+            print(1)
+        elif user.is_studying == False: 
+            today_study_timer = StudyTimer.objects.create(user=user, date=payload.date, study=payload.study)
+        
+        else:
+            # 오늘 공부한 기록이 없으면 새로 생성 (CREATE)
+            out_of_date_study_timer = out_of_date_study_timers.first()
+            out_of_date_study_timer.study = payload.study
+            out_of_date_study_timer.save()
+        user.is_studying = False
+        user.save()
+        
+        return {"message": "일시정지"}
+
+    except User.DoesNotExist:
+        return {"message": "유저 정보가 없음."}
+
 
 # @api.post("/upload_image/{user_id}")
 # def upload(request, file: UploadedFile = File(...)):

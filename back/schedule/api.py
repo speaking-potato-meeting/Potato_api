@@ -2,6 +2,7 @@ from ninja import Schema, Router, Path, Query
 from potato.models import Comment, User, Schedule
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseServerError
+from django.contrib.auth.decorators import login_required
 from datetime import date
 from pydantic import BaseModel
 from typing import List, Optional
@@ -20,31 +21,30 @@ class CommentIn(Schema):
 class CommentOut(Schema):
     id: int
     schedule_id: int
-    user_id: int
+    username: str
     timestamp: date
     text: str
 
 class ScheduleIn(Schema):
     start_date: date
-    end_date: date
     schedule: str
     is_holiday: bool
 
-class ScheduleOut(BaseModel):
+class ScheduleOut(Schema):
     id: int
     start_date: date
-    end_date: date
     schedule: str
     is_holiday: bool
 
 # 댓글 작성 (특정 스케줄에 맞춰)
 @router.post("/comments", tags=["코멘트"])
+@login_required
 def create_Comment(request, payload: CommentIn):
     schedule_id = payload.schedule_id
+    user = request.user
     try:
         schedule = Schedule.objects.get(id=schedule_id)
-        user_id = 2
-        comment = Comment.objects.create(text=payload.text, schedule=schedule,user_id=user_id)
+        comment = Comment.objects.create(text=payload.text, schedule=schedule,user=user)
         comment.save()
         return {"success" : True}
     except Schedule.DoesNotExist:
@@ -58,7 +58,7 @@ def get_comments_for_schedule(request, schedule_id: int):
         comment_list = [
             CommentOut(
                 id=comment.id,
-                user_id=comment.user.id,
+                username=comment.user.first_name,
                 timestamp=comment.timestamp,
                 text=comment.text,
                 schedule_id=comment.schedule_id,
@@ -104,7 +104,7 @@ def delete_comment(request, comment_id: int):
 def create_schedule(request,payload:ScheduleIn):
     schedule = Schedule.objects.create(
         start_date = payload.start_date,
-        end_date = payload.end_date,
+        end_date = payload.start_date,
         schedule = payload.schedule,
         is_holiday = payload.is_holiday,
     )
@@ -119,12 +119,31 @@ def get_schedule(request, schedule_id: int):
         return ScheduleOut(
             id=schedule.id,
             start_date=schedule.start_date,
-            end_date=schedule.end_date,
+            end_date=schedule.start_date,
             schedule=schedule.schedule,
             is_holiday=schedule.is_holiday,
         )
     except Schedule.DoesNotExist:
         return 404, {"error": "Schedule not found"}
+
+# 내일까지 엔드데이트랑 스타트데이트
+@router.get("/schedules/", response=List[ScheduleOut], tags=["스케줄"])
+def get_schedules_in_date_range(request, from_date: date, to_date: date):
+    # start_date와 end_date 사이의 스케줄을 데이터베이스에서 조회
+    schedules = Schedule.objects.filter(start_date__gte=from_date, start_date__lte=to_date)
+    
+    # 조회된 스케줄을 ScheduleOut 형태로 변환하여 응답
+    schedule_list = []
+    for schedule in schedules:
+        schedule_data = {
+            "id": schedule.id,
+            "start_date": schedule.start_date,
+            "schedule": schedule.schedule,
+            "is_holiday": schedule.is_holiday,
+        }
+        schedule_list.append(ScheduleOut(**schedule_data))
+    
+    return schedule_list
 
 # 특정 스케줄 수정
 @router.put("/schedules/{schedule_id}/", tags=["스케줄"], response=ScheduleOut)
@@ -132,7 +151,7 @@ def update_schedule(request, schedule_id: int, payload: ScheduleIn):
     try:
         schedule = Schedule.objects.get(id=schedule_id)
         schedule.start_date = payload.start_date
-        schedule.end_date = payload.end_date
+        schedule.end_date = payload.start_date
         schedule.schedule = payload.schedule
         schedule.is_holiday = payload.is_holiday
         schedule.save()

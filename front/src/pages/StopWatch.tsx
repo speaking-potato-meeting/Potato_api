@@ -1,4 +1,4 @@
-import Tictoc from "../components/Tictoc"
+import Tictoc from "../components/Timer/Tictoc"
 
 const StopWatch = () => {
   return (
