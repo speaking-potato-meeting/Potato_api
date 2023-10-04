@@ -3,11 +3,16 @@ import { useState, useEffect, useRef } from "react";
 import { commentType } from "../types";
 import "./comment.css";
 import axios from "axios";
+import { useOutletContext } from "react-router-dom";
+import type { ContextType } from "./Layout/GeneralLayout";
 
 const dateNow = new Date();
 const today = dateNow.toISOString().slice(0, 10);
 
 const Comment = (): JSX.Element => {
+  /* 로그인하지 않은 유저인지 확인 */
+  const { userProfile } = useOutletContext<ContextType>();
+
   // text를 받아오는 고런..
   const [newText, setNewText] = useState("");
   const [newEditText, setNewEditText] = useState("");
@@ -27,7 +32,7 @@ const Comment = (): JSX.Element => {
     try {
       /* 백엔드의 API 엔드포인트를 설정하세요(/api/schedule/schedules/{schedule_id}/comments/) */
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/schedule/schedules/${1}/comments/`
+        `http://127.0.0.1:8000/api/schedule/schedules/${5}/comments/`
       );
 
       const commentData = response.data;
@@ -173,7 +178,7 @@ const Comment = (): JSX.Element => {
                   alt="프로필 사진"
                 />
                 {/* 일단 user 말고 comment.id로 하겠음 */}
-                <p className="comment-name">{comment.id}</p>
+                <p className="comment-name">{comment.user_id}</p>
               </div>
               <div>
                 <p>{elapsedTime(comment.timestamp)}</p>
@@ -216,39 +221,51 @@ const Comment = (): JSX.Element => {
                     <button onClick={() => deleteCommentSubmit(comment.id)}>삭제</button>
                   </div>
                 )} */}
-                <button
-                  className="comment-btn"
-                  onClick={() => editCommentSubmit(comment.id, comment.text)}
-                >
-                  {editingCommentId === comment.id ? "취소" : "수정"}
-                </button>
-                <button
-                  className="comment-btn"
-                  onClick={() => handleConfirmEdit(comment.id)}
-                >
-                  확인
-                </button>
-                <button
-                  className="comment-btn"
-                  onClick={() => deleteCommentSubmit(comment.id)}
-                >
-                  삭제
-                </button>
+                {userProfile && userProfile.id === comment.user_id && (
+                  <>
+                    <button
+                      className="comment-btn"
+                      onClick={() =>
+                        editCommentSubmit(comment.id, comment.text)
+                      }
+                    >
+                      {editingCommentId === comment.id ? "취소" : "수정"}
+                    </button>
+                    <button
+                      className="comment-btn"
+                      onClick={() => handleConfirmEdit(comment.id)}
+                    >
+                      확인
+                    </button>
+                    <button
+                      className="comment-btn"
+                      onClick={() => deleteCommentSubmit(comment.id)}
+                    >
+                      삭제
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </li>
         ))}
       </ul>
       <div className="comment-input-box">
-        <input
-          ref={CommentTextInput as React.MutableRefObject<HTMLInputElement>}
-          className="comment-input"
-          type="text"
-          placeholder="댓글을 입력하세요"
-          value={newText}
-          onChange={(e) => setNewText(e.target.value)}
-        />
-        <button onClick={createCommentSubmit}>댓글 생성</button>
+        {userProfile ? (
+          <>
+            <input
+              ref={CommentTextInput as React.MutableRefObject<HTMLInputElement>}
+              className="comment-input"
+              type="text"
+              placeholder="댓글을 입력하세요"
+              value={newText}
+              onChange={(e) => setNewText(e.target.value)}
+            />
+            <button onClick={createCommentSubmit}>댓글 생성</button>
+          </>
+        ) : (
+          <p>로그인이 필요합니다.</p>
+        )}
       </div>
     </div>
   );
