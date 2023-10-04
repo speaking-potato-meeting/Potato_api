@@ -20,7 +20,6 @@ api.add_router("/schedule/", schedule_router)
 #To-do-list
 class TodoListSchema(Schema):
     user_id: int
-    title: str
     description: str
     is_active: bool
 
@@ -122,7 +121,6 @@ def pause_studying(request, payload: TimerPause):
 def create_todolist(request, data: TodoListSchema):
     todo = TodoList(
         user_id=data.user_id,
-        title=data.title,
         description=data.description,
         is_active=data.is_active
     )
@@ -130,11 +128,14 @@ def create_todolist(request, data: TodoListSchema):
     return todo
 
 #TodoList조회
-@api.get("/todolist/{todo_id}", response=TodoListSchema,tags=["todolist"])
-def get_todolist(request, todo_id: int):
+@api.get("/todolist",tags=["todolist"])
+def get_todolist(request):
     try:
-        todo = TodoList.objects.get(id=todo_id)
-        return todo
+        todo_list = TodoList.objects.all()
+        serialized_todo_list = [
+            {"id": todo.id, "description": todo.description, "is_active": todo.is_active} for todo in todo_list
+            ]
+        return serialized_todo_list
     except TodoList.DoesNotExist:
         return {"message": "실패"}, 404
 
@@ -144,7 +145,6 @@ def update_todolist(request, todo_id: int, data: TodoListSchema):
     try:
         todo = TodoList.objects.get(id=todo_id)
         todo.user_id = data.user_id
-        todo.title = data.title
         todo.description = data.description
         todo.is_active = data.is_active
         todo.save()
