@@ -33,7 +33,6 @@ class ScheduleIn(Schema):
 class ScheduleOut(Schema):
     id: int
     start_date: date
-    end_date: date
     schedule: str
     is_holiday: bool
 
@@ -129,9 +128,9 @@ def get_schedule(request, schedule_id: int):
 
 # 내일까지 엔드데이트랑 스타트데이트
 @router.get("/schedules/", response=List[ScheduleOut], tags=["스케줄"])
-def get_schedules_in_date_range(request, start_date: date, end_date: date):
+def get_schedules_in_date_range(request, from_date: date, to_date: date):
     # start_date와 end_date 사이의 스케줄을 데이터베이스에서 조회
-    schedules = Schedule.objects.filter(start_date__gte=start_date, end_date__lte=end_date)
+    schedules = Schedule.objects.filter(start_date__gte=from_date, start_date__lte=to_date)
     
     # 조회된 스케줄을 ScheduleOut 형태로 변환하여 응답
     schedule_list = []
@@ -139,7 +138,6 @@ def get_schedules_in_date_range(request, start_date: date, end_date: date):
         schedule_data = {
             "id": schedule.id,
             "start_date": schedule.start_date,
-            "end_date": schedule.end_date,
             "schedule": schedule.schedule,
             "is_holiday": schedule.is_holiday,
         }
