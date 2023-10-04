@@ -15,8 +15,9 @@ export default function Editor ({ onAdd } : EditorProps) {
   }
 
   return (
-    <div>
+    <div className='todo-add-box'>
       <input 
+        className='todo-add-input'
         value={text}
         onChange={onChangeInput}  
       />

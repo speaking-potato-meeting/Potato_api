@@ -23,20 +23,20 @@ export default function ItemList({ items, onDelete, onUpdate }: ItemListProps) {
       {items.map(item => (
         <div key={item.id}>
           {editItemId === item.id ? (
-            <>
+            <div className='todoitem-box'>
               <input
                 type="text"
                 value={editedContent}
                 onChange={(e) => setEditedContent(e.target.value)}
               />
               <button onClick={() => handleUpdateClick(item.id)}>확인</button>
-            </>
+            </div>
           ) : (
-            <>
-              <p>{item.content}</p>
+            <div className='todoitem-box'>
+              <p className='todoItem-content'>{item.content}</p>
               <button onClick={() => handleEditClick(item.id, item.content)}>수정</button>
               <button onClick={() => onDelete(item.id)}>삭제</button>
-            </>
+            </div>
           )}
         </div>
       ))}

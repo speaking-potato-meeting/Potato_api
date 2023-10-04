@@ -1,11 +1,36 @@
+.todo-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.todo-box h1 {
+  margin: 5rem 0;
+}
+
+.todo-add-box {
+  display: flex;
+  justify-content: center;
+  width: 20rem;
+}
+
+.todo-add-input {
+  width: 80%;
+  padding-right: 10px;
+}
+
 .todo-add-btn {
 
 }
 
-.todo-del-btn {
+.todo-del-edit-btn {
 
 }
 
-.todoItem-content {
+.todoitem-box {
+  display: flex;
+}
 
+.todoItem-content {
+  margin: 0;
 }
