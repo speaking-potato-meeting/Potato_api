@@ -1,10 +1,11 @@
+/* commentType 수정 */
 export interface commentType {
   id: number;
-  // username: string,
-  user_id: number;
+  user_id: number; // user오면 사라질 field
+  // user: User
+  schedule_id: number;
   text: string;
   timestamp: Date;
-  // pf_pic: string,
 }
 
 export interface timerType {
@@ -28,20 +29,22 @@ export type RuleFormData = {
 
 export interface User {
   [key: string]: string | number | RuleFormData[];
-  first_name: string;
+  id: number;
   username: string;
-  password: string;
-  birth: string;
+  first_name: string;
+  phone: string;
   address: string;
   github: string;
-  phone: string;
+  // password: string;
+  blog: string;
   MBTI: string;
   position: string;
-  total_fee: number;
-  week_studytime: number;
-  penalty: number;
-  immunity: number;
-  // individual_rule: RuleFormData[];
+  birth: string;
+  individual_rule: RuleFormData[];
+  // total_fee: number;
+  // week_studytime: number;
+  // penalty: number;
+  // immunity: number;
   // is_admin: boolean;
   // is_active: boolean;
   // is_staff: boolean;

@@ -1,26 +1,23 @@
-import { ISchedule } from "../Calendar";
-import "./style.css";
+import { ISchedule } from "../../../api/schedule";
 import { useDraggable } from "@dnd-kit/core";
 import { useShowModal } from "./useShowModal";
 import type { scheduleSetter } from "../DateBox";
 
 interface Props {
-  day: Date;
-  schedule: ISchedule;
+  day: string;
+  schedule: ISchedule[];
   scheduleSetter: scheduleSetter;
 }
 
 export default function Schedule({ schedule, day, scheduleSetter }: Props) {
-  const { contents, date } = schedule;
-
   return (
     <ul className="schedule">
-      {contents.map((c) => (
-        <li key={c.id}>
+      {schedule.map((s) => (
+        <li key={s.id}>
           <ScheduleItem
-            content={c.content}
-            id={`${c.id}+${day.toString()}`}
-            date={date}
+            content={s.schedule}
+            date={day}
+            id={`${s.id}+${day}`}
             scheduleSetter={scheduleSetter}
           />
         </li>
@@ -31,14 +28,14 @@ export default function Schedule({ schedule, day, scheduleSetter }: Props) {
 
 function ScheduleItem({
   id,
-  content,
-  date,
   scheduleSetter,
+  date,
+  content,
 }: {
   id: string;
+  date: Date;
+  scheduleSetter?: scheduleSetter;
   content: string;
-  date: ISchedule["date"];
-  scheduleSetter: scheduleSetter;
 }) {
   const { onShow } = useShowModal();
   const { setNodeRef, listeners, transform } = useDraggable({
@@ -47,7 +44,12 @@ function ScheduleItem({
 
   const handleShow = () => {
     onShow({
-      props: { date, content, scheduleSetter, id: parseInt(id.split("+")[0]) },
+      props: {
+        content,
+        date,
+        scheduleSetter,
+        id: parseInt(id.split("+")[0]),
+      },
     });
   };
 
@@ -57,13 +59,14 @@ function ScheduleItem({
 
   return (
     <button
+      className="schedule-modal-btn"
       ref={setNodeRef}
       {...listeners}
       style={style}
       onClick={handleShow}
       // document.body.style.overflow = "hidden";
     >
-      <div className="schedule__content">{content}</div>
+      <p className="schedule-content"> {content}</p>
     </button>
   );
 }

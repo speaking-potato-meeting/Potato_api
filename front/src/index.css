@@ -23,6 +23,16 @@
   --point-success: rgba(0, 150, 0, 0.7);
 }
 
+/* reset */
+body,
+h2,
+h3,
+ul,
+input[type="checkbox"] {
+  margin: 0;
+  padding: 0;
+}
+
 a {
   color: #646cff;
   text-decoration: inherit;

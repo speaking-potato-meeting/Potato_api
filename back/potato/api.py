@@ -5,6 +5,7 @@ from accounts.api import router as accounts_router
 from schedule.api import router as schedule_router
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from .models import User
 from datetime import date
 from django.shortcuts import get_object_or_404
@@ -27,34 +28,79 @@ class TodoListSchema(Schema):
     is_active: bool
 
 #타이머스키마
-class TimerIn(Schema):
+class TimerStart(Schema):
     user_id: int
-    date: date
-    study: int
-    is_active: bool
 
-class TimerOut(Schema):
+class TimerPause(Schema):
+    user_id: int
+    date : date
     study: int
-    is_active: bool
 
 # 타이머 생성
-@api.post('/timer',tags=["타이머"])
-def create_Timer(request, payload: TimerIn):
-    user = User.objects.get(id=payload.user_id)
-    time = StudyTimer.objects.create(user=user, study=payload.study)
-    return {"id":user.id, "studyTime": time.study}
+# @api.post('/timer',tags=["타이머"])
+# def create_Timer(request, payload: TimerStart):
+#     user = User.objects.get(id=payload.user_id)
+#     time = StudyTimer.objects.create(user=user, study=payload.study)
+#     return {"id":user.id, "studyTime": time.study}
 
-# 타이머 수정
-@api.put('/timer/{timer_id}', tags=["타이머"])
-def update_Timer(request, timer_id: int, payload: TimerOut):
-    try:
-        timer = StudyTimer.objects.get(id=timer_id)
-        timer.study = payload.study
-        timer.save()
+# # 타이머 재생버튼
+# @api.get('/timer/{timer_id}', tags=["타이머"])
+# def read_Timer(request, timer_id: int, payload: TimerOut):
+#     try:
+#         user = User.objects.get(id=payload.user_id)
+#         timer = StudyTimer.objects.get(id=timer_id)
+#         timer.save()
         
-        return {"id": timer.user.id, "studyTime": timer.study}
-    except StudyTimer.DoesNotExist:
-        return {"message": "실패"}, 404
+#         return {"id": timer.user.id, "studyTime": timer.study}
+#     except StudyTimer.DoesNotExist:
+#         return {"message": "유저 정보가 아직 없음."}
+
+# 타이머 재생 버튼
+@login_required
+@api.post('/start_studying', tags=["타이머"])
+def start_studying(request, payload: TimerStart):
+    try:
+        user = request.user
+        
+        today_study_timer, created = StudyTimer.objects.get_or_create(user=user)
+        
+        # is_studying을 True로 설정
+        user.is_studying = True
+        user.save()
+
+        if today_study_timer:
+            return {"message": "공부 시작", "studyTimer": {"study": today_study_timer.study}}
+        else:
+            return {"message": "공부 시작", "studyTimer": {}}
+    except User.DoesNotExist:
+        return {"message": "유저 정보가 없음."}
+
+
+# 타이머 일시 정지 버튼
+@login_required
+@api.post('/pause_studying', tags=["타이머"])
+def pause_studying(request, payload: TimerPause):
+    try:
+        user = request.user
+        
+        today_study_timers = StudyTimer.objects.filter(user=user, date=payload.date)
+        
+        if today_study_timers.exists():
+            today_study_timer = today_study_timers.first()
+            today_study_timer.study = payload.study
+            today_study_timer.save()
+        else:
+            # 오늘 공부한 기록이 없으면 새로 생성 (CREATE)
+            today_study_timer = StudyTimer.objects.create(user=user, date=payload.date, study=payload.study)
+        
+        user.is_studying = False
+        user.save()
+        
+        return {"message": "일시정지", "studyTimer": {"study": today_study_timer.study}}
+
+    except User.DoesNotExist:
+        return {"message": "유저 정보가 없음."}
+
 
 # @api.post("/upload_image/{user_id}")
 # def upload(request, file: UploadedFile = File(...)):

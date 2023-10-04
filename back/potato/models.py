@@ -26,7 +26,7 @@ class User(AbstractUser):
     )
     username = models.CharField(max_length=20,unique=True)
     password = models.CharField(max_length=200)
-    birth = models.DateField(null=True)
+    birth = models.DateField()
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=50)
     github = models.URLField()
@@ -35,7 +35,7 @@ class User(AbstractUser):
     position = models.CharField(max_length=20)
     cdt = models.DateTimeField(auto_now_add=True)
     total_fee = models.IntegerField(default=0)
-    individual_rule = models.TextField(null=True, blank=True)
+    individual_rule = models.JSONField(null=True, blank=True)
     week_studytime = models.IntegerField(default=0)
     penalty = models.IntegerField(default=0)
     immunity = models.IntegerField(default=0)
@@ -43,6 +43,7 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    is_studying = models.BooleanField(default=False)
     profile_image = models.ImageField(upload_to='profile_images/')
 
 class Rule(models.Model):
@@ -52,7 +53,6 @@ class Rule(models.Model):
 
 class TodoList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
 
@@ -66,16 +66,15 @@ class Money(models.Model):
 
 class StudyTimer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)
     study = models.IntegerField(default=0)
-    is_active = models.BooleanField(default=True)
 
 
 class Schedule(models.Model):
-    start_date = models.DateTimeField(null=True)
-    end_date = models.DateTimeField(null=True, blank=True)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True, blank=True)
     schedule = models.CharField(max_length=100)
-    is_holiday = models.BooleanField(default=True)
+    is_holiday = models.BooleanField(default=False)
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -1,18 +1,22 @@
 import Schedule from "./Schedule/Schedule";
-import { ISchedule } from "./Calendar";
+import { ISchedule } from "../../api/schedule";
 
 import { useDroppable } from "@dnd-kit/core";
 import { useShowModal } from "./Schedule/useShowModal";
+import { dateToString } from "../../utils/getDays";
+
+type addNewSchedule = (date: string, content: string) => void;
+type editSchedule = (contentId: number, content: string, date: string) => void;
 
 export type scheduleSetter = {
-  addNewSchedule?: (date: string, content: string) => void;
-  editSchedule?: (contentId: number, content: string, date: string) => void;
+  addNewSchedule?: addNewSchedule;
+  editSchedule?: editSchedule;
 };
 
 type Props = {
   nowDate: Date;
   day: Date;
-  schedule?: ISchedule; // 스케줄이 있을수도 없을수도
+  schedule?: ISchedule[]; // 스케줄이 있을수도 없을수도
   scheduleSetter: scheduleSetter;
 };
 
@@ -24,7 +28,7 @@ export default function DateBox({
 }: Props) {
   const { onShow } = useShowModal();
   const { isOver, setNodeRef } = useDroppable({
-    id: day.toString(),
+    id: dateToString(day.toString()),
   });
 
   const { addNewSchedule, editSchedule } = scheduleSetter;
@@ -42,10 +46,14 @@ export default function DateBox({
     return day.getDate();
   }
 
-  const handleShow = () => {
+  const modalDate = `${day.getFullYear()}-${
+    day.getMonth() + 1
+  }-${day.getDate()}`;
+
+  const handleAdd = () => {
     onShow({
       props: {
-        date: `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`,
+        date: modalDate,
         content: "",
         scheduleSetter: { addNewSchedule },
       },
@@ -78,7 +86,7 @@ export default function DateBox({
           top: "6px",
           left: "6px",
         }}
-        onClick={handleShow}
+        onClick={handleAdd}
       >
         +
       </button>
@@ -94,7 +102,7 @@ export default function DateBox({
       </span>
       {schedule && (
         <Schedule
-          day={day}
+          day={modalDate}
           schedule={schedule}
           scheduleSetter={{ editSchedule }}
         ></Schedule>

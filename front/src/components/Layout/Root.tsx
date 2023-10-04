@@ -6,9 +6,10 @@ import { useUser } from "./GeneralLayout";
 
 interface RootProps {
   children: React.ReactNode;
+  isAdminPage?: boolean;
 }
 
-const Root = ({ children }: RootProps) => {
+const Root = ({ children, isAdminPage }: RootProps) => {
   const { userProfile } = useOutletContext<{
     userProfile: { user_id: number; username: string };
     onSetUser: () => void;

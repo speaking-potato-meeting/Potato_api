@@ -12,20 +12,16 @@ export async function login(args: { username: string; password: string }) {
 
   if (loginRes.ok) {
     const data = await loginRes.json();
-    if (data.message === "성공") {
-      console.log(data.message);
+    if (data) {
       return "success";
     }
-    console.log(`Error: ${data.message}`);
+    console.log(`Error: ${data.detail}`);
     return null;
   }
 }
 
-export async function getCurrentUserInfo(): Promise<{
-  user_id: number;
-  username: string;
-} | null> {
-  const getUserRes = await fetch(`${BASE_URL}/api/accounts/users/4`, {
+export async function getCurrentUserInfo(): Promise<User | null> {
+  const getUserRes = await fetch(`${BASE_URL}/api/accounts/status`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -33,7 +29,20 @@ export async function getCurrentUserInfo(): Promise<{
     },
   });
 
-  return getUserRes.ok ? getUserRes.json() : null;
+  /* 
+   * 타입 가드 함수입니다.
+  API 반환 값이 변경되면 변경되거나 삭제될 예정입니다. 
+  */
+  function isUser(user: User | { is_logged_in: boolean }): user is User {
+    return "id" in user;
+  }
+
+  if (getUserRes.ok) {
+    const userInfo: User | { is_logged_in: boolean } = await getUserRes.json();
+    return isUser(userInfo) ? userInfo : null;
+  }
+
+  return null;
 }
 
 export async function logout(): Promise<responseMessage> {
