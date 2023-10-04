@@ -53,7 +53,6 @@ class Rule(models.Model):
 
 class TodoList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
 
@@ -75,7 +74,7 @@ class Schedule(models.Model):
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True, blank=True)
     schedule = models.CharField(max_length=100)
-    is_holiday = models.BooleanField(default=True)
+    is_holiday = models.BooleanField(default=False)
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
