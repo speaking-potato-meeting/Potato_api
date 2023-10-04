@@ -46,6 +46,7 @@ class User(AbstractUser):
     is_studying = models.BooleanField(default=False)
     profile_image = models.ImageField(upload_to='profile_images/')
 
+
 class Rule(models.Model):
     all_rule = models.TextField(null=True, blank=True)
     time = models.IntegerField(default=30)
@@ -54,7 +55,7 @@ class Rule(models.Model):
 class TodoList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.CharField(max_length=100)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
 
 
 class Money(models.Model):

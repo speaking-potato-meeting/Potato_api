@@ -14,6 +14,7 @@ from django.contrib.auth.hashers import make_password #해시화
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import json
+from django.contrib.auth.decorators import user_passes_test#슈퍼유저만
 router = Router()
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,26 @@ class CreateUserSchema(Schema):
     individual_rule: list
     # profile_image:
     
+class updateUserSchema(Schema):
+    username: str
+    password: str
+    first_name: str
+    birth: date
+    address: str
+    github: Optional[HttpUrl]
+    phone: str
+    MBTI: str
+    position: str
+    blog: Optional[HttpUrl]
+    # profile_image:
+
+#관리자    
+class admin_put(Schema):
+    individual_rule: list
+    total_fee: int
+    penalty: int
+    immunity: int
+
 #로그인/로그아웃   
 class LoginInput(Schema):
     username: str
@@ -105,7 +126,6 @@ def create_user(request, data: CreateUserSchema):
         individual_rule = str(data.individual_rule)
         # profile_image:,
     )
-    # print(str(user.individual_rule))
     user.save()
     user_data = {
         "id": user.id,
@@ -129,68 +149,72 @@ def create_user(request, data: CreateUserSchema):
 def get_user(request, user_id: int):
     try:
         user = User.objects.get(id=user_id)
-        serialized_user = {
-            "id":user.id,
-            "username": user.username,
-            "first_name":user.first_name,
-            "phone": user.phone,
-            "address": user.address,
-            "github": user.github,
-            "blog": user.blog,
-            "MBTI": user.MBTI,
-            "position": user.position,
-            "birth": user.birth.strftime('%Y-%m-%d'),
-            "individual_rule": user.individual_rule,
-            # profile_image:,
-        }
-        # json_str = user.individual_rule.replace("'", "\"")
-        # data_list = json.loads(json_str)
-        # for i in data_list:
-        #     print(user.id)
-        #     print(dict(i).get("fee"))
-        #     print(dict(i).get("rule"))
-        return serialized_user
+        if user == request.user:
+            serialized_user = {
+                "id":user.id,
+                "username": user.username,
+                "first_name":user.first_name,
+                "phone": user.phone,
+                "address": user.address,
+                "github": user.github,
+                "blog": user.blog,
+                "MBTI": user.MBTI,
+                "position": user.position,
+                "birth": user.birth.strftime('%Y-%m-%d'),
+                "individual_rule": user.individual_rule,
+                # profile_image:,
+            }
+            # json_str = user.individual_rule.replace("'", "\"")
+            # data_list = json.loads(json_str)
+            # for i in data_list:
+            #     print(user.id)
+            #     print(dict(i).get("fee"))
+            #     print(dict(i).get("rule"))
+            return serialized_user
+        else:
+            return {"message": "권한 없음"}, 403
     except User.DoesNotExist:
         return {"message": "실패"}, 404
 
 #회원수정
 @login_required
 @router.put("/update-user/{user_id}", tags=["회원가입"])
-def update_user(request, user_id: int, data: CreateUserSchema):
+def update_user(request, user_id: int, data: updateUserSchema):
     try:
         user = User.objects.get(id=user_id)
-        if data.password:#수정시 비밀번호 해시화
-            hashed_password = make_password(data.password)
-            user.password = hashed_password
-        user.username = data.username
-        user.first_name= data.first_name
-        user.phone = data.phone
-        user.address = data.address
-        user.github = data.github
-        user.blog = data.blog
-        user.MBTI = data.MBTI
-        user.position = data.position
-        user.individual_rule = data.individual_rule
-        user.birth = data.birth
-        # user.profile_image=data
-        user.save()
+        if user == request.user:
+            if data.password:#수정시 비밀번호 해시화
+                hashed_password = make_password(data.password)
+                user.password = hashed_password
+            user.username = data.username
+            user.first_name= data.first_name
+            user.phone = data.phone
+            user.address = data.address
+            user.github = data.github
+            user.blog = data.blog
+            user.MBTI = data.MBTI
+            user.position = data.position
+            user.birth = data.birth
+            # user.profile_image=data
+            user.save()
 
-        user_data = {
-        "id": user.id,
-        "password": user.password,
-        "username": user.username,
-        "first_name": user.first_name,
-        "birth": user.birth,
-        "address": user.address,
-        "phone": user.phone,
-        "MBTI": user.MBTI,
-        "position": user.position,
-        "github": user.github,
-        "blog": user.blog,
-        "individual_rule": user.individual_rule,
-        # user.profile_image=data
-        }
-        return user_data
+            user_data = {
+            "id": user.id,
+            "password": user.password,
+            "username": user.username,
+            "first_name": user.first_name,
+            "birth": user.birth,
+            "address": user.address,
+            "phone": user.phone,
+            "MBTI": user.MBTI,
+            "position": user.position,
+            "github": user.github,
+            "blog": user.blog,
+            # user.profile_image=data
+            }
+            return user_data
+        else:
+            return {"message": "권한 없음"}, 403
     except User.DoesNotExist:
         return {"message": "실패"}, 404
     
@@ -200,14 +224,18 @@ def update_user(request, user_id: int, data: CreateUserSchema):
 def delete_user(request, user_id: int):
     try:
         user = User.objects.get(id=user_id)
-        if user.id:
+        if user == request.user:
+
             data_user={
                 "user_id":user.id
             }
             user.delete()
-        return data_user
+            return data_user
+        else:
+            return {"message": "권한 없음"}, 403
     except User.DoesNotExist:
         return {"message": "실패"}, 404
+
 
 #로그인
 @router.post("/login", tags=["로그인/로그아웃/여부"])
@@ -226,14 +254,11 @@ def login_user(request, data: LoginInput):
 @login_required
 @router.post("/logout", tags=["로그인/로그아웃/여부"])
 def logout_user(request):
-    if request.user.is_authenticated:
-        user={
-            "user_id":request.user.id
-        }
-        logout(request)
-        return user
-    else:
-        raise HttpError(401, "실패")
+    user={
+        "user_id":request.user.id
+    }
+    logout(request)
+    return user
     
 @login_required#아니면 로그인
 @router.get("/status", tags=["로그인/로그아웃/여부"])
@@ -257,3 +282,51 @@ def check_login_status(request):#로그인 여부
         return serialized_user
     else:#확인
         return JsonResponse({'is_logged_in': False})
+
+@router.get("/admin_users", tags=["관리자페이지"])
+@user_passes_test(lambda u: u.is_superuser)
+@login_required
+def admin_page(request):
+    try:
+        users = User.objects.all()
+        user_all = []
+        for user in users:
+            user_data = {
+                "id": user.id,
+                "username": user.username,
+                "total_fee": user.total_fee,
+                "week_studytime": user.week_studytime,
+                "individual_rule": user.individual_rule,
+            }
+            user_all.append(user_data)
+        return user_all
+    except Exception as e:
+        return JsonResponse({"message": str(e)}, status=500)
+
+
+    
+@router.put("/admin_users/{user_id}", tags=["관리자페이지"])
+@user_passes_test(lambda u: u.is_superuser)
+@login_required
+def admin_page_update(request, user_id, data: admin_put):
+    try:
+        user = User.objects.get(id=user_id)
+        user.individual_rule = data.individual_rule
+        user.total_fee = data.total_fee
+        user.penalty = data.penalty
+        user.immunity = data.immunity
+        user.save()
+        user_data = {
+            "id": user.id,
+            "username": user.username,
+            "individual_rule": user.individual_rule,
+            "total_fee": user.total_fee,
+            "penalty": user.penalty,
+            "immunity": user.immunity,
+        }
+        return user_data
+    except User.DoesNotExist:
+        return JsonResponse({"message": "사용자를 찾을 수 없습니다."}, status=404)
+    except Exception as e:
+        return JsonResponse({"message": str(e)}, status=500)
+   
