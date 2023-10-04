@@ -118,6 +118,7 @@ def pause_studying(request, payload: TimerPause):
 
 #TodoList생성
 @api.post("/todolist/", response=TodoListSchema,tags=["todolist"])
+@login_required
 def create_todolist(request, data: TodoListSchema):
     todo = TodoList(
         user_id=data.user_id,
@@ -129,6 +130,7 @@ def create_todolist(request, data: TodoListSchema):
 
 #TodoList조회
 @api.get("/todolist",tags=["todolist"])
+@login_required
 def get_todolist(request):
     try:
         todo_list = TodoList.objects.all()
@@ -141,6 +143,7 @@ def get_todolist(request):
 
 #TodoList수정
 @api.put("/todolist/{todo_id}", response=TodoListSchema,tags=["todolist"])
+@login_required
 def update_todolist(request, todo_id: int, data: TodoListSchema):
     try:
         todo = TodoList.objects.get(id=todo_id)
@@ -154,6 +157,7 @@ def update_todolist(request, todo_id: int, data: TodoListSchema):
 
 #TodoList삭제
 @api.delete("/todolist/{todo_id}",tags=["todolist"])
+@login_required
 def delete_todolist(request, todo_id: int):
     try:
         todo = TodoList.objects.get(id=todo_id)

@@ -7,7 +7,7 @@ from datetime import date
 from pydantic import BaseModel
 from typing import List, Optional
 import logging
-
+from django.contrib.auth.decorators import user_passes_test#슈퍼유저만
 router = Router()
 logger = logging.getLogger(__name__)
 
@@ -71,6 +71,7 @@ def get_comments_for_schedule(request, schedule_id: int):
 
 # 댓글 수정
 @router.put("/comments/{comment_id}", tags=["코멘트"])
+@login_required
 def update_comment(request, comment_id: int, payload: CommentIn):
     try:
         comment = Comment.objects.get(id=comment_id)
@@ -89,6 +90,7 @@ def update_comment(request, comment_id: int, payload: CommentIn):
 
 # 댓글 삭제
 @router.delete("/comments/{comment_id}", tags=["코멘트"])
+@login_required
 def delete_comment(request, comment_id: int):
     try:
         comment = Comment.objects.get(id=comment_id)
@@ -101,6 +103,8 @@ def delete_comment(request, comment_id: int):
 
 # 스케줄 생성
 @router.post("/schedules/", tags=["스케줄"])
+@user_passes_test(lambda u: u.is_superuser)
+@login_required
 def create_schedule(request,payload:ScheduleIn):
     schedule = Schedule.objects.create(
         start_date = payload.start_date,
@@ -147,6 +151,8 @@ def get_schedules_in_date_range(request, from_date: date, to_date: date):
 
 # 특정 스케줄 수정
 @router.put("/schedules/{schedule_id}/", tags=["스케줄"], response=ScheduleOut)
+@user_passes_test(lambda u: u.is_superuser)
+@login_required
 def update_schedule(request, schedule_id: int, payload: ScheduleIn):
     try:
         schedule = Schedule.objects.get(id=schedule_id)
@@ -168,6 +174,8 @@ def update_schedule(request, schedule_id: int, payload: ScheduleIn):
 
 # 특정 스케줄 삭제
 @router.delete("/schedules/{schedule_id}/", tags=["스케줄"])
+@user_passes_test(lambda u: u.is_superuser)
+@login_required
 def delete_schedule(request, schedule_id: int):
     try:
         schedule = Schedule.objects.get(id=schedule_id)
