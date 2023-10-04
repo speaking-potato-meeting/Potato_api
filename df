@@ -1,0 +1,237 @@
+[33mcommit aa9eaa6a2efdb522b7be162c1b6e22d543f984c5[m[33m ([m[1;36mHEAD -> [m[1;32mtimer[m[33m, [m[1;31morigin/timer[m[33m)[m
+Author: hong2HSH <tnghd1717@gmail.com>
+Date:   Thu Sep 21 11:19:05 2023 +0900
+
+    timer
+
+[33mcommit d3a5cc55e3c74a7fe657241cfcf1774ed7f84b82[m[33m ([m[1;32mdevel[m[33m)[m
+Author: hong2HSH <tnghd1717@gmail.com>
+Date:   Mon Sep 18 23:38:06 2023 +0900
+
+    유저 CRUD 작성
+
+[33mcommit 2e821756869eca2c2ae9752039a4247b19df7765[m
+Merge: 50ec038 a7c7db3
+Author: hong2HSH <tnghd1717@gmail.com>
+Date:   Mon Sep 18 19:11:01 2023 +0900
+
+    Merge branch 'devel' of https://github.com/speaking-potato-meeting/Potato_api into devel
+
+[33mcommit 50ec03862d89a1f662d1eb9c4412407edaf9dd0b[m
+Merge: 5102875 5347b12
+Author: hong2HSH <tnghd1717@gmail.com>
+Date:   Mon Sep 18 19:10:52 2023 +0900
+
+    데이터MySQL로변경
+
+[33mcommit a7c7db324b9807f01fa6b744726499bbbc9c32d6[m
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Sat Sep 16 17:58:16 2023 +0900
+
+    etc: stopwatch 페이지에 tictoc 반영 + tictoc css 파일 추가
+
+[33mcommit 82266436f4908823830a4cce8f07dae1e3eab73a[m
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Sat Sep 16 17:55:20 2023 +0900
+
+    style: comment css 파일 수정
+
+[33mcommit 64149604552f34cfcc77f5568cce9790b0d87a44[m
+Merge: f3bd335 8f6e16d
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Sat Sep 16 17:49:09 2023 +0900
+
+    Merge pull request #7 from speaking-potato-meeting/stopwatch
+    
+    add: Stopwatch 추가 + comment css 수정
+
+[33mcommit 8f6e16dafd90ab577fdacefb0d004e00a09e6d87[m
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Sat Sep 16 17:43:15 2023 +0900
+
+    refactor: 저장 중복 코드 함수화
+
+[33mcommit a7367582f69db5ffcb6bac834c65c2cb2c2d62f1[m
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Sat Sep 16 17:32:32 2023 +0900
+
+    fix: 저장 기능 수정
+
+[33mcommit 15bab6ae92bdb0fd2f36a14eacd6021f226e3b38[m
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Sat Sep 16 17:30:57 2023 +0900
+
+    style: comment input css 수정,  tictoc 공부시간 포맷 수정
+
+[33mcommit c625bf98b5c894cd5b1128d607ae9b9d7d2539e1[m
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Sat Sep 16 04:08:37 2023 +0900
+
+    fix: 객체로 저장하기 수정 완료
+
+[33mcommit f3bd335ab5e1a9ac13e86427efc6c73c9bbb0fbc[m
+Merge: 4578cba 3985db0
+Author: an dong woo <94117209+ANDONGWOO@users.noreply.github.com>
+Date:   Fri Sep 15 16:37:42 2023 +0900
+
+    Merge pull request #6 from speaking-potato-meeting/comment
+    
+    댓글 업데이트/삭제 수정
+
+[33mcommit 3985db08a33b7a2c70cae0f292a30943d90e0eb8[m
+Author: an dong woo <akskwha@naver.com>
+Date:   Fri Sep 15 16:35:46 2023 +0900
+
+    댓글 업데이트/삭제 수정
+
+[33mcommit 4578cba596b6732c758cf8696c1eaa9076ab5b37[m
+Merge: 6defef0 5347b12
+Author: an dong woo <94117209+ANDONGWOO@users.noreply.github.com>
+Date:   Fri Sep 15 12:21:37 2023 +0900
+
+    Merge pull request #5 from speaking-potato-meeting/comment
+    
+    댓글 생성 수정
+
+[33mcommit 510287530119d23c8262e0eba60acedf0d0eb092[m
+Author: hong2HSH <tnghd1717@gmail.com>
+Date:   Fri Sep 15 11:47:32 2023 +0900
+
+    merge
+
+[33mcommit 5347b1223d32646ea5a8901662b7af4c3fdbb93b[m[33m ([m[1;31morigin/comment[m[33m)[m
+Author: an dong woo <akskwha@naver.com>
+Date:   Fri Sep 15 11:39:13 2023 +0900
+
+    댓글 생성 수정
+
+[33mcommit 6defef0c536fa678ca7df1c0227e9e904249b395[m
+Author: an dong woo <akskwha@naver.com>
+Date:   Thu Sep 14 14:31:36 2023 +0900
+
+    댓글 업데이트 수정
+
+[33mcommit b827313019160eab39f8eae33a0d25e5ecd4752f[m
+Author: an dong woo <akskwha@naver.com>
+Date:   Thu Sep 14 13:57:44 2023 +0900
+
+    댓글 업데이트 삭제
+
+[33mcommit fbd311dc6f4684934430aa90c8e4922564e927d5[m
+Author: hong2HSH <tnghd1717@gmail.com>
+Date:   Thu Sep 14 13:11:34 2023 +0900
+
+    댓글생성조회
+
+[33mcommit 6875bd1df0dd751c1a2cfa5a3411f0d930dcde9d[m[33m ([m[1;31morigin/stopwatch[m[33m)[m
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Thu Sep 14 10:27:47 2023 +0900
+
+    일단 재생 일시정지 오류는 해결
+
+[33mcommit 5ce6ac5e81a785aa257a603a38e32dc5cb3c605c[m
+Author: an dong woo <akskwha@naver.com>
+Date:   Wed Sep 13 23:52:32 2023 +0900
+
+    코드 이동
+
+[33mcommit b6858286976194eb03c8302b6e9dda0ad1f1e75a[m
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Wed Sep 13 10:35:03 2023 +0900
+
+    tictoc 임시 커밋
+
+[33mcommit 8f463894d34e7269386d3cd0744a764c400e5102[m
+Merge: 5bc4fbe 8c6fe22
+Author: An Ye-ji <miggo2704@gmail.com>
+Date:   Tue Sep 12 21:34:36 2023 +0900
+
+    Merge pull request #3 from speaking-potato-meeting/modal
+    
+    캘린더 모달 추가/수정 기능 구현
+
+[33mcommit 8c6fe224ecb49f55e371b1afe8770f6dac6ae461[m
+Merge: ccd79aa 5bc4fbe
+Author: An Ye-ji <miggo2704@gmail.com>
+Date:   Tue Sep 12 21:34:21 2023 +0900
+
+    Merge branch 'devel' into modal
+
+[33mcommit ccd79aab18faa9e2689df92230c19576120b75ef[m
+Author: avocad06 <miggo2704@gmail.com>
+Date:   Tue Sep 12 20:40:16 2023 +0900
+
+    캘린더 모달 구현: 추가, 수정 기능
+
+[33mcommit 5bc4fbe659f461a941fcba36eaead86bc3370d80[m
+Author: an dong woo <akskwha@naver.com>
+Date:   Tue Sep 12 11:57:47 2023 +0900
+
+    서버 구동/DB반영
+
+[33mcommit 0e414800bd41fb99a1b2ecce9e03bc18a53ce644[m
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Mon Sep 11 23:43:32 2023 +0900
+
+    css 조금 수정
+
+[33mcommit a5b989dc98a92b9135b7bf7dcc50182c8e9770f9[m
+Author: yangu1455 <kunja266@hanmail.net>
+Date:   Mon Sep 11 23:23:19 2023 +0900
+
+    navbar, comment (css는 수정필요)
+
+[33mcommit 165e24be0dac802736536c08b7572a465dd13f28[m[33m ([m[1;31morigin/calendar[m[33m)[m
+Author: avocad06 <miggo2704@gmail.com>
+Date:   Fri Sep 8 11:45:59 2023 +0900
+
+    캘린더 기능구현
+
+[33mcommit ebc1e1bc2be1d495ad87dd9af9625bc529fa757b[m
+Author: runedemonic <runedemonic@naver.com>
+Date:   Thu Sep 7 22:48:06 2023 +0900
+
+    feature: DB model make
+
+[33mcommit 0e71bf75853f5228bf506613bf3e77d17decf6e2[m[33m ([m[1;31morigin/dependency[m[33m)[m
+Author: avocad06 <miggo2704@gmail.com>
+Date:   Sun Aug 27 21:43:39 2023 +0900
+
+    add: typescript 설치 및 필요없는 의존성 삭제
+
+[33mcommit 1326d34913144f9cea3426d81a825579270b16ef[m
+Merge: 911bebe 433a1e6
+Author: runedemonic <runedemonic@naver.com>
+Date:   Fri Jul 21 00:08:32 2023 +0900
+
+    front generate
+
+[33mcommit 911bebef704f186ca2ded24bfcdeb8faed203e56[m
+Author: runedemonic <runedemonic@naver.com>
+Date:   Fri Jul 21 00:06:57 2023 +0900
+
+    front generate
+
+[33mcommit 433a1e667afcedc624f8bbed6bee1d536cb677da[m
+Author: runedemonic <runedemonic@naver.com>
+Date:   Fri Jul 21 00:05:18 2023 +0900
+
+    Delete front directory
+
+[33mcommit b7b66da304065df43943b25beb86dbfa3150773c[m
+Author: runedemonic <runedemonic@naver.com>
+Date:   Fri Jul 21 00:03:27 2023 +0900
+
+    start project
+
+[33mcommit 964bacaf6a0322a595a064f7a479e8fe180ee138[m
+Author: runedemonic <runedemonic@naver.com>
+Date:   Thu Jul 20 23:51:09 2023 +0900
+
+    start project
+
+[33mcommit fa9fa2ac86f78344e0316fa1a38670685475836c[m[33m ([m[1;31morigin/deploy[m[33m)[m
+Author: runedemonic <runedemonic@naver.com>
+Date:   Thu Jul 20 23:45:22 2023 +0900
+
+    Initial commit
