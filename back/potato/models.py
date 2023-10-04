@@ -66,7 +66,7 @@ class Money(models.Model):
 
 class StudyTimer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField()
     study = models.IntegerField(default=0)
 
 
