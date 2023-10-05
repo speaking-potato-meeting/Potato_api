@@ -54,15 +54,17 @@ export interface User {
 
 export interface Todo {
   id: number;
-  content: string;
+  user_id: number;
+  description: string;
+  is_active: false;
 }
 
-export type ItemListProps = {
-  items: { id: number; content: string }[];
-  onDelete: (id: number) => void;
-  onUpdate: (id: number, newContent: string) => void;
-};
+// export type ItemListProps = {
+//   items: { id: number; user_id: number; description: string; is_active: false; }[];
+//   onDelete: (id: number) => void;
+//   onUpdate: (id: number, newDescription: string) => void;
+// };
 
-export type EditorProps = {
-  onAdd: (text: string) => void;
-};
+// export type EditorProps = {
+//   onAdd: (text: string) => void;
+// };
