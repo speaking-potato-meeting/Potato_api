@@ -1,13 +1,12 @@
 from ninja import Schema, Router, Path, Query
 from potato.models import Comment, User, Schedule
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseServerError
-from django.contrib.auth.decorators import login_required
 from datetime import date
 from pydantic import BaseModel
 from typing import List, Optional
+from django.contrib.auth.decorators import login_required
 import logging
-from django.contrib.auth.decorators import user_passes_test#슈퍼유저만
+
 router = Router()
 logger = logging.getLogger(__name__)
 
@@ -21,18 +20,20 @@ class CommentIn(Schema):
 class CommentOut(Schema):
     id: int
     schedule_id: int
-    username: str
+    user_id: int
     timestamp: date
     text: str
 
 class ScheduleIn(Schema):
     start_date: date
+    end_date: date
     schedule: str
     is_holiday: bool
 
-class ScheduleOut(Schema):
+class ScheduleOut(BaseModel):
     id: int
     start_date: date
+    end_date: date
     schedule: str
     is_holiday: bool
 
@@ -44,6 +45,7 @@ def create_Comment(request, payload: CommentIn):
     user = request.user
     try:
         schedule = Schedule.objects.get(id=schedule_id)
+        # 유저아이디 수정
         comment = Comment.objects.create(text=payload.text, schedule=schedule,user=user)
         comment.save()
         return {"success" : True}
@@ -58,7 +60,7 @@ def get_comments_for_schedule(request, schedule_id: int):
         comment_list = [
             CommentOut(
                 id=comment.id,
-                username=comment.user.first_name,
+                user_id=comment.user.id,
                 timestamp=comment.timestamp,
                 text=comment.text,
                 schedule_id=comment.schedule_id,
@@ -71,7 +73,6 @@ def get_comments_for_schedule(request, schedule_id: int):
 
 # 댓글 수정
 @router.put("/comments/{comment_id}", tags=["코멘트"])
-@login_required
 def update_comment(request, comment_id: int, payload: CommentIn):
     try:
         comment = Comment.objects.get(id=comment_id)
@@ -90,7 +91,6 @@ def update_comment(request, comment_id: int, payload: CommentIn):
 
 # 댓글 삭제
 @router.delete("/comments/{comment_id}", tags=["코멘트"])
-@login_required
 def delete_comment(request, comment_id: int):
     try:
         comment = Comment.objects.get(id=comment_id)
@@ -103,8 +103,6 @@ def delete_comment(request, comment_id: int):
 
 # 스케줄 생성
 @router.post("/schedules/", tags=["스케줄"])
-@user_passes_test(lambda u: u.is_superuser)
-@login_required
 def create_schedule(request,payload:ScheduleIn):
     schedule = Schedule.objects.create(
         start_date = payload.start_date,
@@ -128,31 +126,10 @@ def get_schedule(request, schedule_id: int):
             is_holiday=schedule.is_holiday,
         )
     except Schedule.DoesNotExist:
-        return 404, {"error": "Schedule not found"}
-
-# 내일까지 엔드데이트랑 스타트데이트
-@router.get("/schedules/", response=List[ScheduleOut], tags=["스케줄"])
-def get_schedules_in_date_range(request, from_date: date, to_date: date):
-    # start_date와 end_date 사이의 스케줄을 데이터베이스에서 조회
-    schedules = Schedule.objects.filter(start_date__gte=from_date, start_date__lte=to_date)
-    
-    # 조회된 스케줄을 ScheduleOut 형태로 변환하여 응답
-    schedule_list = []
-    for schedule in schedules:
-        schedule_data = {
-            "id": schedule.id,
-            "start_date": schedule.start_date,
-            "schedule": schedule.schedule,
-            "is_holiday": schedule.is_holiday,
-        }
-        schedule_list.append(ScheduleOut(**schedule_data))
-    
-    return schedule_list
+        return {"message": "스케줄 정보가 없음."}
 
 # 특정 스케줄 수정
 @router.put("/schedules/{schedule_id}/", tags=["스케줄"], response=ScheduleOut)
-@user_passes_test(lambda u: u.is_superuser)
-@login_required
 def update_schedule(request, schedule_id: int, payload: ScheduleIn):
     try:
         schedule = Schedule.objects.get(id=schedule_id)
@@ -170,12 +147,10 @@ def update_schedule(request, schedule_id: int, payload: ScheduleIn):
             is_holiday=schedule.is_holiday,
         )
     except Schedule.DoesNotExist:
-        return 404, {"error": "Schedule not found"}
+        return {"message": "스케줄 정보가 없음."}
 
 # 특정 스케줄 삭제
 @router.delete("/schedules/{schedule_id}/", tags=["스케줄"])
-@user_passes_test(lambda u: u.is_superuser)
-@login_required
 def delete_schedule(request, schedule_id: int):
     try:
         schedule = Schedule.objects.get(id=schedule_id)
@@ -183,4 +158,4 @@ def delete_schedule(request, schedule_id: int):
 
         return {"success": True}
     except Schedule.DoesNotExist:
-        return 404, {"error": "Schedule not found"}
+        return {"message": "스케줄 정보가 없음."}
