@@ -251,7 +251,9 @@ def login_user(request, data: LoginInput):
 @login_required
 @router.post("/logout", tags=["로그인/로그아웃/여부"])
 def logout_user(request):
-    if request.user.is_authenticated:
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "사용자를 찾을 수 없습니다."}, status=404)
+    else:
         user={
             "user_id":request.user.id
         }

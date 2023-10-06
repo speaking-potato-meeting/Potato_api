@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import logging
 from django.contrib.auth.decorators import user_passes_test#슈퍼유저만
+from django.http import HttpResponse
 router = Router()
 logger = logging.getLogger(__name__)
 
@@ -103,17 +104,19 @@ def delete_comment(request, comment_id: int):
 
 # 스케줄 생성
 @router.post("/schedules/", tags=["스케줄"])
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_staff)
 @login_required
 def create_schedule(request,payload:ScheduleIn):
-    schedule = Schedule.objects.create(
-        start_date = payload.start_date,
-        end_date = payload.start_date,
-        schedule = payload.schedule,
-        is_holiday = payload.is_holiday,
-    )
-    schedule.save()
-    return{"success": True}
+    if request.user.is_staff:
+        print(1)
+        schedule = Schedule.objects.create(
+            start_date = payload.start_date,
+            end_date = payload.start_date,
+            schedule = payload.schedule,
+            is_holiday = payload.is_holiday,
+        )
+        schedule.save()
+        return{"success": True}
 
 # 특정 스케줄 조회
 @router.get("/schedules/{schedule_id}/", tags=["스케줄"], response=ScheduleOut)
@@ -151,36 +154,38 @@ def get_schedules_in_date_range(request, from_date: date, to_date: date):
 
 # 특정 스케줄 수정
 @router.put("/schedules/{schedule_id}/", tags=["스케줄"], response=ScheduleOut)
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_staff)
 @login_required
 def update_schedule(request, schedule_id: int, payload: ScheduleIn):
-    try:
-        schedule = Schedule.objects.get(id=schedule_id)
-        schedule.start_date = payload.start_date
-        schedule.end_date = payload.start_date
-        schedule.schedule = payload.schedule
-        schedule.is_holiday = payload.is_holiday
-        schedule.save()
+    if request.user.is_staff:
+        try:
+            schedule = Schedule.objects.get(id=schedule_id)
+            schedule.start_date = payload.start_date
+            schedule.end_date = payload.start_date
+            schedule.schedule = payload.schedule
+            schedule.is_holiday = payload.is_holiday
+            schedule.save()
 
-        return ScheduleOut(
-            id=schedule.id,
-            start_date=schedule.start_date,
-            end_date=schedule.end_date,
-            schedule=schedule.schedule,
-            is_holiday=schedule.is_holiday,
-        )
-    except Schedule.DoesNotExist:
-        return 404, {"error": "Schedule not found"}
-
+            return ScheduleOut(
+                id=schedule.id,
+                start_date=schedule.start_date,
+                end_date=schedule.end_date,
+                schedule=schedule.schedule,
+                is_holiday=schedule.is_holiday,
+            )
+        except Schedule.DoesNotExist:
+            return 404, {"error": "Schedule not found"}
+        
 # 특정 스케줄 삭제
 @router.delete("/schedules/{schedule_id}/", tags=["스케줄"])
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_staff)
 @login_required
 def delete_schedule(request, schedule_id: int):
-    try:
-        schedule = Schedule.objects.get(id=schedule_id)
-        schedule.delete()  # 스케줄 삭제
+    if request.user.is_staff:
+        try:
+            schedule = Schedule.objects.get(id=schedule_id)
+            schedule.delete()  # 스케줄 삭제
 
-        return {"success": True}
-    except Schedule.DoesNotExist:
-        return 404, {"error": "Schedule not found"}
+            return {"success": True}
+        except Schedule.DoesNotExist:
+            return 404, {"error": "Schedule not found"}
