@@ -35,7 +35,6 @@ class User(AbstractUser):
     position = models.CharField(max_length=20,blank=False)
     cdt = models.DateTimeField(auto_now_add=True)
     total_fee = models.IntegerField(default=0)
-    individual_rule = models.JSONField(null=True, blank=True)
     week_studytime = models.IntegerField(default=0)
     penalty = models.IntegerField(default=0)
     immunity = models.IntegerField(default=0)
