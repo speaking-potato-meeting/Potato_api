@@ -116,11 +116,13 @@ def pause_studying(request, payload: TimerPause):
 ####################################################################
 
 #TodoList생성
-@api.post("/todolist/", response=TodoListCreateSchema,tags=["todolist"])
+@api.post("/todolist/", response=TodoListSchema,tags=["todolist"])
 @login_required
-def create_todolist(request,data: TodoListCreateSchema):
+def create_todolist(request,data: TodoListSchema):
     todo = TodoList.objects.create(
-        description=data.description
+        user_id=data.user_id,
+        description=data.description,
+        is_active=data.is_active
     )
     todo.save()
     return todo
@@ -143,7 +145,9 @@ def get_todolist(request, todo_id: int):
             ]
             return serialized_todo_list
         else:
-            return {"message": "권한이 없습니다."}, 403
+            response = HttpResponse("권한이 없습니다.")
+            response.status_code = 403
+            return response
     except TodoList.DoesNotExist:
         return {"message": "TodoList가 존재하지 않습니다."}, 404
     
