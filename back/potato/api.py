@@ -1,14 +1,13 @@
 from ninja import NinjaAPI, Schema
-from .models import User,StudyTimer,TodoList
+from .models import User,StudyTimer,TodoList,User
 from django.shortcuts import get_object_or_404
 from accounts.api import router as accounts_router
 from schedule.api import router as schedule_router
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from .models import User
 from datetime import date, timedelta
-
+from django.http import HttpResponse
 # from django.contrib.auth.models import User
 
 api  = NinjaAPI()
@@ -22,7 +21,8 @@ class TodoListSchema(Schema):
     user_id: int
     description: str
     is_active: bool
-
+class TodoListCreateSchema(Schema):
+    description: str 
 #타이머스키마
 class TimerStart(Schema):
     date : date
@@ -115,32 +115,38 @@ def pause_studying(request, payload: TimerPause):
 #      return {'name': file.name, 'len': len(data)}
 ####################################################################
 
-
 #TodoList생성
-@api.post("/todolist/", response=TodoListSchema,tags=["todolist"])
+@api.post("/todolist/", response=TodoListCreateSchema,tags=["todolist"])
 @login_required
-def create_todolist(request, data: TodoListSchema):
-    todo = TodoList(
-        user_id=data.user_id,
-        description=data.description,
-        is_active=data.is_active
+def create_todolist(request,data: TodoListCreateSchema):
+    todo = TodoList.objects.create(
+        description=data.description
     )
     todo.save()
     return todo
 
 #TodoList조회
-@api.get("/todolist",tags=["todolist"])
+@api.get("/todolist/{todo_id}", tags=["todolist"])
 @login_required
-def get_todolist(request):
+def get_todolist(request, todo_id: int):
     try:
-        todo_list = TodoList.objects.all()
-        serialized_todo_list = [
-            {"id": todo.id, "description": todo.description, "is_active": todo.is_active} for todo in todo_list
+        current_user_id = request.user.id
+        if todo_id == current_user_id:
+            todo_list = TodoList.objects.filter(user_id=todo_id)
+            serialized_todo_list = [
+                {
+                    "id": todo.id,
+                    "description": todo.description,
+                    "is_active": todo.is_active,
+                }
+                for todo in todo_list
             ]
-        return serialized_todo_list
+            return serialized_todo_list
+        else:
+            return {"message": "권한이 없습니다."}, 403
     except TodoList.DoesNotExist:
-        return {"message": "실패"}, 404
-
+        return {"message": "TodoList가 존재하지 않습니다."}, 404
+    
 #TodoList수정
 @api.put("/todolist/{todo_id}", response=TodoListSchema,tags=["todolist"])
 @login_required
