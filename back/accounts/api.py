@@ -297,6 +297,7 @@ def admin_page(request):
                     "username": user.username,
                     "total_fee": user.total_fee,
                     "week_studytime": user.week_studytime,
+                    "is_staff": user.is_staff
                 }
                 user_all.append(user_data)
             return user_all
@@ -327,6 +328,7 @@ def admin_page_update(request, user_id, data: admin_put):
                 "total_fee": user.total_fee,
                 "penalty": user.penalty,
                 "immunity": user.immunity,
+                "is_staff": user.is_staff
             }
             return user_data
         except User.DoesNotExist:

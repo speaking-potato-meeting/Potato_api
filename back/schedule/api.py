@@ -36,6 +36,7 @@ class ScheduleOut(Schema):
     start_date: date
     schedule: str
     is_holiday: bool
+    is_staff:bool#스태프 여부
 
 # 댓글 작성 (특정 스케줄에 맞춰)
 @router.post("/comments", tags=["코멘트"])
@@ -116,8 +117,12 @@ def create_schedule(request,payload:ScheduleIn):
             is_holiday = payload.is_holiday,
         )
         schedule.save()
-        return{"success": True}
-
+        return{"success": True,"is_staff":True}
+    else:
+        response = HttpResponse("권한이 없습니다.")
+        response.status_code = 403
+        return response
+    
 # 특정 스케줄 조회
 @router.get("/schedules/{schedule_id}/", tags=["스케줄"], response=ScheduleOut)
 def get_schedule(request, schedule_id: int):
@@ -172,9 +177,14 @@ def update_schedule(request, schedule_id: int, payload: ScheduleIn):
                 end_date=schedule.end_date,
                 schedule=schedule.schedule,
                 is_holiday=schedule.is_holiday,
+                is_staff=True
             )
         except Schedule.DoesNotExist:
             return 404, {"error": "Schedule not found"}
+    else:
+        response = HttpResponse("권한이 없습니다.")
+        response.status_code = 403
+        return response
         
 # 특정 스케줄 삭제
 @router.delete("/schedules/{schedule_id}/", tags=["스케줄"])
@@ -185,7 +195,11 @@ def delete_schedule(request, schedule_id: int):
         try:
             schedule = Schedule.objects.get(id=schedule_id)
             schedule.delete()  # 스케줄 삭제
-
-            return {"success": True}
+            return {"success": True,"is_staff":True}
+        
         except Schedule.DoesNotExist:
             return 404, {"error": "Schedule not found"}
+    else:
+        response = HttpResponse("권한이 없습니다.")
+        response.status_code = 403
+        return response
