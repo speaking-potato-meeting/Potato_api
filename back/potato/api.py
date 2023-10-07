@@ -18,6 +18,7 @@ api.add_router("/schedule/", schedule_router)
 
 #To-do-list
 class TodoListSchema(Schema):
+    id:int
     user_id: int
     description: str
     is_active: bool
@@ -120,26 +121,34 @@ def pause_studying(request, payload: TimerPause):
 @login_required
 def create_todolist(request,data: TodoListSchema):
     todo = TodoList.objects.create(
+        id=data.id,
         user_id=data.user_id,
         description=data.description,
         is_active=data.is_active
     )
     todo.save()
-    return todo
+    data= {
+        "id": todo.id,
+        "description": todo.description,
+        "is_active": todo.is_active,
+        "user_id":todo.user_id
+    }
+
+    return data
 
 #TodoList조회
-@api.get("/todolist/{todo_id}", tags=["todolist"])
+@api.get("/todolist/{user_id}", tags=["todolist"])
 @login_required
-def get_todolist(request, todo_id: int):
+def get_todolist(request, user_id: int):
     try:
-        current_user_id = request.user.id
-        if todo_id == current_user_id:
-            todo_list = TodoList.objects.filter(user_id=todo_id)
+        if user_id == request.user.id:
+            todo_list = TodoList.objects.filter(user_id=user_id)
             serialized_todo_list = [
                 {
                     "id": todo.id,
                     "description": todo.description,
                     "is_active": todo.is_active,
+                    "user_id":todo.user_id
                 }
                 for todo in todo_list
             ]
@@ -152,26 +161,45 @@ def get_todolist(request, todo_id: int):
         return {"message": "TodoList가 존재하지 않습니다."}, 404
     
 #TodoList수정
-@api.put("/todolist/{todo_id}", response=TodoListSchema,tags=["todolist"])
+@api.put("/todolist/{user_id}", response=TodoListSchema,tags=["todolist"])
 @login_required
-def update_todolist(request, todo_id: int, data: TodoListSchema):
+def update_todolist(request, user_id: int, data: TodoListSchema):
     try:
-        todo = TodoList.objects.get(id=todo_id)
-        todo.user_id = data.user_id
-        todo.description = data.description
-        todo.is_active = data.is_active
-        todo.save()
-        return todo
+        if request.user.id == user_id:
+            todo = TodoList.objects.get(id=user_id)
+            todo.user_id = data.user_id
+            todo.description = data.description
+            todo.is_active = data.is_active
+            todo.save()
+            data= {
+                "id": todo.id,
+                "description": todo.description,
+                "is_active": todo.is_active,
+                "user_id":todo.user_id
+            }
+            return data
+        else:
+            response = HttpResponse("권한이 없습니다.")
+            response.status_code = 403
+            return response
     except TodoList.DoesNotExist:
         return {"message": "실패"}, 404
 
 #TodoList삭제
-@api.delete("/todolist/{todo_id}",tags=["todolist"])
+@api.delete("/todolist/{user_id}",tags=["todolist"])
 @login_required
-def delete_todolist(request, todo_id: int):
+def delete_todolist(request, user_id: int):
     try:
-        todo = TodoList.objects.get(id=todo_id)
-        todo.delete()
-        return {"message": "성공"}
+        if request.user.id == user_id:
+            todo = TodoList.objects.get(id=user_id)
+            todo.delete()
+            data={
+                "id":todo.id
+            }
+            return data
+        else:
+            response = HttpResponse("권한이 없습니다.")
+            response.status_code = 403
+            return response
     except TodoList.DoesNotExist:
         return {"message": "실패"}, 404
