@@ -11,7 +11,7 @@ const today = dateNow.toISOString().slice(0, 10);
 
 const Comment = (): JSX.Element => {
   /* 로그인하지 않은 유저인지 확인 */
-  const { userProfile } = useOutletContext<ContextType>();
+  // const { userProfile } = useOutletContext<ContextType>();
 
   // text를 받아오는 고런..
   const [newText, setNewText] = useState("");
@@ -221,7 +221,7 @@ const Comment = (): JSX.Element => {
                     <button onClick={() => deleteCommentSubmit(comment.id)}>삭제</button>
                   </div>
                 )} */}
-                {userProfile && userProfile.id === comment.user_id && (
+                {
                   <>
                     <button
                       className="comment-btn"
@@ -244,14 +244,14 @@ const Comment = (): JSX.Element => {
                       삭제
                     </button>
                   </>
-                )}
+                }
               </div>
             </div>
           </li>
         ))}
       </ul>
       <div className="comment-input-box">
-        {userProfile ? (
+        {/* {userProfile ? (
           <>
             <input
               ref={CommentTextInput as React.MutableRefObject<HTMLInputElement>}
@@ -265,7 +265,7 @@ const Comment = (): JSX.Element => {
           </>
         ) : (
           <p>로그인이 필요합니다.</p>
-        )}
+        )} */}
       </div>
     </div>
   );
