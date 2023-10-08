@@ -35,7 +35,6 @@ class User(AbstractUser):
     position = models.CharField(max_length=20,blank=False)
     cdt = models.DateTimeField(auto_now_add=True)
     total_fee = models.IntegerField(default=0)
-    individual_rule = models.JSONField(null=True, blank=True)
     week_studytime = models.IntegerField(default=0)
     penalty = models.IntegerField(default=0)
     immunity = models.IntegerField(default=0)
@@ -63,6 +62,7 @@ class Money(models.Model):
     money = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     individual_rule_content = models.TextField(default="개인 벌금 규칙 내용입니다.")
+    confirm = models.IntegerField(default=1)
 
 
 class StudyTimer(models.Model):

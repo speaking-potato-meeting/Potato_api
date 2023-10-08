@@ -13,8 +13,8 @@ import os
 from django.contrib.auth.hashers import make_password #해시화
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-import json
 from django.contrib.auth.decorators import user_passes_test#슈퍼유저만
+from django.http import HttpResponse
 router = Router()
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,6 @@ class CreateUserSchema(Schema):
     MBTI: str
     position: str
     blog: Optional[HttpUrl]
-    individual_rule: list
     # profile_image:
     
 class updateUserSchema(Schema):
@@ -123,7 +122,6 @@ def create_user(request, data: CreateUserSchema):
         position = data.position,
         github = data.github,
         blog = data.blog,
-        individual_rule = str(data.individual_rule)
         # profile_image:,
     )
     user.save()
@@ -138,22 +136,21 @@ def create_user(request, data: CreateUserSchema):
         "position": user.position,
         "github": user.github,
         "blog": user.blog,
-        "individual_rule": user.individual_rule
         # Add other fields as needed
     }
     return user_data
 
 #회원조회
+@router.get("/get-user/{user_id}", tags=["회원가입"])
 @login_required
-@router.get("/get-user/{user_id}",tags=["회원가입"])
 def get_user(request, user_id: int):
     try:
-        user = User.objects.get(id=user_id)
-        if user == request.user:
+        if user_id == request.user.id:
+            user = User.objects.get(id=user_id)
             serialized_user = {
-                "id":user.id,
+                "id": user.id,
                 "username": user.username,
-                "first_name":user.first_name,
+                "first_name": user.first_name,
                 "phone": user.phone,
                 "address": user.address,
                 "github": user.github,
@@ -161,20 +158,16 @@ def get_user(request, user_id: int):
                 "MBTI": user.MBTI,
                 "position": user.position,
                 "birth": user.birth.strftime('%Y-%m-%d'),
-                "individual_rule": user.individual_rule,
-                # profile_image:,
             }
-            # json_str = user.individual_rule.replace("'", "\"")
-            # data_list = json.loads(json_str)
-            # for i in data_list:
-            #     print(user.id)
-            #     print(dict(i).get("fee"))
-            #     print(dict(i).get("rule"))
             return serialized_user
         else:
-            return {"message": "권한 없음"}, 403
+            response = HttpResponse("권한이 없습니다.")
+            response.status_code = 403
+            return response
     except User.DoesNotExist:
-        return {"message": "실패"}, 404
+        return {"message": "사용자가 존재하지 않습니다."}, 404
+    except Exception as e:
+        return {"message": str(e)}, 500
 
 #회원수정
 @login_required
@@ -214,7 +207,9 @@ def update_user(request, user_id: int, data: updateUserSchema):
             }
             return user_data
         else:
-            return {"message": "권한 없음"}, 403
+            response = HttpResponse("권한이 없습니다.")
+            response.status_code = 403
+            return response
     except User.DoesNotExist:
         return {"message": "실패"}, 404
     
@@ -232,7 +227,9 @@ def delete_user(request, user_id: int):
             user.delete()
             return data_user
         else:
-            return {"message": "권한 없음"}, 403
+            response = HttpResponse("권한이 없습니다.")
+            response.status_code = 403
+            return response
     except User.DoesNotExist:
         return {"message": "실패"}, 404
 
@@ -254,11 +251,15 @@ def login_user(request, data: LoginInput):
 @login_required
 @router.post("/logout", tags=["로그인/로그아웃/여부"])
 def logout_user(request):
-    user={
-        "user_id":request.user.id
-    }
-    logout(request)
-    return user
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "사용자를 찾을 수 없습니다."}, status=404)
+    else:
+        user={
+            "user_id":request.user.id
+        }
+        logout(request)
+        return user
+
     
 @login_required#아니면 로그인
 @router.get("/status", tags=["로그인/로그아웃/여부"])
@@ -276,57 +277,66 @@ def check_login_status(request):#로그인 여부
             "MBTI": user.MBTI,
             "position": user.position,
             "birth": user.birth.strftime('%Y-%m-%d'),
-            "individual_rule": user.individual_rule,
             # profile_image:,
         }
         return serialized_user
-    else:#확인
+    else:
         return JsonResponse({'is_logged_in': False})
 
 @router.get("/admin_users", tags=["관리자페이지"])
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_staff)
 @login_required
 def admin_page(request):
-    try:
-        users = User.objects.all()
-        user_all = []
-        for user in users:
-            user_data = {
-                "id": user.id,
-                "username": user.username,
-                "total_fee": user.total_fee,
-                "week_studytime": user.week_studytime,
-                "individual_rule": user.individual_rule,
-            }
-            user_all.append(user_data)
-        return user_all
-    except Exception as e:
-        return JsonResponse({"message": str(e)}, status=500)
+    if request.user.is_staff:
+        try:
+            users = User.objects.all()
+            user_all = []
+            for user in users:
+                user_data = {
+                    "id": user.id,
+                    "username": user.username,
+                    "total_fee": user.total_fee,
+                    "week_studytime": user.week_studytime,
+                    "is_staff": user.is_staff
+                }
+                user_all.append(user_data)
+            return user_all
+        except Exception as e:
+            return JsonResponse({"message": str(e)}, status=500)
+    else:
+        response = HttpResponse("권한이 없습니다.")
+        response.status_code = 403
+        return response
 
 
     
 @router.put("/admin_users/{user_id}", tags=["관리자페이지"])
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_staff)
 @login_required
 def admin_page_update(request, user_id, data: admin_put):
-    try:
-        user = User.objects.get(id=user_id)
-        user.individual_rule = data.individual_rule
-        user.total_fee = data.total_fee
-        user.penalty = data.penalty
-        user.immunity = data.immunity
-        user.save()
-        user_data = {
-            "id": user.id,
-            "username": user.username,
-            "individual_rule": user.individual_rule,
-            "total_fee": user.total_fee,
-            "penalty": user.penalty,
-            "immunity": user.immunity,
-        }
-        return user_data
-    except User.DoesNotExist:
-        return JsonResponse({"message": "사용자를 찾을 수 없습니다."}, status=404)
-    except Exception as e:
-        return JsonResponse({"message": str(e)}, status=500)
+    if request.user.is_staff:
+        try:
+            user = User.objects.get(id=user_id)
+            user.individual_rule = data.individual_rule
+            user.total_fee = data.total_fee
+            user.penalty = data.penalty
+            user.immunity = data.immunity
+            user.save()
+            user_data = {
+                "id": user.id,
+                "username": user.username,
+                "total_fee": user.total_fee,
+                "penalty": user.penalty,
+                "immunity": user.immunity,
+                "is_staff": user.is_staff
+            }
+            return user_data
+        except User.DoesNotExist:
+            return JsonResponse({"message": "사용자를 찾을 수 없습니다."}, status=404)
+        except Exception as e:
+            return JsonResponse({"message": str(e)}, status=500)
+    else:
+        response = HttpResponse("권한이 없습니다.")
+        response.status_code = 403
+        return response
    

@@ -5,58 +5,25 @@ import { useState, useEffect } from "react";
 import type { User } from "../../types";
 import { getCurrentUserInfo } from "../../api/login";
 
-export type ContextType = {
-  userProfile: User | null;
-  onSetUser: (args: string | null) => void;
-};
+/* React-Query */
+import { useUserQuery } from "../../hooks/useUserQuery";
 
-export default function GeneralLayout({}) {
-  const [userProfile, setUserProfile] = useState<User | null>(null);
-
-  let location = useLocation();
+export default function GeneralLayout() {
+  const userQuery = useUserQuery();
 
   const navbarLists = () => {
     /* 유저 프로필이 있을 때, */
-    if (userProfile) return NavbarContent;
+    if (userQuery.isSuccess && userQuery.data) {
+      return NavbarContent;
+    }
 
     return NavbarContent.filter((r) => !r.withAuth);
   };
 
-  useEffect(() => {
-    let ignore = false;
-
-    const fetchUserProfile = async () => {
-      const userProfileResponse = await getCurrentUserInfo();
-
-      /* 한 번만 상태 setter하는 로직 */
-      if (!ignore && userProfileResponse) {
-        setUserProfile(userProfileResponse);
-      }
-    };
-    fetchUserProfile();
-
-    return () => {
-      ignore = true;
-    };
-  }, [location]);
-
-  // if (!userProfile) return <div>정보를 불러오는 중입니다...</div>;
-
-  const onSetUser = (args: string | null) => {
-    setUserProfile(args);
-  };
-
   return (
     <>
-      <Navbar
-        NavbarContent={navbarLists()}
-        userProfile={userProfile}
-        onSetUser={onSetUser}
-      />
-      <Outlet context={{ userProfile, onSetUser }} />
+      <Navbar NavbarContent={navbarLists()} />
+      <Outlet />
     </>
   );
-}
-export function useUser() {
-  return useOutletContext<ContextType>();
 }
