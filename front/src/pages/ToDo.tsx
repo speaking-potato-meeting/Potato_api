@@ -1,20 +1,30 @@
 import { useEffect, useState } from 'react';
 import '../App.css';
 import '../components/TodoList/Todo.css'
-import { Todo } from '../types';
+import { Todo, User } from '../types';
 import axios from 'axios';
+import { RiDeleteBin6Line } from 'react-icons/ri';
+import { AiFillEdit } from 'react-icons/ai';
+import { MdCheckBox, MdCheckBoxOutlineBlank } from 'react-icons/md'
+import { useOutletContext } from 'react-router-dom';
 
-function App() {
+
+function ToDo() {
   const [todolist, setTodolist] = useState<Todo[]>([]);
+
+  const { userProfile } = useOutletContext()
+  const user_id = userProfile.id
 
   // 데이터를 서버에서 가져오는 함수
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/todolist'); // 백엔드의 API 엔드포인트를 설정하세요
+      const response = await axios.get(`http://localhost:8000/api/todolist/${user_id}`, {
+        withCredentials: true,
+      });
       const todoData = response.data;
       setTodolist(todoData);
     } catch (error) {
-      console.error('todo 데이터를 가져오는 중 오류 발생:', error);
+      console.error('todo 데이터를 가져오는 중 오류 발생했습니다.', error);
     }
   };
 
@@ -25,11 +35,10 @@ function App() {
 
   const onAdd = async (description: string) => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/todolist/', {
-        user_id: 1, // 임시로...
-        description: description,
-        is_active: false,
-      });
+      const response = await axios.post('http://localhost:8000/api/todolist/', 
+        { user_id: user_id, description: description, is_active: false },
+        { withCredentials: true }
+      );
       const newTodolist = {
         id: response.data.id,
         user_id: response.data.user_id,
@@ -44,11 +53,12 @@ function App() {
 
   const onUpdate = async (id: number, newDescription: string) => {
     try {
-      const response = await axios.put(`http://127.0.0.1:8000/api/todolist/${id}`, {
-        user_id: 1,
+      const response = await axios.put(`http://localhost:8000/api/todolist/${id}`, {
+        user_id: user_id,
         description: newDescription,
         is_active: false,
-      });
+      },
+      { withCredentials: true });
       const updatedTodo = todolist.map((todo) => {
         if (todo.id === id) {
           return {
@@ -69,7 +79,7 @@ function App() {
 
   const onDelete = async (id: number) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/todolist/${id}`);
+      await axios.delete(`http://localhost:8000/api/todolist/${id}`, { withCredentials: true });
       const updatedTodo = todolist.filter((todo) => todo.id !== id);
       setTodolist(updatedTodo);
     } catch (error) {
@@ -107,30 +117,35 @@ function App() {
     <div className='todo-box'>
       <h1>할 일을 하자</h1>
       <div className='todo-add-box'>
-      <input 
-        className='todo-add-input'
-        value={text}
-        onChange={onChangeInput}  
-      />
-      <button onClick={onClickAdd}>추가</button>
-    </div>
-      <div>
+        <input 
+          className='todo-add-input'
+          value={text}
+          onChange={onChangeInput}  
+        />
+        <button onClick={onClickAdd}>추가</button>
+      </div>
+      <div className=''>
           {todolist.map((todo)=>(
             <div key={todo.id}>
             {editItemId === todo.id ? (
               <div className='todoitem-box'>
                 <input
+                  className='todo-edit-input'
                   type="text"
                   value={editedContent}
                   onChange={(e) => setEditedContent(e.target.value)}
                 />
-                <button onClick={() => handleUpdateClick(todo.id)}>확인</button>
+                <button onClick={() => handleUpdateClick(todo.id)}>수정 완료</button>
               </div>
             ) : (
               <div className='todoitem-box'>
                 <p className='todoItem-content'>{todo.description}</p>
-                <button onClick={() => handleEditClick(todo.id, todo.description)}>수정</button>
-                <button onClick={() => onDelete(todo.id)}>삭제</button>
+                <div className='todo-edit-btn' onClick={() => handleEditClick(todo.id, todo.description)}>
+                  <AiFillEdit size='20'/>
+                </div>
+                <div className='todo-delete-btn' onClick={() => onDelete(todo.id)}>
+                  <RiDeleteBin6Line size='20'/>
+                </div>
               </div>
             )}
           </div>
@@ -140,4 +155,4 @@ function App() {
   )
 }
 
-export default App;
+export default ToDo;
