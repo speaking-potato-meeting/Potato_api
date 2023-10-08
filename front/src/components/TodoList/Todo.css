@@ -11,7 +11,8 @@
 .todo-add-box {
   display: flex;
   justify-content: center;
-  width: 20rem;
+  width: 50rem;
+  margin-bottom: 3rem;
 }
 
 .todo-add-input {
@@ -19,18 +20,37 @@
   padding-right: 10px;
 }
 
-.todo-add-btn {
-
-}
-
-.todo-del-edit-btn {
-
+.todo-edit-input {
+  width: 30rem;
+  padding-right: 10px;
 }
 
 .todoitem-box {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2rem 0;
 }
 
 .todoItem-content {
   margin: 0;
+  width: 45rem;
+  font-size: large;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.todo-delete-btn, .todo-edit-btn {
+  cursor: pointer;
+  margin-right: 5px;
+  line-height: 0;
+}
+
+.todo-delete-btn:hover {
+  color: red;
+}
+
+.todo-edit-btn:hover {
+  color: rgb(74, 169, 74);
 }
