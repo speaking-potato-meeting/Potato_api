@@ -21,25 +21,30 @@ export async function login(args: { username: string; password: string }) {
 }
 
 export async function getCurrentUserInfo(): Promise<User | null> {
-  const getUserRes = await fetch(`${BASE_URL}/api/accounts/status`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json;charset=utf-8",
-    },
-  });
+  try {
+    const getUserRes = await fetch(`${BASE_URL}/api/accounts/status`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
+    });
 
-  /* 
+    /* 
    * 타입 가드 함수입니다.
   API 반환 값이 변경되면 변경되거나 삭제될 예정입니다. 
   */
-  function isUser(user: User | { is_logged_in: boolean }): user is User {
-    return "id" in user;
-  }
+    function isUser(user: User | { is_logged_in: boolean }): user is User {
+      return "id" in user;
+    }
 
-  if (getUserRes.ok) {
-    const userInfo: User | { is_logged_in: boolean } = await getUserRes.json();
-    return isUser(userInfo) ? userInfo : null;
+    if (getUserRes.ok) {
+      const userInfoResult = await getUserRes.json();
+      return isUser(userInfoResult) ? userInfoResult : null;
+    }
+    throw new Error();
+  } catch (error) {
+    console.log(error);
   }
 
   return null;

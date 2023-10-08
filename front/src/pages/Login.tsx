@@ -1,11 +1,6 @@
 import { useState } from "react";
-import { login, getUser } from "../api/login";
+import { login } from "../api/login";
 import { useNavigate } from "react-router-dom";
-
-const User = {
-  id: "coenffl",
-  pw: "chaessi0115@@",
-};
 
 export default function Login() {
   const [loginForm, setLoginForm] = useState({
@@ -15,9 +10,7 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const [userName, setUserName] = useState("");
-
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newForm = { ...loginForm };
 
     newForm[e.target.name] = e.target.value;
@@ -25,7 +18,7 @@ export default function Login() {
     setLoginForm(newForm);
   };
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const loginResponse = await login(loginForm);
@@ -40,7 +33,7 @@ export default function Login() {
   }
   return (
     <form onSubmit={handleSubmit}>
-      {userName ? <p>{userName}</p> : <p>감자 맞나요?</p>}
+      <p>감자 맞나요?</p>
       <label htmlFor="username">
         <span>아이디</span>
       </label>
