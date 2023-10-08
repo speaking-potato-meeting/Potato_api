@@ -18,7 +18,6 @@ api.add_router("/schedule/", schedule_router)
 
 #To-do-list
 class TodoListSchema(Schema):
-    id:int
     user_id: int
     description: str
     is_active: bool
@@ -121,7 +120,6 @@ def pause_studying(request, payload: TimerPause):
 @login_required
 def create_todolist(request,data: TodoListSchema):
     todo = TodoList.objects.create(
-        id=data.id,
         user_id=data.user_id,
         description=data.description,
         is_active=data.is_active
@@ -133,7 +131,6 @@ def create_todolist(request,data: TodoListSchema):
         "is_active": todo.is_active,
         "user_id":todo.user_id
     }
-
     return data
 
 #TodoList조회
