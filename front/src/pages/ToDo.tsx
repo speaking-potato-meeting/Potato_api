@@ -6,19 +6,28 @@ import axios from 'axios';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { AiFillEdit } from 'react-icons/ai';
 import { MdCheckBox, MdCheckBoxOutlineBlank } from 'react-icons/md'
-import { useOutletContext } from 'react-router-dom';
+import { useCurrentUserContext } from "../context/CurrentUserContextProvider";
 
 
 function ToDo() {
   const [todolist, setTodolist] = useState<Todo[]>([]);
+  const [todoUserId, setTodoUserId] = useState(0);
 
-  const { userProfile } = useOutletContext()
-  const user_id = userProfile.id
+  // 기존 방식에서 user 정보 받아왔던 것
+  // const { currentUser } = useCurrentUserContext()
+  const currentUser = useCurrentUserContext();
+
+  // 무한루프 방지를 위해 조건문
+  if (currentUser && currentUser.id !== todoUserId) {
+    const user_id = currentUser.id;
+    setTodoUserId(user_id);
+  }
+
 
   // 데이터를 서버에서 가져오는 함수
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/todolist/${user_id}`, {
+      const response = await axios.get(`http://localhost:8000/api/todolist/${todoUserId}`, {
         withCredentials: true,
       });
       const todoData = response.data;
@@ -36,7 +45,7 @@ function ToDo() {
   const onAdd = async (description: string) => {
     try {
       const response = await axios.post('http://localhost:8000/api/todolist/', 
-        { user_id: user_id, description: description, is_active: false },
+        { user_id: todoUserId, description: description, is_active: false },
         { withCredentials: true }
       );
       const newTodolist = {
@@ -54,7 +63,7 @@ function ToDo() {
   const onUpdate = async (id: number, newDescription: string) => {
     try {
       const response = await axios.put(`http://localhost:8000/api/todolist/${id}`, {
-        user_id: user_id,
+        user_id: todoUserId,
         description: newDescription,
         is_active: false,
       },
