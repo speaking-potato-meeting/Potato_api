@@ -277,6 +277,7 @@ def check_login_status(request):#로그인 여부
             "MBTI": user.MBTI,
             "position": user.position,
             "birth": user.birth.strftime('%Y-%m-%d'),
+            "is_staff": user.is_staff
             # profile_image:,
         }
         return serialized_user
