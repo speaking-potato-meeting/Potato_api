@@ -122,7 +122,7 @@ def create_schedule(request,payload:ScheduleIn):
         response = HttpResponse("권한이 없습니다.")
         response.status_code = 403
         return response
-    
+      
 # 특정 스케줄 조회
 @router.get("/schedules/{schedule_id}/", tags=["스케줄"], response=ScheduleOut)
 def get_schedule(request, schedule_id: int):

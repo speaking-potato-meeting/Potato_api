@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUserQuery } from "../../hooks/useUserQuery";
 import { useQueryClient } from "react-query";
@@ -9,6 +10,7 @@ interface RootProps {
 }
 
 const Root = ({ children, isAdminPage }: RootProps) => {
+
   const queryClient = useQueryClient();
   const { pathname } = useLocation();
 
@@ -17,6 +19,7 @@ const Root = ({ children, isAdminPage }: RootProps) => {
     refetchOnWindowFocus: true,
   });
   const navigate = useNavigate();
+
 
   if (!data) {
     return (

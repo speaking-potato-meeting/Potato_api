@@ -1,6 +1,7 @@
 import { useQuery } from "react-query";
 import { getCurrentUserInfo } from "../api/login";
 
+
 export const useUserQuery = (
   key?: string,
   options?: {
