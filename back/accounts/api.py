@@ -12,9 +12,8 @@ import logging
 import os
 from django.contrib.auth.hashers import make_password #해시화
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 from django.contrib.auth.decorators import user_passes_test#슈퍼유저만
-from django.http import HttpResponse
 router = Router()
 logger = logging.getLogger(__name__)
 
@@ -75,38 +74,22 @@ class UserInfo(BaseModel):
 users = []
 
 #유저 이미지파일
-@router.post("/user/{user_id}/upload")
-def upload_photo(request, user_id: int, file: UploadedFile = File(...)):
-    # 업로드된 파일 저장 경로 설정
-    upload_dir = "uploads"  
-    os.makedirs(upload_dir, exist_ok=True)
-    file_path = os.path.join(upload_dir, file.name)
+@router.post("/user/{user_id}/upload", tags=["회원가입"])
+@login_required
+def upload_photo(request, user_id: int, file: UploadedFile= File(...)):
+    try:
+        user = User.objects.get(id=user_id)
+        if user == request.user:
+            # 업로드된 파일을 user.profile_image 필드에 저장
+            user.profile_image.save(file.name,file)
+            user.save()
+            return {"message": "Image uploaded Successfully"}
+        else:
+            return {"message": "권한이 없습니다."}
+    except User.DoesNotExist:
+        return {"message": "유저를 찾을 수 없습니다."}
 
-    # 이미지 파일 저장
-    with open(file_path, 'wb') as f:
-        f.write(file.read())
 
-    for user in users:
-        if user.user_id== user_id:
-            user.profile_image = file_path
-            break
-
-    return {"message": "Image uploaded Successfully"}
-
-# @router.get("/users/{user_id}", response=UserInfo)
-# def get_user_info(request, user_id: int = Path(..., description="User ID")):
-#     try:
-#         user = User.objects.get(id=user_id)
-#     except User.DoesNotExist:
-#         return 404, {"error":"User not found"}
-
-#     user_data = {
-#         "user_id": user_id,
-#         "username": user.username,
-#         "email": user.email,
-#     }
-
-#     return user_data
 
 #회원가입
 @router.post("/create-user", tags=["회원가입"])
