@@ -3,15 +3,14 @@ import { useState, useEffect, useRef } from "react";
 import { commentType } from "../types";
 import "./comment.css";
 import axios from "axios";
-import { useOutletContext } from "react-router-dom";
-import type { ContextType } from "./Layout/GeneralLayout";
+import { useOutletContext } from "react-router";
 
 const dateNow = new Date();
 const today = dateNow.toISOString().slice(0, 10);
 
 const Comment = (): JSX.Element => {
   /* 로그인하지 않은 유저인지 확인 */
-  // const { userProfile } = useOutletContext<ContextType>();
+  const userProfile = useOutletContext();
 
   // text를 받아오는 고런..
   const [newText, setNewText] = useState("");
@@ -251,7 +250,7 @@ const Comment = (): JSX.Element => {
         ))}
       </ul>
       <div className="comment-input-box">
-        {/* {userProfile ? (
+        {userProfile ? (
           <>
             <input
               ref={CommentTextInput as React.MutableRefObject<HTMLInputElement>}
@@ -265,7 +264,7 @@ const Comment = (): JSX.Element => {
           </>
         ) : (
           <p>로그인이 필요합니다.</p>
-        )} */}
+        )}
       </div>
     </div>
   );
