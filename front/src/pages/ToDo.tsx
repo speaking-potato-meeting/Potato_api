@@ -23,7 +23,6 @@ function ToDo() {
     setTodoUserId(user_id);
   }
 
-
   // 데이터를 서버에서 가져오는 함수
   const fetchData = async () => {
     try {
@@ -62,8 +61,7 @@ function ToDo() {
 
   const onUpdate = async (id: number, newDescription: string) => {
     try {
-      const response = await axios.put(`http://localhost:8000/api/todolist/${id}`, {
-        user_id: todoUserId,
+      const response = await axios.put(`http://localhost:8000/api/todolist/todo/${id}`, {
         description: newDescription,
         is_active: false,
       },
@@ -88,7 +86,9 @@ function ToDo() {
 
   const onDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:8000/api/todolist/${id}`, { withCredentials: true });
+      await axios.delete(`http://localhost:8000/api/todolist/todo/${id}`,
+      { withCredentials: true }
+      );
       const updatedTodo = todolist.filter((todo) => todo.id !== id);
       setTodolist(updatedTodo);
     } catch (error) {
