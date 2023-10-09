@@ -105,7 +105,7 @@ def delete_comment(request, comment_id: int):
 
 # 스케줄 생성
 @router.post("/schedules/", tags=["스케줄"])
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_staff)
 @login_required
 def create_schedule(request,payload:ScheduleIn):
     if request.user.is_staff:
@@ -122,6 +122,7 @@ def create_schedule(request,payload:ScheduleIn):
         response = HttpResponse("권한이 없습니다.")
         response.status_code = 403
         return response
+      
 # 특정 스케줄 조회
 @router.get("/schedules/{schedule_id}/", tags=["스케줄"], response=ScheduleOut)
 def get_schedule(request, schedule_id: int):

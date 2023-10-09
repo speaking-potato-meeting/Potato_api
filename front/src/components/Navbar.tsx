@@ -13,8 +13,12 @@ type Prop = {
 const Navbar = ({ NavbarContent }: Prop) => {
   const queryClient = useQueryClient();
 
+  const data = useCurrentUserContext();
+
   const mutation = useMutation(logout, {
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userInfo"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userInfo"] });
+    },
   });
 
   const logoutHandler = async () => {
@@ -26,7 +30,6 @@ const Navbar = ({ NavbarContent }: Prop) => {
   //   queryKey: "userInfo",
   // });
 
-  const data = useCurrentUserContext();
 
   return (
     <nav className="nav_nav">
