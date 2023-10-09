@@ -1,10 +1,18 @@
 import { useQuery } from "react-query";
 import { getCurrentUserInfo } from "../api/login";
 
-export const useUserQuery = () => {
+export const useUserQuery = (
+  key?: string,
+  options?: {
+    refetchOnMount?: boolean;
+    enabled?: boolean;
+    refetchOnWindowFocus?: boolean;
+  }
+) => {
   return useQuery({
-    queryKey: ["userInfo"],
+    queryKey: ["userInfo", key],
     queryFn: getCurrentUserInfo,
+    ...options,
   });
 };
 

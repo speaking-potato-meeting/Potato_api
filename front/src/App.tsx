@@ -8,7 +8,13 @@ import { ReactQueryDevtools } from "react-query/devtools";
 
 import CurrentUserContextProvider from "./context/CurrentUserContextProvider";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => {
   return (
