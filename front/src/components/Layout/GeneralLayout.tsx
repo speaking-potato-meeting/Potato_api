@@ -1,9 +1,6 @@
 import { Outlet, useLocation, useOutletContext } from "react-router-dom";
 import Navbar from "../Navbar";
 import { NavbarContent } from "../../router";
-import { useState, useEffect } from "react";
-import type { User } from "../../types";
-import { getCurrentUserInfo } from "../../api/login";
 
 /* React-Query */
 import { useUserQuery } from "../../hooks/useUserQuery";

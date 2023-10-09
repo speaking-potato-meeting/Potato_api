@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
-import { getCurrentUserInfo } from "../../api/login";
-import { useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useUserQuery } from "../../hooks/useUserQuery";
+import { useQueryClient } from "react-query";
 import { useCurrentUserContext } from "../../context/CurrentUserContextProvider";
 
 interface RootProps {
@@ -9,11 +9,16 @@ interface RootProps {
 }
 
 const Root = ({ children, isAdminPage }: RootProps) => {
-  const user = useCurrentUserContext();
+  const queryClient = useQueryClient();
+  const { pathname } = useLocation();
 
+  const { data } = useUserQuery(pathname, {
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
   const navigate = useNavigate();
 
-  if (!user) {
+  if (!data) {
     return (
       <>
         <div>찾을 수 없는 페이지입니다.</div>
