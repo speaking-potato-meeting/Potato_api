@@ -121,7 +121,7 @@ def pause_studying(request, payload: TimerPause):
 ####################################################################
 
 #TodoList생성
-@api.post("/todolist/", response=TodoListSchema,tags=["todolist"])
+@api.post("/todolist/", tags=["todolist"])
 @login_required
 def create_todolist(request,data: TodoListSchema):
     todo = TodoList.objects.create(
