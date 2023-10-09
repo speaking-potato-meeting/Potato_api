@@ -1,4 +1,4 @@
-import { Outlet, useLocation, useOutletContext } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Navbar from "../Navbar";
 import { NavbarContent } from "../../router";
 
@@ -9,15 +9,16 @@ import CurrentUserContextProvider from "../../context/CurrentUserContextProvider
 export default function GeneralLayout() {
   const userQuery = useUserQuery();
 
+  // const user = useCurrentUserContext();
+
   const navbarLists = () => {
     /* 유저 프로필이 있을 때, */
-    if (userQuery.isSuccess && userQuery.data) {
+    if (userQuery.data) {
       return NavbarContent;
     }
 
     return NavbarContent.filter((r) => !r.withAuth);
   };
-
   return (
     <>
       <CurrentUserContextProvider>

@@ -3,14 +3,14 @@ import { useState, useEffect, useRef } from "react";
 import { commentType } from "../types";
 import "./comment.css";
 import axios from "axios";
-import { useOutletContext } from "react-router";
+import { useCurrentUserContext } from "../context/CurrentUserContextProvider";
 
 const dateNow = new Date();
 const today = dateNow.toISOString().slice(0, 10);
 
 const Comment = (): JSX.Element => {
   /* 로그인하지 않은 유저인지 확인 */
-  const userProfile = useOutletContext();
+  const userInfo = useCurrentUserContext();
 
   // text를 받아오는 고런..
   const [newText, setNewText] = useState("");
@@ -176,8 +176,9 @@ const Comment = (): JSX.Element => {
                   src="../images/yang.jpeg"
                   alt="프로필 사진"
                 />
-                {/* 일단 user 말고 comment.id로 하겠음 */}
-                <p className="comment-name">{comment.user_id}</p>
+                <p className="comment-name">
+                  {userInfo?.first_name ?? "이름을 불러올 수 없습니다."}
+                </p>
               </div>
               <div>
                 <p>{elapsedTime(comment.timestamp)}</p>
@@ -220,7 +221,7 @@ const Comment = (): JSX.Element => {
                     <button onClick={() => deleteCommentSubmit(comment.id)}>삭제</button>
                   </div>
                 )} */}
-                {
+                {userInfo && (
                   <>
                     <button
                       className="comment-btn"
@@ -243,14 +244,14 @@ const Comment = (): JSX.Element => {
                       삭제
                     </button>
                   </>
-                }
+                )}
               </div>
             </div>
           </li>
         ))}
       </ul>
       <div className="comment-input-box">
-        {userProfile ? (
+        {userInfo ? (
           <>
             <input
               ref={CommentTextInput as React.MutableRefObject<HTMLInputElement>}
