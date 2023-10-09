@@ -18,7 +18,6 @@ export const createSchedule = async (args: {
     method: "POST",
     body: JSON.stringify({
       start_date: args.date,
-      end_date: args.date,
       schedule: args.content,
       is_holiday: false,
     }),
@@ -45,23 +44,31 @@ export const createSchedule = async (args: {
   }
 };
 
-export const getSchedule = async (): Promise<ISchedule | scheduleResponse> => {
-  const getScheduleRes = await fetch(`${BASE_URL}/api/schedule/schedules/2/`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json;charset=utf-8",
-    },
-  });
+export const getSchedule = async (args: {
+  first_day: string;
+  last_day: string;
+}): Promise<ISchedule[] | null> => {
+  const { first_day, last_day } = args;
+
+  const getScheduleRes = await fetch(
+    `${BASE_URL}/api/schedule/schedules/?from_date=${first_day}&to_date=${last_day}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
+    }
+  );
 
   try {
     if (getScheduleRes.ok) {
       const httpResponse = await getScheduleRes.json();
-      return httpResponse ? httpResponse : "fail";
+      return httpResponse ? httpResponse : null;
     }
     throw new Error("서버 에러 발생");
   } catch (error) {
     console.log(error);
-    return "fail";
+    return null;
   }
 };
 
@@ -69,14 +76,13 @@ export const updateSchedule = async (args: {
   id: number;
   editDate: string;
   content: string;
-}): Promise<scheduleResponse> => {
+}): Promise<ISchedule | null> => {
   const updateScheduleRes = await fetch(
-    `${BASE_URL}/api/schedule/schedules/2/`,
+    `${BASE_URL}/api/schedule/schedules/${args.id}/`,
     {
       method: "PUT",
       body: JSON.stringify({
         start_date: args.editDate,
-        end_date: args.editDate,
         schedule: args.content,
         is_holiday: false,
       }),
@@ -91,15 +97,15 @@ export const updateSchedule = async (args: {
     if (updateScheduleRes.ok) {
       const httpResponse = await updateScheduleRes.json();
       if (httpResponse) {
-        return "success";
+        return httpResponse;
       }
 
-      return "fail";
+      return null;
     }
 
     throw new Error("서버 에러 발생");
   } catch (error) {
     console.log(error);
-    return "fail";
+    return null;
   }
 };

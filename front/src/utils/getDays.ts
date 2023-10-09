@@ -36,7 +36,7 @@ export const getDays = (nowDate: Date) => {
   return result;
 };
 
-export function dateToString(arg: UniqueIdentifier) {
+export function dateToString(arg: UniqueIdentifier | Date) {
   const timeStamp = new Date(arg);
   const timeString = `${timeStamp.getFullYear()}-${(timeStamp.getMonth() + 1)
     .toString()

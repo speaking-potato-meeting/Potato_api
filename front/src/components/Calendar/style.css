@@ -40,12 +40,12 @@ section {
 .dateContainer {
   display: grid;
   grid-template-columns: repeat(7, calc(100% / 7));
-  min-height: 150vh;
+  min-height: 80vh;
 }
 
 .dateContainer .dateBox {
   position: relative;
-  min-height: 130px;
+  min-height: 60px;
   text-align: end;
 
   border: 1px solid #80808021;
