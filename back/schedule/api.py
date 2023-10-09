@@ -109,6 +109,7 @@ def delete_comment(request, comment_id: int):
 @login_required
 def create_schedule(request,payload:ScheduleIn):
     if request.user.is_staff:
+        print(1)
         schedule = Schedule.objects.create(
             start_date = payload.start_date,
             end_date = payload.start_date,
@@ -116,11 +117,7 @@ def create_schedule(request,payload:ScheduleIn):
             is_holiday = payload.is_holiday,
         )
         schedule.save()
-        return ScheduleIn(
-        start_date = schedule.start_date,
-        schedule = schedule.schedule,
-        is_holiday = schedule.is_holiday,
-    )
+        return{"success": True,"is_staff":True}
     else:
         response = HttpResponse("권한이 없습니다.")
         response.status_code = 403

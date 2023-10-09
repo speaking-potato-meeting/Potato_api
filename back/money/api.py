@@ -40,8 +40,23 @@ def get_moneys(request, user_id: int):
     ]
     return money_list
 
+# 전체 회원 벌금 조회
+@router.get("/moneys", tags=["벌금"])
+def get_moneys(request):
+    moneys = Money.objects.all()
+    money_list = [
+            MoneyOut(
+                id=money.id,
+                fee=money.money,
+                username=money.user.first_name,
+                individual_rule_content=money.individual_rule_content,
+            )
+            for money in moneys
+    ]
+    return money_list
+
 # 벌금 삭제 (원래 있던 규칙 {교체or삭제} 요청 - 승인, 새로 만든 규칙 요청 - 거부)
-@router.delete("/moneys/{money_id}", tags=["벌금"])
+@router.delete("/moneys/", tags=["벌금"])
 def delete_Money(request, money_id: int):
     try:
         money = Money.objects.get(id=money_id)
@@ -72,12 +87,12 @@ def update_Money_confirm_2(request, money_id: int):
     except Money.DoesNotExist:
         return {"message": "벌금 정보가 없음."}
 
-# 벌금 is_active 값 수정 (벌금을 내면 0 안내면 1)
-@router.put("/moneys/{money_id}/confirm_2", tags=["벌금"])
+# 벌금 is_active 값 수정 (규칙 수행한거 false 안한거 True)
+@router.put("/moneys/{money_id}/is_active", tags=["벌금"])
 def update_is_active(request, money_id: int):
     try:
         money = Money.objects.get(id=money_id)
-        money.is_active = 0
+        money.is_active = False
         money.save()
         return {"message": "벌금 confirm 필드 업데이트 성공"}
     except Money.DoesNotExist:
@@ -88,6 +103,6 @@ def update_is_active(request, money_id: int):
 def reset_is_active(request):
     moneys = Money.objects.all()
     for money in moneys:
-        money.is_active = 1
+        money.is_active = True
         money.save()
     return {"message": "벌금 is_active 값 초기화 완료"}

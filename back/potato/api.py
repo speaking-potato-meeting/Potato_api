@@ -59,8 +59,8 @@ def start_studying(request, payload: TimerStart):
             return {"message": "공부 시작", "studyTimer": {}}
     except User.DoesNotExist:
         return {"message": "유저 정보가 없음."}
-    
-    
+
+
 @api.get("/study_timers/date_range/", tags=["타이머"])
 def get_study_timers_in_date_range(request, from_date: date, to_date: date):
     # StudyTimer 모델에서 from_date와 to_date 사이의 데이터를 필터링
