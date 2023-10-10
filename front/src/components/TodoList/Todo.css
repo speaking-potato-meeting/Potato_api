@@ -26,6 +26,7 @@ input.todo-edit-input {
   padding: 2px 4px;
 }
 
+input.todo-edit-input:focus,
 input.todo-edit-input:hover {
   border: 1px solid #7310c4;
   border-radius: 2px;
