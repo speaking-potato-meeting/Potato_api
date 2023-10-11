@@ -21,6 +21,11 @@ class TodoListSchema(Schema):
     user_id: int
     description: str
     is_active: bool
+
+class TodoListupdate(Schema):
+    description: str
+    is_active: bool
+
 class TodoListCreateSchema(Schema):
     description: str 
 #타이머스키마
@@ -116,7 +121,7 @@ def pause_studying(request, payload: TimerPause):
 ####################################################################
 
 #TodoList생성
-@api.post("/todolist/", response=TodoListSchema,tags=["todolist"])
+@api.post("/todolist/", tags=["todolist"])
 @login_required
 def create_todolist(request,data: TodoListSchema):
     todo = TodoList.objects.create(
@@ -158,13 +163,12 @@ def get_todolist(request, user_id: int):
         return {"message": "TodoList가 존재하지 않습니다."}, 404
     
 #TodoList수정
-@api.put("/todolist/{user_id}", response=TodoListSchema,tags=["todolist"])
+@api.put("/todolist/todo/{todo_id}", tags=["todolist"])
 @login_required
-def update_todolist(request, user_id: int, data: TodoListSchema):
+def update_todolist(request, todo_id: int,data: TodoListupdate):
     try:
-        if request.user.id == user_id:
-            todo = TodoList.objects.get(id=user_id)
-            todo.user_id = data.user_id
+        todo = TodoList.objects.get(id=todo_id)
+        if request.user.id == todo.user_id:
             todo.description = data.description
             todo.is_active = data.is_active
             todo.save()
@@ -183,17 +187,14 @@ def update_todolist(request, user_id: int, data: TodoListSchema):
         return {"message": "실패"}, 404
 
 #TodoList삭제
-@api.delete("/todolist/{user_id}",tags=["todolist"])
+@api.delete("/todolist/todo/{todo_id}",tags=["todolist"])
 @login_required
-def delete_todolist(request, user_id: int):
+def delete_todolist(request, todo_id: int):
     try:
-        if request.user.id == user_id:
-            todo = TodoList.objects.get(id=user_id)
+        todo = TodoList.objects.get(id=todo_id)
+        if request.user.id == todo.user_id:
             todo.delete()
-            data={
-                "id":todo.id
-            }
-            return data
+            return {"message": "삭제 성공"}
         else:
             response = HttpResponse("권한이 없습니다.")
             response.status_code = 403
