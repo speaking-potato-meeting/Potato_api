@@ -16,6 +16,12 @@ class MoneyOut(Schema):
     fee: int
     individual_rule_content : str
 
+class CommonMoneyIn(Schema):
+    day_fee: int
+    day_study_time : int
+    week_fee: int
+    week_study_time : int
+
 # 벌금 작성 (새로 만든 규칙 요청 - 승인 전)
 @router.post("/moneys", tags=["벌금"])
 @login_required
@@ -25,9 +31,45 @@ def create_Money(request, payload: MoneyIn):
     money.save()
     return {"success" : True}
 
+# 전체 규칙 벌금 테이블에 적용
+@router.post("/common-moneys", tags=["벌금"])
+def create_common_money(request, payload: CommonMoneyIn):
+    # payload에서 공통 rule_content 및 fee를 가져옵니다.
+
+    # 모든 사용자에게 적용되는 벌금 레코드 생성
+    users = User.objects.all()
+    for user in users:
+        day_money = Money.objects.create(user=user, money=payload.day_fee, individual_rule_content="하루공부", confirm=payload.day_study_time)
+        day_money.save()
+        week_money = Money.objects.create(user=user, money=payload.week_fee, individual_rule_content="일주일공부", confirm=payload.week_study_time)
+        week_money.save()
+
+    return {"success": True}
+
+# 개인별로 하루공부, 일주일공부 수정
+@router.put("/common-moneys/{rule_content}", tags=["벌금"])
+@login_required
+def Update_Common_Money(request, rule_content: str, studytime: int, fee: int ):
+    user = request.user
+    try:
+        if rule_content == "하루공부":
+            money = Money.objects.get(user=user,individual_rule_content=rule_content)
+            money.confirm = studytime
+            money.money = fee
+            money.save()
+            return {"message": "하루공부 필드 업데이트 성공"}
+        elif rule_content == "일주일공부":
+            money = Money.objects.get(user=user,individual_rule_content=rule_content)
+            money.confirm = studytime
+            money.money = fee
+            money.save()
+            return {"message": "일주일공부 필드 업데이트 성공"}
+    except Money.DoesNotExist:
+        return {"message": "벌금 정보가 없음."}
+
 # 회원별 벌금 조회
 @router.get("/moneys/{user_id}", tags=["벌금"])
-def get_moneys(request, user_id: int):
+def user_get_moneys(request, user_id: int):
     moneys = Money.objects.filter(user_id=user_id)
     money_list = [
             MoneyOut(
@@ -43,7 +85,7 @@ def get_moneys(request, user_id: int):
 # 전체 회원 벌금 조회
 @router.get("/moneys", tags=["벌금"])
 def get_moneys(request):
-    moneys = Money.objects.all()
+    moneys = Money.objects.exclude(individual_rule_content="하루공부").exclude(individual_rule_content="일주일공부")
     money_list = [
             MoneyOut(
                 id=money.id,

@@ -3,6 +3,7 @@ from .models import User,StudyTimer,TodoList,User
 from django.shortcuts import get_object_or_404
 from accounts.api import router as accounts_router
 from schedule.api import router as schedule_router
+from money.api import router as money_router
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -13,6 +14,7 @@ from django.http import HttpResponse
 api  = NinjaAPI()
 
 
+api.add_router("/money/", money_router)
 api.add_router("/accounts/", accounts_router)
 api.add_router("/schedule/", schedule_router)
 
