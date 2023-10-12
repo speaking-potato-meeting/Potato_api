@@ -46,6 +46,23 @@ def create_common_money(request, payload: CommonMoneyIn):
 
     return {"success": True}
 
+# 전체 규칙 벌금 테이블 수정
+@router.put("/common-moneys", tags=["벌금"])
+def create_or_update_common_money(request, payload: CommonMoneyIn):
+    users = User.objects.all()
+    for user in users:
+        day_money = Money.objects.get(user=user, individual_rule_content="하루공부")
+        day_money.money = payload.day_fee
+        day_money.confirm = payload.day_study_time
+        day_money.save()
+
+        week_money = Money.objects.get(user=user, individual_rule_content="일주일공부")
+        week_money.money = payload.week_fee
+        week_money.confirm = payload.week_study_time
+        week_money.save()
+        
+    return {"success": True}
+
 # 개인별로 하루공부, 일주일공부 수정
 @router.put("/common-moneys/{rule_content}", tags=["벌금"])
 @login_required
@@ -70,7 +87,7 @@ def Update_Common_Money(request, rule_content: str, studytime: int, fee: int ):
 # 회원별 벌금 조회
 @router.get("/moneys/{user_id}", tags=["벌금"])
 def user_get_moneys(request, user_id: int):
-    moneys = Money.objects.filter(user_id=user_id)
+    moneys = Money.objects.filter(user_id=user_id).exclude(individual_rule_content="하루공부").exclude(individual_rule_content="일주일공부")
     money_list = [
             MoneyOut(
                 id=money.id,
@@ -143,7 +160,7 @@ def update_is_active(request, money_id: int):
 # 벌금 is_active 값 초기화
 @router.put("/moneys/", tags=["벌금"])
 def reset_is_active(request):
-    moneys = Money.objects.all()
+    moneys = Money.objects.all().exclude(individual_rule_content="하루공부").exclude(individual_rule_content="일주일공부")
     for money in moneys:
         money.is_active = True
         money.save()
