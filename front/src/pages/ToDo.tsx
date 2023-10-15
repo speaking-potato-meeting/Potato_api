@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../App.css';
 import '../components/TodoList/Todo.css'
-import { Todo, User } from '../types';
+import { Todo } from '../types';
+import TodoForm from '../components/TodoList/TodoForm';
+import TodoItem from '../components/TodoList/TodoItem';
 import axios from 'axios';
-import { RiDeleteBin6Line } from 'react-icons/ri';
-import { AiFillEdit } from 'react-icons/ai';
-import { MdCheckBox, MdCheckBoxOutlineBlank } from 'react-icons/md'
 import { useCurrentUserContext } from "../context/CurrentUserContextProvider";
 
 function ToDo() {
@@ -37,9 +36,6 @@ function ToDo() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  const todoTextInput = useRef<HTMLInputElement>(null); // todoTextInput Ref 객체
-  const todoEditTextInput = useRef<HTMLInputElement>(null); // todoEditTextInput Ref 객체
 
   const onAdd = async (description: string) => {
     try {
@@ -96,88 +92,14 @@ function ToDo() {
     }
   }
 
-  const [text, setText] = useState('');
-
-  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
-  };
-
-  const handleAddPress = (e: { key: string; }) => {
-    if (e.key === 'Enter') {
-      onClickAdd();
-    }
-  };
-
-  const onClickAdd = () => {
-    if (text.trim() !== '') {
-      onAdd(text); // 받은 text를 추가해주는 코드
-      setText('');
-    } else {
-      if (todoTextInput.current) {
-        todoTextInput.current.focus();
-      }
-    }
-  }
-
-  const [editItemId, setEditItemId] = useState<number | null>(null);
-  const [editedContent, setEditedContent] = useState<string>('');
-
-  const handleEditClick = (id: number, description: string) => {
-    setEditItemId(id);
-    setEditedContent(description);
-  };
-
-  const handleUpdateClick = (id: number) => {
-    if (editedContent.trim() !== '') {
-      onUpdate(id, editedContent);
-      setEditItemId(null);
-    } else {
-      if (todoEditTextInput.current) {
-        todoEditTextInput.current.focus();
-      }
-    }
-  };
-
   return (
     <div className='todo-box'>
       <h1>할 일을 하자</h1>
-      <div className='todo-add-box'>
-        <input 
-          className='todo-add-input'
-          ref={todoTextInput}
-          value={text}
-          onChange={onChangeInput}  
-          onKeyPress={handleAddPress}
-        />
-        <button onClick={onClickAdd}>추가</button>
-      </div>
-      <div className=''>
-          {todolist.map((todo)=>(
-            <div key={todo.id}>
-            {editItemId === todo.id ? (
-              <div className='todoitem-box'>
-                <input
-                  className='todo-edit-input'
-                  ref={todoEditTextInput}
-                  type="text"
-                  value={editedContent}
-                  onChange={(e) => setEditedContent(e.target.value)}
-                />
-                <button onClick={() => handleUpdateClick(todo.id)}>수정 완료</button>
-              </div>
-            ) : (
-              <div className='todoitem-box'>
-                <p className='todoItem-content'>{todo.description}</p>
-                <div className='todo-edit-btn' onClick={() => handleEditClick(todo.id, todo.description)}>
-                  <AiFillEdit size='20'/>
-                </div>
-                <div className='todo-delete-btn' onClick={() => onDelete(todo.id)}>
-                  <RiDeleteBin6Line size='20'/>
-                </div>
-              </div>
-            )}
-          </div>
-          ))}
+      <TodoForm onAdd={onAdd}/>
+      <div>
+        {todolist.map((todo) => (
+          <TodoItem key={todo.id} todo={todo} onUpdate={onUpdate} onDelete={onDelete} />
+        ))}
       </div>
     </div>
   )

@@ -8,7 +8,7 @@
   margin: 5rem 0;
 }
 
-.todo-add-box {
+.todo-add-editor {
   display: flex;
   justify-content: center;
   width: 50rem;
@@ -37,6 +37,26 @@ input.todo-edit-input:hover {
   align-items: center;
   justify-content: space-between;
   margin: 2rem 0;
+}
+
+.todo-add-invalid-span {
+  padding-left: 2rem;
+  font-size: small;
+  color: var(--point-red);
+}
+
+.todo-edititem-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.todo-edititem-box .todoitem-box {
+  margin: 0;
+}
+
+.todo-edit-invalid-span {
+  font-size: small;
+  color: var(--point-red);
 }
 
 .todoItem-content {
