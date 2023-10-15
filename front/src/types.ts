@@ -59,12 +59,12 @@ export interface Todo {
   is_active: false;
 }
 
-// export type ItemListProps = {
-//   items: { id: number; user_id: number; description: string; is_active: false; }[];
-//   onDelete: (id: number) => void;
-//   onUpdate: (id: number, newDescription: string) => void;
-// };
+export interface TodoItemProps {
+  todo: Todo;
+  onUpdate: (id: number, newDescription: string) => void;
+  onDelete: (id: number) => void;
+}
 
-// export type EditorProps = {
-//   onAdd: (text: string) => void;
-// };
+export interface TodoFormProps {
+  onAdd: (description: string) => void;
+}
