@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../App.css';
 import '../components/TodoList/Todo.css'
 import { Todo, User } from '../types';
@@ -8,13 +8,10 @@ import { AiFillEdit } from 'react-icons/ai';
 import { MdCheckBox, MdCheckBoxOutlineBlank } from 'react-icons/md'
 import { useCurrentUserContext } from "../context/CurrentUserContextProvider";
 
-
 function ToDo() {
   const [todolist, setTodolist] = useState<Todo[]>([]);
   const [todoUserId, setTodoUserId] = useState(0);
 
-  // 기존 방식에서 user 정보 받아왔던 것
-  // const { currentUser } = useCurrentUserContext()
   const currentUser = useCurrentUserContext();
 
   // 무한루프 방지를 위해 조건문
@@ -22,7 +19,6 @@ function ToDo() {
     const user_id = currentUser.id;
     setTodoUserId(user_id);
   }
-
 
   // 데이터를 서버에서 가져오는 함수
   const fetchData = async () => {
@@ -41,6 +37,9 @@ function ToDo() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const todoTextInput = useRef<HTMLInputElement>(null); // todoTextInput Ref 객체
+  const todoEditTextInput = useRef<HTMLInputElement>(null); // todoEditTextInput Ref 객체
 
   const onAdd = async (description: string) => {
     try {
@@ -62,8 +61,7 @@ function ToDo() {
 
   const onUpdate = async (id: number, newDescription: string) => {
     try {
-      const response = await axios.put(`http://localhost:8000/api/todolist/${id}`, {
-        user_id: todoUserId,
+      const response = await axios.put(`http://localhost:8000/api/todolist/todo/${id}`, {
         description: newDescription,
         is_active: false,
       },
@@ -88,7 +86,9 @@ function ToDo() {
 
   const onDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:8000/api/todolist/${id}`, { withCredentials: true });
+      await axios.delete(`http://localhost:8000/api/todolist/todo/${id}`,
+      { withCredentials: true }
+      );
       const updatedTodo = todolist.filter((todo) => todo.id !== id);
       setTodolist(updatedTodo);
     } catch (error) {
@@ -102,9 +102,21 @@ function ToDo() {
     setText(e.target.value);
   };
 
+  const handleAddPress = (e: { key: string; }) => {
+    if (e.key === 'Enter') {
+      onClickAdd();
+    }
+  };
+
   const onClickAdd = () => {
-    onAdd(text); // 받은 text를 추가해주는 코드
-    setText('');
+    if (text.trim() !== '') {
+      onAdd(text); // 받은 text를 추가해주는 코드
+      setText('');
+    } else {
+      if (todoTextInput.current) {
+        todoTextInput.current.focus();
+      }
+    }
   }
 
   const [editItemId, setEditItemId] = useState<number | null>(null);
@@ -119,6 +131,10 @@ function ToDo() {
     if (editedContent.trim() !== '') {
       onUpdate(id, editedContent);
       setEditItemId(null);
+    } else {
+      if (todoEditTextInput.current) {
+        todoEditTextInput.current.focus();
+      }
     }
   };
 
@@ -128,8 +144,10 @@ function ToDo() {
       <div className='todo-add-box'>
         <input 
           className='todo-add-input'
+          ref={todoTextInput}
           value={text}
           onChange={onChangeInput}  
+          onKeyPress={handleAddPress}
         />
         <button onClick={onClickAdd}>추가</button>
       </div>
@@ -140,6 +158,7 @@ function ToDo() {
               <div className='todoitem-box'>
                 <input
                   className='todo-edit-input'
+                  ref={todoEditTextInput}
                   type="text"
                   value={editedContent}
                   onChange={(e) => setEditedContent(e.target.value)}

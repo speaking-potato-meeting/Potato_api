@@ -23,9 +23,11 @@ class TodoListSchema(Schema):
     user_id: int
     description: str
     is_active: bool
-class TodoListOut(Schema):
+
+class TodoListupdate(Schema):
     description: str
     is_active: bool
+
 class TodoListCreateSchema(Schema):
     description: str 
 #타이머스키마
@@ -119,7 +121,7 @@ def pause_studying(request, payload: TimerPause):
 ####################################################################
 
 #TodoList생성
-@api.post("/todolist/", response=TodoListSchema,tags=["todolist"])
+@api.post("/todolist/", tags=["todolist"])
 @login_required
 def create_todolist(request,data: TodoListSchema):
     todo = TodoList.objects.create(
@@ -161,9 +163,9 @@ def get_todolist(request, user_id: int):
         return {"message": "TodoList가 존재하지 않습니다."}, 404
     
 #TodoList수정
-@api.put("/todolist/", tags=["todolist"])
+@api.put("/todolist/todo/{todo_id}", tags=["todolist"])
 @login_required
-def update_todolist(request, todo_id: int, data: TodoListOut):
+def update_todolist(request, todo_id: int,data: TodoListupdate):
     try:
         todo = TodoList.objects.get(id=todo_id)
         if request.user.id == todo.user_id:
@@ -185,7 +187,7 @@ def update_todolist(request, todo_id: int, data: TodoListOut):
         return {"message": "실패"}, 404
 
 #TodoList삭제
-@api.delete("/todolist/",tags=["todolist"])
+@api.delete("/todolist/todo/{todo_id}",tags=["todolist"])
 @login_required
 def delete_todolist(request, todo_id: int):
     try:

@@ -6,8 +6,6 @@ import { ReactRouterObject } from "./router";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 
-import CurrentUserContextProvider from "./context/CurrentUserContextProvider";
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -19,9 +17,7 @@ const queryClient = new QueryClient({
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <CurrentUserContextProvider>
-        <RouterProvider router={ReactRouterObject} />;
-      </CurrentUserContextProvider>
+      <RouterProvider router={ReactRouterObject} />;
       <ReactQueryDevtools />
     </QueryClientProvider>
   );
