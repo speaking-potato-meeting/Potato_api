@@ -60,7 +60,7 @@ class TodoList(models.Model):
 class Money(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     money = models.IntegerField(default=0)
-    is_active = models.BooleanField(default=True)
+    is_active = models.IntegerField(default=1)
     individual_rule_content = models.TextField(default="개인 벌금 규칙 내용입니다.")
     confirm = models.IntegerField(default=1)
 
