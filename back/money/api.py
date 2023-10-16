@@ -1,8 +1,7 @@
 from ninja import Schema, Router, Path, Query
 from potato.models import Money, User
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 import logging
-from django.contrib.auth.decorators import user_passes_test#슈퍼유저만
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -33,6 +32,7 @@ def create_Money(request, payload: MoneyIn):
 
 # 전체 규칙 벌금 테이블에 적용
 @router.post("/all-common-moneys", tags=["벌금"])
+@user_passes_test(lambda u: u.is_staff)
 def create_common_money(request, payload: CommonMoneyIn):
     users = User.objects.all()
     for user in users:
@@ -43,7 +43,7 @@ def create_common_money(request, payload: CommonMoneyIn):
 
     return {"success": True}
 
-# 수정하려고 할때 원래 있던 데이터의 confirm 값 0으로 바꿔주기
+# 수정하려고 할때 원래 있던 데이터의 confirm 값 2로 바꿔주고 새로 수정한 데이터 추가
 @router.post("/common-moneys", tags=["벌금"])
 @login_required
 def create_or_update_common_money(request, payload: CommonMoneyIn):
@@ -83,6 +83,7 @@ def update_common_money_before_confirm(request, payload: CommonMoneyIn):
 
 # 전체 규칙 벌금 테이블 수정
 @router.put("/all-common-moneys", tags=["벌금"])
+@user_passes_test(lambda u: u.is_staff)
 def update_all_common_money(request, payload: CommonMoneyIn):
     users = User.objects.all()
     try:
@@ -103,6 +104,7 @@ def update_all_common_money(request, payload: CommonMoneyIn):
 
 # 회원별 벌금 조회
 @router.get("/moneys/{user_id}", tags=["벌금"])
+@user_passes_test(lambda u: u.is_staff)
 def user_get_moneys(request, user_id: int):
     try:
         moneys = Money.objects.filter(user_id=user_id).exclude(individual_rule_content="+_+").exclude(individual_rule_content="0_0")
@@ -122,6 +124,7 @@ def user_get_moneys(request, user_id: int):
 
 # 전체 회원 벌금 조회
 @router.get("/moneys", tags=["벌금"])
+@user_passes_test(lambda u: u.is_staff)
 def get_moneys(request):
     try:
         moneys = Money.objects.exclude(individual_rule_content="+_+").exclude(individual_rule_content="0_0")
@@ -141,6 +144,7 @@ def get_moneys(request):
 
 # 벌금 삭제 (원래 있던 규칙 {교체or삭제} 요청 - 승인, 새로 만든 규칙 요청 - 거부)
 @router.delete("/moneys/", tags=["벌금"])
+@user_passes_test(lambda u: u.is_staff)
 def delete_Money(request, money_id: int):
     try:
         money = Money.objects.get(id=money_id)
@@ -152,6 +156,7 @@ def delete_Money(request, money_id: int):
     
 # 벌금 confirm 값 수정 (원래 있던 규칙 {교체or삭제} 요청 - 거부, 새로 만든 규칙 요청 - 승인)
 @router.put("/moneys/{money_id}/confirm_0", tags=["벌금"])
+@user_passes_test(lambda u: u.is_staff)
 def update_Money_confirm_0(request, money_id: int):
     try:
         money = Money.objects.get(id=money_id)
@@ -164,6 +169,7 @@ def update_Money_confirm_0(request, money_id: int):
 
 # 벌금 confirm 값 수정 (원래 있던 규칙 {교체or삭제} 요청)
 @router.put("/moneys/{money_id}/confirm_2", tags=["벌금"])
+@user_passes_test(lambda u: u.is_staff)
 def update_Money_confirm_2(request, money_id: int):
     try:
         money = Money.objects.get(id=money_id)
@@ -176,6 +182,7 @@ def update_Money_confirm_2(request, money_id: int):
 
 # 벌금 is_active 값 수정 (규칙 수행한거 false 안한거 True)
 @router.put("/moneys/{money_id}/is_active", tags=["벌금"])
+@user_passes_test(lambda u: u.is_staff)
 def update_is_active(request, money_id: int):
     try:
         money = Money.objects.get(id=money_id).exclude(individual_rule_content="+_+").exclude(individual_rule_content="0_0")
@@ -188,6 +195,7 @@ def update_is_active(request, money_id: int):
 
 # 벌금 is_active 값 초기화
 @router.put("/moneys/", tags=["벌금"])
+@user_passes_test(lambda u: u.is_staff)
 def reset_is_active(request):
     moneys = Money.objects.all().exclude(individual_rule_content="+_+").exclude(individual_rule_content="0_0")
     for money in moneys:
