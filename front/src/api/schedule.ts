@@ -1,11 +1,10 @@
 import { BASE_URL } from "./signup";
 
-type scheduleResponse = "success" | "fail";
+type scheduleResponse = ISchedule | "fail";
 
 export interface ISchedule {
   id: number;
   start_date: string;
-  end_date: string;
   schedule: string;
   is_holiday: boolean;
 }
@@ -29,12 +28,7 @@ export const createSchedule = async (args: {
 
   try {
     if (createScheduleRes.ok) {
-      const httpResponse = await createScheduleRes.json();
-      if (httpResponse.success) {
-        return "success";
-      }
-
-      return "fail";
+      return createScheduleRes.json();
     }
 
     throw new Error("서버 에러 발생");
@@ -106,6 +100,25 @@ export const updateSchedule = async (args: {
     throw new Error("서버 에러 발생");
   } catch (error) {
     console.log(error);
+    return null;
+  }
+};
+
+export const deleteSchedule = async (id: number): Promise<"success" | null> => {
+  try {
+    const deleteScheduleRes = await fetch(
+      `${BASE_URL}//api/schedule/schedules/${id}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
+      }
+    );
+
+    return deleteScheduleRes.ok ? deleteScheduleRes.json() : null;
+  } catch (err) {
     return null;
   }
 };

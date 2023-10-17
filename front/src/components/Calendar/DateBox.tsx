@@ -5,33 +5,24 @@ import { useDroppable } from "@dnd-kit/core";
 import { useShowModal } from "./Schedule/useShowModal";
 import { dateToString } from "../../utils/getDays";
 
-type addNewSchedule = (date: string, content: string) => void;
-type editSchedule = (contentId: number, content: string, date: string) => void;
-
-export type scheduleSetter = {
-  addNewSchedule?: addNewSchedule;
-  editSchedule?: editSchedule;
-};
+import { useCurrentUserContext } from "../../context/CurrentUserContextProvider";
+import { useScheduleDispatchContext } from "../../context/ScheduleProvider";
 
 type Props = {
   nowDate: Date;
   day: Date;
   schedule?: ISchedule[]; // 스케줄이 있을수도 없을수도
-  scheduleSetter: scheduleSetter;
 };
 
-export default function DateBox({
-  day,
-  nowDate,
-  schedule,
-  scheduleSetter,
-}: Props) {
+export default function DateBox({ day, nowDate, schedule }: Props) {
   const { onShow } = useShowModal();
   const { isOver, setNodeRef } = useDroppable({
     id: dateToString(day.toString()),
   });
 
-  const { addNewSchedule, editSchedule } = scheduleSetter;
+  const dispatch = useScheduleDispatchContext();
+
+  const userInfo = useCurrentUserContext();
 
   const style = isOver ? { color: "green" } : undefined;
 
@@ -55,7 +46,7 @@ export default function DateBox({
       props: {
         date: modalDate,
         content: "",
-        scheduleSetter: { addNewSchedule },
+        scheduleSetter: { add: dispatch?.add },
       },
     });
   };
@@ -68,28 +59,11 @@ export default function DateBox({
         nowDate.getMonth() !== day.getMonth() && "notMonth"
       }`}
     >
-      <button
-        style={{
-          cursor: "pointer",
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: "0",
-          borderRadius: "3px",
-          height: "20px",
-          width: "20px",
-          padding: "0px",
-          background: "white",
-          boxShadow:
-            "rgba(15, 15, 15, 0.1) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 2px 4px",
-          position: "absolute",
-          top: "6px",
-          left: "6px",
-        }}
-        onClick={handleAdd}
-      >
-        +
-      </button>
+      {userInfo?.is_staff && (
+        <button className="schedule-addBtn" onClick={handleAdd}>
+          +
+        </button>
+      )}
       <span
         className={`${
           today.getDate() === day.getDate() &&
@@ -100,13 +74,7 @@ export default function DateBox({
       >
         {dateName}
       </span>
-      {schedule && (
-        <Schedule
-          day={modalDate}
-          schedule={schedule}
-          scheduleSetter={{ editSchedule }}
-        ></Schedule>
-      )}
+      {schedule && <Schedule day={modalDate} schedule={schedule} />}
     </div>
   );
 }

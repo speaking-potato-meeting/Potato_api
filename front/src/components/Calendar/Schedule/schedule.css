@@ -117,3 +117,8 @@ h1 {
   /* border-top: 4px solid #999; */
   padding: 20px;
 }
+
+.eventWindow-delete-btn {
+  display: flex;
+  margin-left: auto;
+}
