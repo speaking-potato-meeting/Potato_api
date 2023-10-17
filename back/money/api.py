@@ -1,5 +1,6 @@
 from ninja import Schema, Router, Path, Query
 from potato.models import Money, User
+from typing import List
 from django.contrib.auth.decorators import login_required,user_passes_test
 import logging
 
@@ -152,7 +153,22 @@ def delete_Money(request, money_id: int):
         return {"message": "벌금 삭제 성공"}
     except Money.DoesNotExist:
         return {"message": "벌금 정보가 없음."}
-    
+
+### 회원별 벌금 confirm 
+@router.put("/money_confirm/{user_id}", tags=["벌금"])
+@user_passes_test(lambda u: u.is_staff)
+def user_confirm_moneys(request, user_id: int,confirm_ids:List[int]):
+    try:
+        moneys = Money.objects.filter(user_id=user_id).exclude(individual_rule_content="+_+").exclude(individual_rule_content="0_0").exclude(confirm=0)
+        for i, money in enumerate(moneys):
+            if confirm_ids[i] == 1:
+                money.confirm = 0
+                money.save()
+            elif confirm_ids[i] == 2:
+                money.delete()
+        return{"message": "confirm 완료"}
+    except Money.DoesNotExist:
+        return {"message": "벌금 정보가 없음."}
     
 # 벌금 confirm 값 수정 (원래 있던 규칙 {교체or삭제} 요청 - 거부, 새로 만든 규칙 요청 - 승인)
 @router.put("/moneys/{money_id}/confirm_0", tags=["벌금"])
