@@ -1,12 +1,12 @@
 from ninja import NinjaAPI, Schema
-from .models import User,StudyTimer,TodoList,User
+from .models import User,StudyTimer,TodoList,User,Rule
 from django.shortcuts import get_object_or_404
 from accounts.api import router as accounts_router
 from schedule.api import router as schedule_router
 from money.api import router as money_router
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 from datetime import date, timedelta
 from django.http import HttpResponse
 # from django.contrib.auth.models import User
@@ -42,6 +42,11 @@ class StudyTimerOut(Schema):
     user_id: int
     date: date
     study: int
+
+class RuleIn(Schema):
+    all_rule: str
+    time: int
+
 
 # 타이머 재생 버튼
 @login_required
@@ -201,3 +206,77 @@ def delete_todolist(request, todo_id: int):
             return response
     except TodoList.DoesNotExist:
         return {"message": "실패"}, 404
+    
+
+
+
+
+####################################
+#Rule 생성
+@api.post("/rule", tags=["룰"])
+@user_passes_test(lambda u: u.is_staff)
+@login_required
+def create_rule(request, payload:RuleIn):
+    try:
+        existing_rule = Rule.objects.all()
+        if existing_rule.exists():
+            return {"message": "이미 룰 정보가 있습니다."}
+        else:
+            rule = Rule.objects.create(
+            all_rule=payload.all_rule,
+            time=payload.time
+            )
+            rule.save()
+            data= {
+                "id": rule.id,
+                "all_rule": rule.all_rule,
+                "time": rule.time
+            }
+            return data
+    except Rule.DoesNotExist:
+        return {"message": "룰 정보가 없습니다."}
+    
+#Rule 조회
+@api.get("/rule", tags=["룰"])
+@user_passes_test(lambda u: u.is_staff)
+@login_required
+def get_rule(request):
+    try:
+        rule = Rule.objects.first()
+        return{
+            "id": rule.id,
+            "all_rule": rule.all_rule,
+            "time": rule.time
+            }
+    except Rule.DoesNotExist:
+        return {"message": "룰 정보가 없습니다."}
+    
+#Rule 수정
+@api.put("/rule", tags=["룰"])
+@user_passes_test(lambda u: u.is_staff)
+@login_required
+def update_rule(request, payload: RuleIn):
+    try:
+        rule = Rule.objects.first()
+        rule.all_rule = payload.all_rule
+        rule.time = payload.time
+        rule.save()
+        data= {
+            "id": rule.id,
+            "all_rule": rule.all_rule,
+            "time": rule.time
+        }
+        return data
+    except Rule.DoesNotExist:
+        return {"message": "룰 정보가 없습니다."}
+    
+@api.delete("/rule", tags=["룰"])
+@user_passes_test(lambda u: u.is_staff)
+@login_required
+def delete_rule(request):
+    try:
+        rule = Rule.objects.first()
+        rule.delete()
+        return {"message": "룰 삭제 완료."}
+    except Rule.DoesNotExist:
+        return {"message": "룰 정보가 없습니다."}
