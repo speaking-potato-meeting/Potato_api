@@ -332,3 +332,12 @@ input[type="checkbox"] {
   color: white;
   padding: 4px 10px;
 }
+
+input:read-only {
+  border: 0;
+  outline: none;
+}
+
+input:read-only.delete {
+  text-decoration: line-through;
+}
