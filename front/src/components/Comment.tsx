@@ -31,9 +31,9 @@ const Comment = (): JSX.Element => {
     try {
       /* 백엔드의 API 엔드포인트를 설정하세요(/api/schedule/schedules/{schedule_id}/comments/) */
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/schedule/schedules/${5}/comments/`
+        `http://127.0.0.1:8000/api/schedule/schedules/${1}/comments/`,
+        { withCredentials: true }
       );
-
       const commentData = response.data;
       setComments(commentData);
     } catch (error) {
@@ -56,16 +56,22 @@ const Comment = (): JSX.Element => {
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/comments", {
-        user_id: 2, // user 어떻게 넘겨줘야하지? 임시로 이렇게 넘겨주기
-        text: newText, // 새로 받을 텍스트
-      });
+      const response = await axios.post("http://127.0.0.1:8000/api/schedule/comments", 
+        {
+          user_id: userInfo?.id,
+          schedule_id : 1, // 임시로 넣음
+          timestamp: new Date().toISOString().slice(0, 10),
+          text: newText,
+        },
+        { withCredentials: true }
+      );
 
       const newComment = {
         id: response.data.id,
-        user_id: 2, // 여기도 임시로...
+        user_id: response.data.user_id,
+        schedule_id: response.data.schedule_id,
         timestamp: response.data.timestamp,
-        text: newText,
+        text: response.data.text,
       };
 
       // 새로운 댓글을 기존 댓글 목록에 추가
@@ -108,12 +114,13 @@ const Comment = (): JSX.Element => {
 
     try {
       const response = await axios.put(
-        `http://127.0.0.1:8000/api/comments/${id}`,
+        `http://127.0.0.1:8000/api/schedule/comments/${id}`,
         {
           user_id: 2,
           text: newEditText,
           timestamp: new Date().toISOString().slice(0, 10),
-        }
+        },
+        { withCredentials: true }
       );
       const updatedComments = comments.map((comment) => {
         if (comment.id === id) {
@@ -135,7 +142,8 @@ const Comment = (): JSX.Element => {
 
   const deleteCommentSubmit = async (id: number) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/comments/${id}`); // 추가됨
+      await axios.delete(`http://127.0.0.1:8000/api/schedule/comments/${id}`,
+      { withCredentials: true });
       const updatedComments = comments.filter((comment) => comment.id !== id);
       setComments(updatedComments);
     } catch (error) {
