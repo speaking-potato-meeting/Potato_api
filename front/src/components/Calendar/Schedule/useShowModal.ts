@@ -8,8 +8,13 @@ export function useShowModal() {
   const onShow = (props: state) => {
     setModalState(props);
   };
-  const onClose = () => {
-    setModalState(null);
+  const onClose = (args: "ModalClose" | null) => {
+    if (args === "ModalClose")
+      return setModalState((prev) => {
+        return { ...prev, close: args };
+      });
+
+    return setModalState(null);
   };
 
   return { onShow, onClose };
