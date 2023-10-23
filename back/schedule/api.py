@@ -17,8 +17,6 @@ def is_staff_user(user):
 
 class CommentIn(Schema):
     schedule_id: int
-    user_id: int
-    timestamp: date
     text: str
 
 
@@ -42,7 +40,7 @@ class ScheduleOut(Schema):
     is_staff:bool#스태프 여부
 
 # 댓글 작성 (특정 스케줄에 맞춰)
-@router.post("/comments", tags=["코멘트"])
+@router.post("/schedules/{schedule_id}/comments", tags=["코멘트"])
 @login_required
 def create_Comment(request, payload: CommentIn):
     schedule_id = payload.schedule_id
@@ -58,7 +56,7 @@ def create_Comment(request, payload: CommentIn):
                 "text": comment.text
                 }
     except Schedule.DoesNotExist:
-        return 404, {"error": "Schedule not found"}
+        return {"error": "Schedule not found"}
 
 # 해당 일정에 작성된 코멘트 불러오기
 @router.get("/schedules/{schedule_id}/comments/", tags=["코멘트"])
