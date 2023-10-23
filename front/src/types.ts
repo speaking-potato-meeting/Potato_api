@@ -28,7 +28,6 @@ export type RuleFormData = {
 };
 
 export interface User {
-  [key: string]: string | number | RuleFormData[];
   id: number;
   username: string;
   first_name: string;
@@ -41,13 +40,13 @@ export interface User {
   position: string;
   birth: string;
   individual_rule: RuleFormData[];
+  is_staff: boolean;
   // total_fee: number;
   // week_studytime: number;
   // penalty: number;
   // immunity: number;
   // is_admin: boolean;
   // is_active: boolean;
-  // is_staff: boolean;
   // is_superuser: boolean;
   // profile_image: string;
 }

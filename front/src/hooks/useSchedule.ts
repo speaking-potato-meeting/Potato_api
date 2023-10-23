@@ -1,8 +1,23 @@
 import { useState, useEffect } from "react";
 
 import type { ISchedule } from "../api/schedule";
-import { getSchedule, updateSchedule } from "../api/schedule";
+import {
+  getSchedule,
+  updateSchedule,
+  createSchedule,
+  deleteSchedule,
+} from "../api/schedule";
 import { dateToString } from "../utils/getDays";
+
+export type editSchedule = (id: number, date: string, content: string) => void;
+export type addSchedule = (date: string, content: string) => void;
+export type removeSchedule = (id: number) => void;
+
+export type scheduleSetter = {
+  add?: addSchedule;
+  edit?: editSchedule;
+  delete?: removeSchedule;
+};
 
 export default function useSchedule(allDay: Date[], nowDate: Date) {
   const [allSchedule, setAllSchedule] = useState<ISchedule[] | null>(null);
@@ -55,15 +70,29 @@ export default function useSchedule(allDay: Date[], nowDate: Date) {
     return;
   };
 
-  // const removeSchedule = async (id: number) => {
-  //   const deleteScheduleMsg = await deleteSchedule(id);
+  const addNewSchedule = async (date: string, content: string) => {
+    date = dateToString(date);
 
-  //   if (deleteScheduleMsg === "success") {
-  //     setAllSchedule(
-  //       allSchedule ? allSchedule.filter((s) => s.id !== id) : null
-  //     );
-  //   }
-  // };
+    const addNewScheduleResponse = await createSchedule({
+      date,
+      content: content.length ? content : "제목없음",
+    });
 
-  return { allSchedule, editSchedule };
+    if (addNewScheduleResponse !== "fail") {
+      setAllSchedule([...(allSchedule ?? []), addNewScheduleResponse]);
+    }
+    return;
+  };
+
+  const removeSchedule = async (id: number) => {
+    const deleteScheduleMsg = await deleteSchedule(id);
+
+    if (deleteScheduleMsg) {
+      setAllSchedule(
+        allSchedule ? allSchedule.filter((s) => s.id !== id) : null
+      );
+    }
+  };
+
+  return { allSchedule, editSchedule, addNewSchedule, removeSchedule };
 }

@@ -12,6 +12,9 @@ from django.http import HttpResponse
 router = Router()
 logger = logging.getLogger(__name__)
 
+def is_staff_user(user):
+    return user.is_staff
+
 class CommentIn(Schema):
     schedule_id: int
     user_id: int
@@ -48,7 +51,12 @@ def create_Comment(request, payload: CommentIn):
         schedule = Schedule.objects.get(id=schedule_id)
         comment = Comment.objects.create(text=payload.text, schedule=schedule,user=user)
         comment.save()
-        return {"success" : True}
+        return {"id" : comment.id,
+                "schedule_id": comment.schedule.id,
+                "user_id": user.id,
+                "timestamp": comment.timestamp,
+                "text": comment.text
+                }
     except Schedule.DoesNotExist:
         return 404, {"error": "Schedule not found"}
 
@@ -109,7 +117,6 @@ def delete_comment(request, comment_id: int):
 @login_required
 def create_schedule(request,payload:ScheduleIn):
     if request.user.is_staff:
-        print(1)
         schedule = Schedule.objects.create(
             start_date = payload.start_date,
             end_date = payload.start_date,
@@ -117,7 +124,11 @@ def create_schedule(request,payload:ScheduleIn):
             is_holiday = payload.is_holiday,
         )
         schedule.save()
-        return{"success": True,"is_staff":True}
+        return {"id": schedule.id,
+                "start_date": schedule.start_date,
+                "schedule": schedule.schedule,
+                "is_holiday": schedule.is_holiday,
+                }
     else:
         response = HttpResponse("권한이 없습니다.")
         response.status_code = 403
