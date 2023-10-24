@@ -107,7 +107,7 @@ export const updateSchedule = async (args: {
 export const deleteSchedule = async (id: number): Promise<"success" | null> => {
   try {
     const deleteScheduleRes = await fetch(
-      `${BASE_URL}//api/schedule/schedules/${id}/`,
+      `${BASE_URL}/api/schedule/schedules/${id}/`,
       {
         method: "DELETE",
         credentials: "include",

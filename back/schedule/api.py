@@ -37,12 +37,12 @@ class ScheduleOut(Schema):
     start_date: date
     schedule: str
     is_holiday: bool
-    is_staff:bool#스태프 여부
+    # is_staff:bool#스태프 여부
 
 # 댓글 작성 (특정 스케줄에 맞춰)
 @router.post("/schedules/{schedule_id}/comments", tags=["코멘트"])
 @login_required
-def create_Comment(request, payload: CommentIn):
+def create_Comment(request, schedule_id:int, payload: CommentIn):
     schedule_id = payload.schedule_id
     user = request.user
     try:

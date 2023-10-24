@@ -46,7 +46,7 @@ const Comment = (): JSX.Element => {
     fetchData();
   }, []);
 
-  const createCommentSubmit = async () => {
+  const createCommentSubmit = async (schedule_id: number) => {
     // 유효성 검사 (댓글 내용 비어있는지)
     if (newText.length === 0) {
       if (CommentTextInput.current) {
@@ -56,11 +56,9 @@ const Comment = (): JSX.Element => {
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/schedule/comments", 
+      const response = await axios.post(`http://127.0.0.1:8000/api/schedule/schedules/${schedule_id}/comments`, 
         {
-          user_id: userInfo?.id,
-          schedule_id : 1, // 임시로 넣음
-          timestamp: new Date().toISOString().slice(0, 10),
+          schedule_id: schedule_id,
           text: newText,
         },
         { withCredentials: true }
