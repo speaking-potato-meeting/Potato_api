@@ -1,11 +1,13 @@
-import React from 'react'
+import { RuleForm } from "../components/SignUp/RuleForm";
+import UpdateRuleForm from "../components/UpdateRuleForm";
 
 const MyPage = () => {
   return (
-    <div>
-      MyPage
-    </div>
-  )
-}
+    <>
+      <UpdateRuleForm />
+      <RuleForm />
+    </>
+  );
+};
 
-export default MyPage
+export default MyPage;
