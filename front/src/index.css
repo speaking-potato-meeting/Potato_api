@@ -73,6 +73,10 @@ button:hover {
   border-color: #7310c4;
 }
 
+input {
+  font-family: "Dovemayo_gothic";
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
