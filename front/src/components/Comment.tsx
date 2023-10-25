@@ -5,8 +5,12 @@ import "./comment.css";
 import axios from "axios";
 import { useCurrentUserContext } from "../context/CurrentUserContextProvider";
 
-const dateNow = new Date();
-const today = dateNow.toISOString().slice(0, 10);
+// 한국 시간으로 포매팅된 오늘 날짜
+const today = new Date();
+const year = today.getFullYear();
+const month = String(today.getMonth() + 1).padStart(2, '0');
+const day = String(today.getDate()).padStart(2, '0');
+const formattedToday = `${year}-${month}-${day}`;
 
 const Comment = (): JSX.Element => {
   /* 로그인하지 않은 유저인지 확인 */
@@ -25,13 +29,30 @@ const Comment = (): JSX.Element => {
   const CommentEditTextInput: React.MutableRefObject<
     HTMLInputElement | undefined
   > = useRef();
+  const [todayScheduleId, setTodayScheduleId] = useState<number | null>(null);
+
 
   // 데이터를 서버에서 가져오는 함수
   const fetchData = async () => {
     try {
+      const today_schedule_id_response = await axios.get(
+        `http://127.0.0.1:8000/api/schedule/schedules/`,
+        { 
+          // 특정일자 조회로 첫날 마지막날을 오늘로 맞춘 다음에 조회해서 id 가지고 오면 될거같음!
+          params: {
+            from_date: formattedToday,
+            to_date: formattedToday,
+            // 현재 category는 생성이 안되어있으니 그거는 일단 제외하고 작업함
+            // category : '출석부'
+          }
+        }
+      );
+      const scheduleId = today_schedule_id_response.data[0].id;
+      setTodayScheduleId(scheduleId);
+
       /* 백엔드의 API 엔드포인트를 설정하세요(/api/schedule/schedules/{schedule_id}/comments/) */
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/schedule/schedules/${1}/comments/`,
+        `http://127.0.0.1:8000/api/schedule/schedules/${scheduleId}/comments/`,
         { withCredentials: true }
       );
       const commentData = response.data;
@@ -46,7 +67,7 @@ const Comment = (): JSX.Element => {
     fetchData();
   }, []);
 
-  const createCommentSubmit = async (schedule_id: number) => {
+  const createCommentSubmit = async (schedule_id: number | null) => {
     // 유효성 검사 (댓글 내용 비어있는지)
     if (newText.length === 0) {
       if (CommentTextInput.current) {
@@ -55,28 +76,33 @@ const Comment = (): JSX.Element => {
       return;
     }
 
-    try {
-      const response = await axios.post(`http://127.0.0.1:8000/api/schedule/schedules/${schedule_id}/comments`, 
-        {
-          schedule_id: schedule_id,
-          text: newText,
-        },
-        { withCredentials: true }
-      );
-
-      const newComment = {
-        id: response.data.id,
-        user_id: response.data.user_id,
-        schedule_id: response.data.schedule_id,
-        timestamp: response.data.timestamp,
-        text: response.data.text,
-      };
-
-      // 새로운 댓글을 기존 댓글 목록에 추가
-      setComments([...comments, newComment]);
-      setNewText("");
-    } catch (error) {
-      console.error("댓글 생성 중 오류 발생:", error);
+    if (schedule_id === null) {
+      console.log('schedule_id를 찾을 수 없습니다.');
+    } else {
+      try {
+        const response = await axios.post(
+          `http://127.0.0.1:8000/api/schedule/schedules/${schedule_id}/comments`, 
+          {
+            schedule_id: schedule_id,
+            text: newText,
+          },
+          { withCredentials: true }
+        );
+  
+        const newComment = {
+          id: response.data.id,
+          user_id: response.data.user_id,
+          schedule_id: response.data.schedule_id,
+          timestamp: response.data.timestamp,
+          text: response.data.text,
+        };
+  
+        // 새로운 댓글을 기존 댓글 목록에 추가
+        setComments([...comments, newComment]);
+        setNewText("");
+      } catch (error) {
+        console.error("댓글 생성 중 오류 발생:", error);
+      }
     }
   };
 
@@ -171,7 +197,7 @@ const Comment = (): JSX.Element => {
 
   return (
     <div className="comment">
-      <h1 className="today">{today}</h1>
+      <h1 className="today">{formattedToday}</h1>
       <ul>
         {comments.map((comment) => (
           <li key={comment.id}>
@@ -267,7 +293,7 @@ const Comment = (): JSX.Element => {
               value={newText}
               onChange={(e) => setNewText(e.target.value)}
             />
-            <button onClick={createCommentSubmit}>댓글 생성</button>
+            <button onClick={() => createCommentSubmit(todayScheduleId)}>댓글 생성</button>
           </>
         ) : (
           <p>로그인이 필요합니다.</p>
