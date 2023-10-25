@@ -55,7 +55,7 @@ function ToDo() {
     }
   }
 
-  const onUpdate = async (id: number, newDescription: string) => {
+  const onDescriptionUpdate = async (id: number, newDescription: string) => {
     try {
       const response = await axios.put(`http://localhost:8000/api/todolist/todo/${id}`, {
         description: newDescription,
@@ -76,7 +76,7 @@ function ToDo() {
       });
       setTodolist(updatedTodo);
     } catch (error) {
-      console.log('todo 수정 중에 오류가 발생했습니다. :', error)
+      console.log('todo 내용 수정 중에 오류가 발생했습니다. :', error)
     }
   };
 
@@ -92,13 +92,42 @@ function ToDo() {
     }
   }
 
+
+  const handleCheckboxChange = async (id: number, is_active: boolean, description: string) => {
+    try {
+      const response = await axios.put(`http://localhost:8000/api/todolist/todo/${id}`, {
+        description: description,
+        is_active: !is_active,
+      },
+      { withCredentials: true });
+      const updatedTodo = todolist.map((todo) => {
+        if (todo.id === id) {
+          return {
+            ...todo,
+            id: response.data.id,
+            user_id: response.data.id,
+            description: response.data.description,
+            is_active: response.data.is_active
+          };
+        }
+        return todo;
+      });
+      setTodolist(updatedTodo);
+    } catch (error) {
+      console.log('todo is_active 수정 중에 오류가 발생했습니다. :', error)
+    }
+  }
+
   return (
-    <div className='todo-box'>
+    <div className='todo'>
       <h1>할 일을 하자</h1>
       <TodoForm onAdd={onAdd}/>
       <div>
         {todolist.map((todo) => (
-          <TodoItem key={todo.id} todo={todo} onUpdate={onUpdate} onDelete={onDelete} />
+          <div className='todo-box'>
+            <input className='todoItem-checkbox' type="checkbox" checked={todo.is_active} onChange={() => handleCheckboxChange(todo.id, todo.is_active, todo.description)} />
+            <TodoItem key={todo.id} todo={todo} onDescriptionUpdate={onDescriptionUpdate} onDelete={onDelete} />
+          </div>
         ))}
       </div>
     </div>

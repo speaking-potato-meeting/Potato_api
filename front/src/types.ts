@@ -60,7 +60,7 @@ export interface Todo {
 
 export interface TodoItemProps {
   todo: Todo;
-  onUpdate: (id: number, newDescription: string) => void;
+  onDescriptionUpdate: (id: number, newDescription: string) => void;
   onDelete: (id: number) => void;
 }
 

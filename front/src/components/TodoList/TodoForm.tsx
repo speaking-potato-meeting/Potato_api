@@ -41,6 +41,7 @@ const TodoForm = ({ onAdd }: TodoFormProps ) => {
           value={text}
           onChange={onChangeInput}  
           onKeyPress={handleAddPress}
+          placeholder='ex) 1일 1커밋'
         />
         <button onClick={onClickAdd}>추가</button>
       </div>

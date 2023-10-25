@@ -1,29 +1,43 @@
-.todo-box {
+.todo {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.todo-box h1 {
+.todo h1 {
   margin: 5rem 0;
+}
+
+.todo-box h2 {
+  font-size: 1.3em;
+}
+
+.todo-box {
+  display: flex;
+  align-items: center;
+}
+
+.todo-box .todoItem-checkbox {
+  margin-right: 1.3rem;
 }
 
 .todo-add-editor {
   display: flex;
   justify-content: center;
-  width: 50rem;
-  margin-bottom: 1rem;
+  width: 55rem;
+  margin-bottom: 3rem;
 }
 
 .todo-add-input {
   width: 80%;
-  padding-right: 10px;
   padding: 2px 4px;
+  font-size: 1.1em;
 }
 
 input.todo-edit-input {
-  width: 40rem;
+  width: 47rem;
   padding: 2px 4px;
+  font-size: 1.3em;
 }
 
 input.todo-edit-input:focus,
@@ -36,7 +50,7 @@ input.todo-edit-input:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 2rem 0;
+  margin: 0.8rem 0;
 }
 
 .todo-add-invalid-span {
@@ -48,10 +62,7 @@ input.todo-edit-input:hover {
 .todo-edititem-box {
   display: flex;
   flex-direction: column;
-}
-
-.todo-edititem-box .todoitem-box {
-  margin: 0;
+  /* margin: 0.8rem 0; */
 }
 
 .todo-edit-invalid-span {
@@ -60,12 +71,16 @@ input.todo-edit-input:hover {
 }
 
 .todoItem-content {
-  margin: 0;
-  width: 45rem;
-  font-size: large;
+  width: 50rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.is-not-active {
+  color: rgb(179, 179, 179);
+  /* 가져온 폰트라 적용이 안되는군요... */
+  /* font-style: italic; */
 }
 
 .todo-delete-btn, .todo-edit-btn {
