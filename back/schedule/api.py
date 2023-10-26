@@ -64,7 +64,7 @@ def create_Comment(request, schedule_id:int, payload: CommentIn):
             "position": user_info.position,
             "github": user_info.github,
             "blog": user_info.blog,
-            " profile_image": user_info.profile_image
+            "profile_image": user_info.profile_image
         }
         response_data = {
             "comment": {
