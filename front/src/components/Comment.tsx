@@ -89,7 +89,7 @@ const Comment = (): JSX.Element => {
   
         const newComment = {
           id: response.data.id,
-          user_id: response.data.user_id,
+          username: response.data.username,
           schedule_id: response.data.schedule_id,
           timestamp: response.data.timestamp,
           text: response.data.text,
@@ -138,9 +138,8 @@ const Comment = (): JSX.Element => {
       const response = await axios.put(
         `http://127.0.0.1:8000/api/schedule/comments/${id}`,
         {
-          user_id: 2,
+          schedule_id: id,
           text: newEditText,
-          timestamp: new Date().toISOString().slice(0, 10),
         },
         { withCredentials: true }
       );
@@ -148,8 +147,7 @@ const Comment = (): JSX.Element => {
         if (comment.id === id) {
           return {
             ...comment,
-            text: response.data.text,
-            timestamp: new Date(),
+            text: response.data.text
           };
         }
         return comment;
@@ -207,7 +205,7 @@ const Comment = (): JSX.Element => {
                   alt="프로필 사진"
                 />
                 <p className="comment-name">
-                  {userInfo?.first_name ?? "이름을 불러올 수 없습니다."}
+                  {userInfo?.first_name ? `${comment.username}` : "이름을 불러올 수 없습니다."}
                 </p>
               </div>
               <div>
@@ -237,20 +235,6 @@ const Comment = (): JSX.Element => {
                 </div>
               )}
               <div className="comment-btn-container">
-                {/* {editingCommentId === comment.id ? (
-                  // 수정 모드 일때
-                  <div>
-                    <button onClick={handleConfirmEdit}>확인</button>
-                    <button onClick={() => setEditingCommentId(null)}>취소</button>
-                    <button onClick={() => deleteCommentSubmit(comment.id)}>삭제</button>
-                  </div>
-                ) : ( 
-                  // 수정 모드 아닐 때
-                  <div>
-                    <button onClick={() => editCommentSubmit(comment.id, comment.text)}>수정</button>
-                    <button onClick={() => deleteCommentSubmit(comment.id)}>삭제</button>
-                  </div>
-                )} */}
                 {userInfo && (
                   <>
                     <button
@@ -261,12 +245,14 @@ const Comment = (): JSX.Element => {
                     >
                       {editingCommentId === comment.id ? "취소" : "수정"}
                     </button>
-                    <button
-                      className="comment-btn"
-                      onClick={() => handleConfirmEdit(comment.id)}
-                    >
-                      확인
-                    </button>
+                    {editingCommentId === comment.id ? (
+                      <button
+                        className="comment-btn"
+                        onClick={() => handleConfirmEdit(comment.id)}
+                      >
+                        확인
+                      </button>
+                    ) : <></>}
                     <button
                       className="comment-btn"
                       onClick={() => deleteCommentSubmit(comment.id)}
