@@ -1,8 +1,8 @@
 /* commentType 수정 */
 export interface commentType {
   id: number;
-  user_id: number; // user오면 사라질 field
-  // user: User
+  // user_id: number; // 마이페이지에서 보여줄 때 필요함
+  username: string; // 댓글 띄워줄 때 필요함
   schedule_id: number;
   text: string;
   timestamp: Date;
