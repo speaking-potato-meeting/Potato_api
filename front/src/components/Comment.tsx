@@ -42,15 +42,13 @@ const Comment = (): JSX.Element => {
           params: {
             from_date: formattedToday,
             to_date: formattedToday,
-            // 현재 category는 생성이 안되어있으니 그거는 일단 제외하고 작업함
-            // category : '출석부'
           }
         }
       );
-      const scheduleId = today_schedule_id_response.data[0].id;
+
+      const scheduleId = today_schedule_id_response.data.filter((item: { category: string; }) => item.category === '출석')[0].id;
       setTodayScheduleId(scheduleId);
 
-      /* 백엔드의 API 엔드포인트를 설정하세요(/api/schedule/schedules/{schedule_id}/comments/) */
       const response = await axios.get(
         `http://127.0.0.1:8000/api/schedule/schedules/${scheduleId}/comments/`,
         { withCredentials: true }
