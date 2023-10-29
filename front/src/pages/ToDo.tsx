@@ -124,9 +124,9 @@ function ToDo() {
       <TodoForm onAdd={onAdd}/>
       <div>
         {todolist.map((todo) => (
-          <div className='todo-box'>
+          <div className='todo-box' key={todo.id}>
             <input className='todoItem-checkbox' type="checkbox" checked={todo.is_active} onChange={() => handleCheckboxChange(todo.id, todo.is_active, todo.description)} />
-            <TodoItem key={todo.id} todo={todo} onDescriptionUpdate={onDescriptionUpdate} onDelete={onDelete} />
+            <TodoItem todo={todo} onDescriptionUpdate={onDescriptionUpdate} onDelete={onDelete} />
           </div>
         ))}
       </div>
