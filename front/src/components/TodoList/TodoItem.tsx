@@ -30,7 +30,7 @@ const TodoItem = ({ todo, onDescriptionUpdate, onDelete }: TodoItemProps) => {
   };
 
   return (
-    <div key={todo.id}>
+    <div>
       {editMode ? (
         <div className='todo-edititem-box'>
           <span className='todo-edit-invalid-span'>{editErrorMessage}</span>
