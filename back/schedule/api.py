@@ -32,7 +32,6 @@ class ScheduleIn(Schema):
     start_date: date
     schedule: str
     is_holiday: bool
-    category: str
     
 class ScheduleOut(Schema):
     id: int
@@ -143,7 +142,7 @@ def create_schedule(request,payload:ScheduleIn):
             end_date = payload.start_date,
             schedule = payload.schedule,
             is_holiday = payload.is_holiday,
-            category=payload.category
+            category="일정"
         )
         schedule.save()
         return {"id": schedule.id,
