@@ -236,7 +236,6 @@ def update_schedule(request, schedule_id: int, payload: ScheduleIn):
             schedule.end_date = payload.start_date
             schedule.schedule = payload.schedule
             schedule.is_holiday = payload.is_holiday
-            schedule.category=payload.category
             schedule.save()
 
             return ScheduleOut(
@@ -245,7 +244,7 @@ def update_schedule(request, schedule_id: int, payload: ScheduleIn):
                 end_date=schedule.end_date,
                 schedule=schedule.schedule,
                 is_holiday=schedule.is_holiday,
-                category=payload.category,
+                category=schedule.category,
                 is_staff=True
             )
         except Schedule.DoesNotExist:
