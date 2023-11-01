@@ -31,7 +31,7 @@ class ScheduleIn(Schema):
     start_date: date
     schedule: str
     is_holiday: bool
-
+    
 class ScheduleOut(Schema):
     id: int
     start_date: date
@@ -49,33 +49,75 @@ def create_Comment(request, payload: CommentIn):
         schedule = Schedule.objects.get(id=schedule_id)
         comment = Comment.objects.create(text=payload.text, schedule=schedule,user=user)
         comment.save()
-        return {"id" : comment.id,
+        user_info=User.objects.get(id=user.id)
+        user_data = {#해당 유저 정보
+            "id": user_info.id,
+            "profile_image": user_info.profile_image.url if user_info.profile_image else None
+        }
+        response_data = {
+            "comment": {
+                "id": comment.id,
                 "schedule_id": comment.schedule.id,
                 "user_id": user.id,
                 "timestamp": comment.timestamp,
                 "text": comment.text
                 }
+        }
     except Schedule.DoesNotExist:
         return {"error": "Schedule not found"}
 
 # 해당 일정에 작성된 코멘트 불러오기
-@router.get("/schedules/{schedule_id}/comments/", tags=["코멘트"])
-def get_comments_for_schedule(request, schedule_id: int):
+@router.get("/schedules/{schedule_id}/comments", tags=["코멘트"])
+def get_comments_for_schedule(request,schedule_id: int):
     try:
-        comments = Comment.objects.filter(schedule_id=schedule_id)  # 해당 스케줄에 해당하는 comment 검색
-        comment_list = [
-            CommentOut(
-                id=comment.id,
-                username=comment.user.first_name,
-                timestamp=comment.timestamp,
-                text=comment.text,
-                schedule_id=comment.schedule_id,
-            )
-            for comment in comments
-        ]
+        comments = Comment.objects.filter(schedule_id=schedule_id)
+        comment_list = []
+        for comment in comments:
+            user_info = User.objects.get(id=comment.user.id)
+            user_data = {
+                "id": user_info.id,
+                "profile_image": user_info.profile_image.url if user_info.profile_image else None
+            }
+            comment_data = {
+                "id": comment.id,
+                "schedule_id": comment.schedule.id,
+                "user_id": user_info.id,
+                "timestamp": comment.timestamp,
+                "text": comment.text,
+                "user_info": user_data
+            }
+            comment_list.append(comment_data)
         return comment_list
-    except Schedule.DoesNotExist:
-        return 404, {"error": "Schedule not found"}
+
+    except Comment.DoesNotExist:
+        return {"error": "Comments not found"}
+
+    
+# 유저별 작성한 코멘트 불러오기
+@router.get("/users/{user_id}/comments", tags=["코멘트"])
+def get_comments_by_user(user_id: int):
+    try:
+        comments = Comment.objects.filter(user_id=user_id)
+        comment_list = []
+        for comment in comments:
+            user_info = User.objects.get(id=comment.user.id)
+            user_data = {
+                "id": user_info.id,
+                "profile_image": user_info.profile_image.url if user_info.profile_image else None
+            }
+            comment_data = {
+                "id": comment.id,
+                "schedule_id": comment.schedule.id,
+                "user_id": user_info.id,
+                "timestamp": comment.timestamp,
+                "text": comment.text,
+                "user_info": user_data
+            }
+            comment_list.append(comment_data)
+        return comment_list
+
+    except Comment.DoesNotExist:
+        return {"error": "Comments not found"}
 
 # 댓글 수정
 @router.put("/comments/{comment_id}", tags=["코멘트"])
@@ -86,13 +128,22 @@ def update_comment(request, comment_id: int, payload: CommentIn):
         comment.text = payload.text
         comment.save()
 
-        return CommentOut(
-            id=comment.id,
-            user_id=comment.user.id,
-            timestamp=comment.timestamp,
-            text=comment.text,
-            schedule_id=comment.schedule_id,
-        )
+        user_info=User.objects.get(id=comment.user.id)
+        user_data = {#해당 유저 정보
+            "id": user_info.id,
+            "profile_image": user_info.profile_image.url if user_info.profile_image else None
+        }
+        response_data = {
+            "comment": {
+                "id": comment.id,
+                "schedule_id": comment.schedule.id,
+                "user_id": comment.user.id,
+                "timestamp": comment.timestamp,
+                "text": comment.text,
+            },
+            "user_info": user_data,
+        }
+        return response_data
     except Comment.DoesNotExist:
         return 404, {"error": "Comment not found"}
 
@@ -108,6 +159,7 @@ def delete_comment(request, comment_id: int):
         return 404, {"error": "Comment not found"}
 
 #####################################################################
+#####################################################################
 
 # 스케줄 생성
 @router.post("/schedules/", tags=["스케줄"])
@@ -120,6 +172,7 @@ def create_schedule(request,payload:ScheduleIn):
             end_date = payload.start_date,
             schedule = payload.schedule,
             is_holiday = payload.is_holiday,
+            category=payload.category
         )
         schedule.save()
         return {"id": schedule.id,
@@ -150,7 +203,6 @@ def get_schedule(request, schedule_id: int):
 # 내일까지 엔드데이트랑 스타트데이트
 @router.get("/schedules/", response=List[ScheduleOut], tags=["스케줄"])
 def get_schedules_in_date_range(request, from_date: date, to_date: date):
-    # start_date와 end_date 사이의 스케줄을 데이터베이스에서 조회
     schedules = Schedule.objects.filter(start_date__gte=from_date, start_date__lte=to_date)
     
     # 조회된 스케줄을 ScheduleOut 형태로 변환하여 응답
