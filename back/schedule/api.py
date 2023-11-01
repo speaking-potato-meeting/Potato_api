@@ -189,35 +189,6 @@ def create_schedule(request,payload:ScheduleIn):
         response = HttpResponse("권한이 없습니다.")
         response.status_code = 403
         return response
-    
-#1년 스케줄 생성(카테고리 출석)
-@router.post("/create_yearly_schedules", tags=["스케줄"])
-@user_passes_test(lambda u: u.is_staff)
-@login_required
-def create_yearly_schedules(request):
-    # 시작일과 끝일 설정
-    today = timezone.now()
-    end_date = today + timedelta(days=365)  # 1년 후
-
-    # 스케줄 생성
-    while today <= end_date:
-
-        day_of_week = today.weekday()
-
-        # 주말제외
-        if day_of_week != 6 and day_of_week != 5:
-            schedule = Schedule.objects.create(
-                start_date=today,
-                end_date=today,
-                schedule="일일 스케줄",
-                is_holiday=False,
-                category='출석',  # 또는 '일정'으로 변경 가능
-            )
-            schedule.save()
-
-        today += timedelta(days=1)
-    
-    return {"message": "1년 동안의 스케줄이 생성되었습니다."}   
 
 # 특정 스케줄 조회
 @router.get("/schedules/{schedule_id}/", tags=["스케줄"], response=ScheduleOut)
