@@ -71,7 +71,6 @@ def create_Comment(request, schedule_id: int, payload: CommentIn):
             "comment": {
                 "id": comment.id,
                 "schedule_id": comment.schedule.id,
-                "user_id": user.id,
                 "timestamp": comment.timestamp,
                 "text": comment.text,
             },
@@ -100,7 +99,6 @@ def get_comments_for_schedule(request, schedule_id: int):
             comment_data = {
                 "id": comment.id,
                 "schedule_id": comment.schedule.id,
-                "user_id": user_info.id,
                 "timestamp": comment.timestamp,
                 "text": comment.text,
                 "user_info": user_data,
@@ -130,7 +128,6 @@ def get_comments_by_user(user_id: int):
             comment_data = {
                 "id": comment.id,
                 "schedule_id": comment.schedule.id,
-                "user_id": user_info.id,
                 "timestamp": comment.timestamp,
                 "text": comment.text,
                 "user_info": user_data,
@@ -163,7 +160,6 @@ def update_comment(request, comment_id: int, payload: CommentIn):
             "comment": {
                 "id": comment.id,
                 "schedule_id": comment.schedule.id,
-                "user_id": comment.user.id,
                 "timestamp": comment.timestamp,
                 "text": comment.text,
             },
