@@ -1,9 +1,11 @@
-// Comment.tsx
+import "../components/Comment/Comment.css";
+// import CommentForm from "../components/Comment/CommentForm";
+// import CommentArea from "../components/Comment/CommentArea";
 import { useState, useEffect, useRef } from "react";
-import { commentType } from "../types";
-import "./comment.css";
+import { CommentResponseType, CommentType } from "../types";
 import axios from "axios";
 import { useCurrentUserContext } from "../context/CurrentUserContextProvider";
+import { BASE_URL } from "../api/signup";
 
 // 한국 시간으로 포매팅된 오늘 날짜
 const today = new Date();
@@ -16,27 +18,33 @@ const Comment = (): JSX.Element => {
   /* 로그인하지 않은 유저인지 확인 */
   const userInfo = useCurrentUserContext();
 
-  // text를 받아오는 고런..
   const [newText, setNewText] = useState("");
   const [newEditText, setNewEditText] = useState("");
-  // 댓글 생성시..
-  const [comments, setComments] = useState<commentType[]>([]);
+  // 댓글 담기는 곳
+  const [comments, setComments] = useState<CommentType[]>([]);
+
+  // 댓글 fetch로 받아오는 오늘 스케줄 ID
+  const [todayScheduleId, setTodayScheduleId] = useState<number | null>(null);
   // 수정 기능을 위해 대상 댓글의 ID 받아오는..
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+
   // 댓글 내용 포커싱을 위한 useRef
   const CommentTextInput: React.MutableRefObject<HTMLInputElement | undefined> =
     useRef();
   const CommentEditTextInput: React.MutableRefObject<
     HTMLInputElement | undefined
   > = useRef();
-  const [todayScheduleId, setTodayScheduleId] = useState<number | null>(null);
 
+  // 수정 모드 때 사용될 오류 메세지
+  const [commentEditErrorMessage, setCommentEditErrorMessage] = useState("");
 
   // 데이터를 서버에서 가져오는 함수
   const fetchData = async () => {
+    let scheduleId; // scheduleId 변수를 try 블록 외부에서 선언
+
     try {
       const today_schedule_id_response = await axios.get(
-        `http://127.0.0.1:8000/api/schedule/schedules/`,
+        `${BASE_URL}/api/schedule/schedules/`,
         { 
           // 특정일자 조회로 첫날 마지막날을 오늘로 맞춘 다음에 조회해서 id 가지고 오면 될거같음!
           params: {
@@ -45,22 +53,29 @@ const Comment = (): JSX.Element => {
           }
         }
       );
-
-      const scheduleId = today_schedule_id_response.data.filter((item: { category: string; }) => item.category === '출석')[0].id;
+      // scheduleId = today_schedule_id_response.data.filter((item: { category: string; }) => item.category === '출석')[0].id;
+      // 지금은 생성이 기본 일정으로만 되어있어서 출석부가 생성이 안되기 때문에 임시로!
+      scheduleId = today_schedule_id_response.data[0].id;
       setTodayScheduleId(scheduleId);
+    } catch (error) {
+      console.error("댓글 아이디를 가져오는 중 오류 발생:", error);
+    }
 
+    // 해당 스케줄의 comment들 정보 불러오기
+    try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/schedule/schedules/${scheduleId}/comments/`,
+        `${BASE_URL}/api/schedule/schedules/${scheduleId}/comments`,
         { withCredentials: true }
       );
       const commentData = response.data;
-      setComments(commentData);
+      console.log(commentData[0].user_info.profile_image)
+      setComments(commentData)
     } catch (error) {
-      console.error("댓글 데이터를 가져오는 중 오류 발생:", error);
+      // 없으면 없는대로 error 안띄워주기로..
     }
+    
   };
 
-  // 기존 비동기 코드 대체
   useEffect(() => {
     fetchData();
   }, []);
@@ -76,10 +91,11 @@ const Comment = (): JSX.Element => {
 
     if (schedule_id === null) {
       console.log('schedule_id를 찾을 수 없습니다.');
+      return;
     } else {
       try {
-        const response = await axios.post(
-          `http://127.0.0.1:8000/api/schedule/schedules/${schedule_id}/comments`, 
+        const response: CommentResponseType = await axios.post(
+          `${BASE_URL}/api/schedule/schedules/${schedule_id}/comments`, 
           {
             schedule_id: schedule_id,
             text: newText,
@@ -88,12 +104,16 @@ const Comment = (): JSX.Element => {
         );
   
         const newComment = {
-          id: response.data.id,
-          username: response.data.username,
-          schedule_id: response.data.schedule_id,
-          timestamp: response.data.timestamp,
-          text: response.data.text,
-        };
+          id: response.data.comment.id,
+          schedule_id: response.data.comment.schedule_id,
+          timestamp: response.data.comment.timestamp,
+          text: response.data.comment.text,
+          user_info: {
+            user_id: response.data.user_info.user_id,
+            username: response.data.user_info.username,
+            profile_image: response.data.user_info.profile_image,
+          },
+        };        
   
         // 새로운 댓글을 기존 댓글 목록에 추가
         setComments([...comments, newComment]);
@@ -110,10 +130,12 @@ const Comment = (): JSX.Element => {
       // 이미 수정 중인 상태면 수정을 취소하고 읽기 모드로 변경
       setEditingCommentId(null);
       setNewEditText("");
+      setCommentEditErrorMessage('');
     } else {
       // 수정 중이 아니면 해당 댓글을 수정 모드로 변경
       setEditingCommentId(id);
       setNewEditText(text);
+      setCommentEditErrorMessage('');
     }
   };
 
@@ -121,10 +143,15 @@ const Comment = (): JSX.Element => {
   const handleConfirmEdit = (id: number) => {
     if (newEditText.length === 0 || editingCommentId === null) {
       // 댓글 내용이 비어있거나 수정 대상 댓글이 없으면 수정하지 않음
+      if (CommentEditTextInput.current) {
+        CommentEditTextInput.current.focus();
+        setCommentEditErrorMessage('내용을 입력해주세요.')
+      }
       return;
     }
     // 수정된 내용을 백엔드로 전송하고 상태를 업데이트
     updateComment(id, newEditText);
+    setCommentEditErrorMessage('');
   };
 
   // 댓글 수정 함수
@@ -136,22 +163,24 @@ const Comment = (): JSX.Element => {
 
     try {
       const response = await axios.put(
-        `http://127.0.0.1:8000/api/schedule/comments/${id}`,
+        `${BASE_URL}/api/schedule/comments/${id}`,
         {
           schedule_id: id,
           text: newEditText,
         },
         { withCredentials: true }
       );
+
       const updatedComments = comments.map((comment) => {
         if (comment.id === id) {
           return {
             ...comment,
-            text: response.data.text
+            text: response.data.comment.text
           };
         }
         return comment;
       });
+
       setComments(updatedComments);
       setNewEditText("");
       setEditingCommentId(null);
@@ -162,7 +191,7 @@ const Comment = (): JSX.Element => {
 
   const deleteCommentSubmit = async (id: number) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/schedule/comments/${id}`,
+      await axios.delete(`${BASE_URL}/api/schedule/comments/${id}`,
       { withCredentials: true });
       const updatedComments = comments.filter((comment) => comment.id !== id);
       setComments(updatedComments);
@@ -193,7 +222,7 @@ const Comment = (): JSX.Element => {
 
   return (
     <div className="comment">
-      <h1 className="today">{formattedToday}</h1>
+      {/* <CommentArea/> */}
       <ul>
         {comments.map((comment) => (
           <li key={comment.id}>
@@ -201,11 +230,14 @@ const Comment = (): JSX.Element => {
               <div className="comment-profile-box">
                 <img
                   className="comment-pf-pic"
-                  src="../images/yang.jpeg"
+                  // back/profile_images/230611_0.jpeg 상대경로
+                  // /Users/senga/Desktop/Potato_api/back/profile_images/230611_0.jpeg  절대경로
+                  // src={userInfo?.first_name ? `${BASE_URL}${comment.user_info.profile_image}` : 'https://dummyimage.com/500x500/000/fff&text=.'}
+                  src={'https://dummyimage.com/500x500/000/fff&text=.'} // s3 들어가면 경로가 바뀔 예정이라 더이상 진행하지 않고 임시로 더미 이미지 넣어둠
                   alt="프로필 사진"
                 />
                 <p className="comment-name">
-                  {userInfo?.first_name ? `${comment.username}` : "이름을 불러올 수 없습니다."}
+                  {userInfo?.first_name ? `${comment.user_info.username}` : "이름을 불러올 수 없습니다."}
                 </p>
               </div>
               <div>
@@ -216,7 +248,8 @@ const Comment = (): JSX.Element => {
             <div className="comment-edit-content">
               {/*  수정 모드 일때 */}
               {editingCommentId === comment.id ? (
-                <div>
+                <div className="comment-edit-form-box">
+                  <span className='comment-edit-invalid-span'>{commentEditErrorMessage}</span>
                   <input
                     ref={
                       CommentEditTextInput as React.MutableRefObject<HTMLInputElement>
@@ -268,6 +301,7 @@ const Comment = (): JSX.Element => {
       </ul>
       <div className="comment-input-box">
         {userInfo ? (
+          // <CommentForm/>
           <>
             <input
               ref={CommentTextInput as React.MutableRefObject<HTMLInputElement>}

@@ -332,3 +332,8 @@ input[type="checkbox"] {
   color: white;
   padding: 4px 10px;
 }
+
+/* 오늘 날짜 h1 */
+.today {
+  margin: 0.5rem 10rem;
+}

@@ -1,11 +1,28 @@
+export interface CommentResponseType {
+  data: {
+    comment: {
+      id: number;
+      schedule_id: number;
+      timestamp: Date;
+      text: string;
+    };
+    user_info: UserInfo;
+  };
+}
+
 /* commentType 수정 */
-export interface commentType {
+export interface CommentType {
   id: number;
-  // user_id: number; // 마이페이지에서 보여줄 때 필요함
-  username: string; // 댓글 띄워줄 때 필요함
   schedule_id: number;
   text: string;
   timestamp: Date;
+  user_info: UserInfo; // user_info를 UserInfo 인터페이스로 정의한 것을 사용
+}
+
+export interface UserInfo {
+  user_id: number; // 마이페이지에서 보여줄 때 필요함
+  username: string; // 댓글 띄워줄 때 필요함
+  profile_image: string
 }
 
 export interface timerType {
