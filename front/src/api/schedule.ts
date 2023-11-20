@@ -12,13 +12,14 @@ export interface ISchedule {
 export const createSchedule = async (args: {
   date: string;
   content: string;
+  is_holiday: boolean;
 }): Promise<scheduleResponse> => {
   const createScheduleRes = await fetch(`${BASE_URL}/api/schedule/schedules/`, {
     method: "POST",
     body: JSON.stringify({
       start_date: args.date,
       schedule: args.content,
-      is_holiday: false,
+      is_holiday: args.is_holiday,
     }),
     credentials: "include",
     headers: {
@@ -70,6 +71,7 @@ export const updateSchedule = async (args: {
   id: number;
   editDate: string;
   content: string;
+  is_holiday: boolean;
 }): Promise<ISchedule | null> => {
   const updateScheduleRes = await fetch(
     `${BASE_URL}/api/schedule/schedules/${args.id}/`,
@@ -78,7 +80,7 @@ export const updateSchedule = async (args: {
       body: JSON.stringify({
         start_date: args.editDate,
         schedule: args.content,
-        is_holiday: false,
+        is_holiday: args.is_holiday,
       }),
       credentials: "include",
       headers: {

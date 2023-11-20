@@ -9,8 +9,8 @@ import {
 } from "../api/schedule";
 import { dateToString } from "../utils/getDays";
 
-export type editSchedule = (id: number, date: string, content: string) => void;
-export type addSchedule = (date: string, content: string) => void;
+export type editSchedule = (id: number, date: string, content: string, is_holiday: boolean) => void;
+export type addSchedule = (date: string, content: string, is_holiday: boolean) => void;
 export type removeSchedule = (id: number) => void;
 
 export type scheduleSetter = {
@@ -45,11 +45,12 @@ export default function useSchedule(allDay: Date[], nowDate: Date) {
     };
   }, [nowDate]);
 
-  const editSchedule = async (id: number, date: string, content: string) => {
+  const editSchedule = async (id: number, date: string, content: string, is_holiday: boolean) => {
     const updateScheduleResponse = await updateSchedule({
       id,
       editDate: date,
       content,
+      is_holiday
     });
 
     if (updateScheduleResponse) {
@@ -60,7 +61,6 @@ export default function useSchedule(allDay: Date[], nowDate: Date) {
               ...s,
               start_date: updateScheduleResponse.start_date,
               schedule: updateScheduleResponse.schedule,
-              is_holiday: updateScheduleResponse.is_holiday,
             };
           return s;
         });
@@ -70,12 +70,13 @@ export default function useSchedule(allDay: Date[], nowDate: Date) {
     return;
   };
 
-  const addNewSchedule = async (date: string, content: string) => {
+  const addNewSchedule = async (date: string, content: string, is_holiday: boolean) => {
     date = dateToString(date);
 
     const addNewScheduleResponse = await createSchedule({
       date,
       content: content.length ? content : "제목없음",
+      is_holiday
     });
 
     if (addNewScheduleResponse !== "fail") {
