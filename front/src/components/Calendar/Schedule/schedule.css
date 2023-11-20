@@ -104,6 +104,16 @@ h1 {
   margin: 15px 0;
 }
 
+.eventWindow-isholiday {
+  display: flex;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.eventWindow-isholiday input.eventWindow-checkbox {
+  margin-right: 5px;
+}
+
 .eventWindow-contents {
   padding: 30px;
   margin: 0 10px;

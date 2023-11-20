@@ -203,9 +203,9 @@ def get_schedule(request, schedule_id: int):
 
 # 스케줄조회
 @router.get("/schedules/", response=List[ScheduleOut], tags=["스케줄"])
-def get_schedules_in_date_range(request, from_date: date, to_date: date,schedule_category:str):
+def get_schedules_in_date_range(request, from_date: date, to_date: date):
     # start_date와 end_date 사이의 스케줄을 데이터베이스에서 조회
-    schedules = Schedule.objects.filter(start_date__gte=from_date, start_date__lte=to_date,category=schedule_category)
+    schedules = Schedule.objects.filter(start_date__gte=from_date, start_date__lte=to_date)
     
     # 조회된 스케줄을 ScheduleOut 형태로 변환하여 응답
     schedule_list = []
@@ -233,7 +233,7 @@ def update_schedule(request, schedule_id: int, payload: ScheduleIn):
             schedule.end_date = payload.start_date
             schedule.schedule = payload.schedule
             schedule.is_holiday = payload.is_holiday
-            schedule.category=payload.category
+            # schedule.category=payload.category
             schedule.save()
 
             return ScheduleOut(
@@ -242,7 +242,7 @@ def update_schedule(request, schedule_id: int, payload: ScheduleIn):
                 end_date=schedule.end_date,
                 schedule=schedule.schedule,
                 is_holiday=schedule.is_holiday,
-                category=payload.category,
+                category=schedule.category,
                 is_staff=True
             )
         except Schedule.DoesNotExist:
