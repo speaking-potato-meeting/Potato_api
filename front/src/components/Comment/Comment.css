@@ -6,11 +6,6 @@
   align-items: stretch;
 }
 
-/* 오늘 날짜 h1 */
-.today {
-  margin: 0.5rem 1.5rem;
-}
-
 .comment li {
   border: 0.2px white solid;
   border-radius: 1em;
@@ -40,9 +35,14 @@
   margin-right: 0.5em;
 }
 
+.comment-edit-form-box {
+  display: flex;
+  flex-direction: column;
+}
+
 /* 수정 모드시 input과 버튼들 묶은 */
 .comment-edit-content {
-  margin-left: 0.3rem;
+  margin-left: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -56,14 +56,24 @@
 /* 수정 모드 아닐 때 댓글 내용 */
 .comment-text {
   margin: 0.4rem 1rem;
+  width: 50rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 댓글 수정 모드시 사용되는 오류 메세지 */
+.comment-edit-invalid-span {
+  margin: 7px 1rem 0;
+  font-size: small;
+  color: var(--point-red);
 }
 
 /* 댓글 수정 모드시 나타나는 input */
-.comment-edit-input {
+input.comment-edit-input {
   display: block;
   font-family: 'Dovemayo_gothic';
-  width: 400px;
-  /* max-width: 430px; */
+  width: 50rem;
   height: 22px;
   font-size: 16px;
   margin: 0.4rem 1rem;
@@ -87,10 +97,8 @@
 
 /* 댓글 생성 input */
 .comment-input {
-  width: 80%;
+  width: 3rem;
   border: 1px rgb(173, 173, 173) solid;
-  /* font-family: 'Dovemayo_gothic'; */
-  /* font-size: 16px; */
 }
 
 @media (prefers-color-scheme: light) {
