@@ -6,10 +6,11 @@
   align-items: stretch;
 }
 
+/* 댓글 한개당 박스 */
 .comment li {
   border: 0.2px white solid;
   border-radius: 1em;
-  padding: 0.7em;
+  padding: 1.3rem 0.8rem;
   margin: 0.85rem;
   min-width: 600px;
 }
@@ -18,7 +19,7 @@
 .comment-profile-timestamp-box {
   display: flex;
   justify-content: space-between;
-  padding: 0 0.5rem;
+  padding: 0 3rem;
 }
 
 /* 프로필 사진과 작성자를 묶은 */
@@ -38,11 +39,13 @@
 .comment-edit-form-box {
   display: flex;
   flex-direction: column;
+
 }
 
 /* 수정 모드시 input과 버튼들 묶은 */
 .comment-edit-content {
-  margin-left: 1rem;
+  /* position: relative; */
+  margin: 0 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -55,50 +58,53 @@
 
 /* 수정 모드 아닐 때 댓글 내용 */
 .comment-text {
-  margin: 0.4rem 1rem;
-  width: 50rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin: 1rem 1rem 1rem 2rem;
+  width: 90%;
+  word-break: break-all;
 }
 
 /* 댓글 수정 모드시 사용되는 오류 메세지 */
 .comment-edit-invalid-span {
-  margin: 7px 1rem 0;
+  margin: 7px 2rem 0;
   font-size: small;
   color: var(--point-red);
 }
 
 /* 댓글 수정 모드시 나타나는 input */
-input.comment-edit-input {
+.comment-edit-input {
   display: block;
   font-family: 'Dovemayo_gothic';
-  width: 50rem;
-  height: 22px;
   font-size: 16px;
-  margin: 0.4rem 1rem;
-  border: 0;
-}
-
-/* 댓글 생성 input과 버튼을 감싸는 */
-.comment-input-box {
-  margin-top: 1.5rem;
-  display: flex;
-  justify-content: center;
+  margin: 0.5rem 1rem 1rem 2rem;
+  border-radius: 5px;
+  padding: 5px;
 }
 
 .comment-btn-container {
+  /* position: absolute; */
+  /* right: 5px; */
   display: flex;
+  justify-content: flex-end;
 }
 
 .comment-btn {
   flex-shrink: 0;
 }
 
+/* 댓글 생성 input과 버튼을 감싸는 */
+.comment-input-box {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+}
+
 /* 댓글 생성 input */
-.comment-input {
-  width: 3rem;
+input.comment-input {
+  width: 40rem;
   border: 1px rgb(173, 173, 173) solid;
+  border-radius: 5px;
+  padding: 5px;
+  margin-right: 0.5rem;
 }
 
 @media (prefers-color-scheme: light) {
@@ -106,6 +112,6 @@ input.comment-edit-input {
     border-color: black;
   }
   .comment-edit-input {
-    border: 1px rgb(173, 173, 173) solid;
+    border: 1px rgb(226, 226, 226) solid;
   }
 }
