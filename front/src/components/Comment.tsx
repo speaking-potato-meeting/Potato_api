@@ -32,7 +32,7 @@ const Comment = (): JSX.Element => {
   const CommentTextInput: React.MutableRefObject<HTMLInputElement | undefined> =
     useRef();
   const CommentEditTextInput: React.MutableRefObject<
-    HTMLInputElement | undefined
+    HTMLTextAreaElement | undefined
   > = useRef();
 
   // 수정 모드 때 사용될 오류 메세지
@@ -79,6 +79,12 @@ const Comment = (): JSX.Element => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleCommentAddPress = (e: { key: string; }) => {
+    if (e.key === 'Enter') {
+      createCommentSubmit(todayScheduleId);
+    }
+  };
 
   const createCommentSubmit = async (schedule_id: number | null) => {
     // 유효성 검사 (댓글 내용 비어있는지)
@@ -145,7 +151,7 @@ const Comment = (): JSX.Element => {
       // 댓글 내용이 비어있거나 수정 대상 댓글이 없으면 수정하지 않음
       if (CommentEditTextInput.current) {
         CommentEditTextInput.current.focus();
-        setCommentEditErrorMessage('내용을 입력해주세요.')
+        setCommentEditErrorMessage('내용을 입력해주세요')
       }
       return;
     }
@@ -250,15 +256,16 @@ const Comment = (): JSX.Element => {
               {editingCommentId === comment.id ? (
                 <div className="comment-edit-form-box">
                   <span className='comment-edit-invalid-span'>{commentEditErrorMessage}</span>
-                  <input
+                  <textarea 
                     ref={
-                      CommentEditTextInput as React.MutableRefObject<HTMLInputElement>
+                      CommentEditTextInput as React.MutableRefObject<HTMLTextAreaElement>
                     }
                     className="comment-edit-input"
-                    type="text"
                     placeholder="댓글을 입력하세요"
                     value={newEditText}
                     onChange={(e) => setNewEditText(e.target.value)}
+                    cols={51}
+                    rows={2}
                   />
                 </div>
               ) : (
@@ -310,6 +317,7 @@ const Comment = (): JSX.Element => {
               placeholder="댓글을 입력하세요"
               value={newText}
               onChange={(e) => setNewText(e.target.value)}
+              onKeyPress={handleCommentAddPress}
             />
             <button onClick={() => createCommentSubmit(todayScheduleId)}>댓글 생성</button>
           </>
