@@ -80,6 +80,12 @@ const Comment = (): JSX.Element => {
     fetchData();
   }, []);
 
+  const handleCommentAddPress = (e: { key: string; }) => {
+    if (e.key === 'Enter') {
+      createCommentSubmit(todayScheduleId);
+    }
+  };
+
   const createCommentSubmit = async (schedule_id: number | null) => {
     // 유효성 검사 (댓글 내용 비어있는지)
     if (newText.length === 0) {
@@ -310,6 +316,7 @@ const Comment = (): JSX.Element => {
               placeholder="댓글을 입력하세요"
               value={newText}
               onChange={(e) => setNewText(e.target.value)}
+              onKeyPress={handleCommentAddPress}
             />
             <button onClick={() => createCommentSubmit(todayScheduleId)}>댓글 생성</button>
           </>
