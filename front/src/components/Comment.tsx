@@ -1,7 +1,7 @@
 import "../components/Comment/Comment.css";
 // import CommentForm from "../components/Comment/CommentForm";
 // import CommentArea from "../components/Comment/CommentArea";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, FormEvent } from "react";
 import { CommentResponseType, CommentType } from "../types";
 import axios from "axios";
 import { useCurrentUserContext } from "../context/CurrentUserContextProvider";
@@ -29,11 +29,8 @@ const Comment = (): JSX.Element => {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
 
   // 댓글 내용 포커싱을 위한 useRef
-  const CommentTextInput: React.MutableRefObject<HTMLInputElement | undefined> =
-    useRef();
-  const CommentEditTextInput: React.MutableRefObject<
-    HTMLTextAreaElement | undefined
-  > = useRef();
+  const CommentTextInput = useRef<HTMLInputElement>(null);
+  const CommentEditTextInput = useRef<HTMLTextAreaElement>(null);
 
   // 수정 모드 때 사용될 오류 메세지
   const [commentEditErrorMessage, setCommentEditErrorMessage] = useState("");
@@ -80,11 +77,12 @@ const Comment = (): JSX.Element => {
     fetchData();
   }, []);
 
-  const handleCommentAddPress = (e: { key: string; }) => {
-    if (e.key === 'Enter') {
-      createCommentSubmit(todayScheduleId);
-    }
+  const handleCommentSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // 기본 폼 제출 동작을 막음
+    createCommentSubmit(todayScheduleId);
   };
+
+  
 
   const createCommentSubmit = async (schedule_id: number | null) => {
     // 유효성 검사 (댓글 내용 비어있는지)
@@ -257,9 +255,7 @@ const Comment = (): JSX.Element => {
                 <div className="comment-edit-form-box">
                   <span className='comment-edit-invalid-span'>{commentEditErrorMessage}</span>
                   <textarea 
-                    ref={
-                      CommentEditTextInput as React.MutableRefObject<HTMLTextAreaElement>
-                    }
+                    ref={CommentEditTextInput}
                     className="comment-edit-input"
                     placeholder="댓글을 입력하세요"
                     value={newEditText}
@@ -308,19 +304,17 @@ const Comment = (): JSX.Element => {
       </ul>
       <div className="comment-input-box">
         {userInfo ? (
-          // <CommentForm/>
-          <>
+          <form onSubmit={handleCommentSubmit}>
             <input
-              ref={CommentTextInput as React.MutableRefObject<HTMLInputElement>}
+              ref={CommentTextInput}
               className="comment-input"
               type="text"
               placeholder="댓글을 입력하세요"
               value={newText}
               onChange={(e) => setNewText(e.target.value)}
-              onKeyPress={handleCommentAddPress}
             />
-            <button onClick={() => createCommentSubmit(todayScheduleId)}>댓글 생성</button>
-          </>
+            <button type="submit">댓글 생성</button>
+          </form>
         ) : (
           <p>로그인이 필요합니다.</p>
         )}

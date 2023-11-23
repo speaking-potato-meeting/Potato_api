@@ -44,7 +44,6 @@
 
 /* 수정 모드시 input과 버튼들 묶은 */
 .comment-edit-content {
-  /* position: relative; */
   margin: 0 1rem;
   display: flex;
   justify-content: space-between;
@@ -81,10 +80,10 @@
 }
 
 .comment-btn-container {
-  /* position: absolute; */
-  /* right: 5px; */
   display: flex;
   justify-content: flex-end;
+  margin-top: auto;
+  margin-bottom: 10px;
 }
 
 .comment-btn {
