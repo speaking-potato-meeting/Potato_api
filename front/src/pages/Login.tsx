@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { login } from "../api/login";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+interface loginForm {
+  [key: string]: string;
+  username: string;
+  password: string;
+}
 
 export default function Login() {
-  const [loginForm, setLoginForm] = useState({
+  const [loginForm, setLoginForm] = useState<loginForm>({
     username: "",
     password: "",
   });
@@ -32,35 +39,45 @@ export default function Login() {
     }
   }
   return (
-    <form onSubmit={handleSubmit}>
-      <p>감자 맞나요?</p>
-      <label htmlFor="username">
-        <span>아이디</span>
-      </label>
-      <div className="input">
-        <input
-          id="username"
-          onChange={handleChange}
-          name="username"
-          type="text"
-          placeholder="아이디를 입력해주세요"
-          value={loginForm.username}
-        />
-      </div>
-      <label htmlFor="password">
-        <span>비밀번호</span>
-      </label>
-      <div className="input">
-        <input
-          id="password"
-          onChange={handleChange}
-          name="password"
-          type="password"
-          placeholder="비밀번호를 입력해주세요"
-          value={loginForm.password}
-        />
-      </div>
-      <button>확인</button>
-    </form>
+    <div className="login">
+      <form onSubmit={handleSubmit}>
+        <div className="loginForm-field">
+          <label htmlFor="username">
+            <span>아이디</span>
+          </label>
+          <div className="input">
+            <input
+              id="username"
+              onChange={handleChange}
+              name="username"
+              type="text"
+              placeholder="아이디를 입력해주세요"
+              value={loginForm.username}
+            />
+          </div>
+        </div>
+        <div className="loginForm-field">
+          <label htmlFor="password">
+            <span>비밀번호</span>
+          </label>
+          <div className="input">
+            <input
+              id="password"
+              onChange={handleChange}
+              name="password"
+              type="password"
+              placeholder="비밀번호를 입력해주세요"
+              value={loginForm.password}
+            />
+          </div>
+        </div>
+        <button type="submit" className="login-button">
+          로그인
+        </button>
+      </form>
+      <Link to={"/signup"} className="navigate-link">
+        감자 맞나요?
+      </Link>
+    </div>
   );
 }
