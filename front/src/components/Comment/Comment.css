@@ -39,12 +39,10 @@
 .comment-edit-form-box {
   display: flex;
   flex-direction: column;
-
 }
 
 /* 수정 모드시 input과 버튼들 묶은 */
 .comment-edit-content {
-  /* position: relative; */
   margin: 0 1rem;
   display: flex;
   justify-content: space-between;
@@ -60,7 +58,6 @@
 .comment-text {
   margin: 1rem 1rem 1rem 2rem;
   width: 90%;
-  word-break: break-all;
 }
 
 /* 댓글 수정 모드시 사용되는 오류 메세지 */
@@ -81,10 +78,10 @@
 }
 
 .comment-btn-container {
-  /* position: absolute; */
-  /* right: 5px; */
   display: flex;
   justify-content: flex-end;
+  margin-top: auto;
+  margin-bottom: 10px;
 }
 
 .comment-btn {

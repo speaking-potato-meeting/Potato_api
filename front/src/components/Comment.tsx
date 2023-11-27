@@ -1,8 +1,8 @@
 import "../components/Comment/Comment.css";
 // import CommentForm from "../components/Comment/CommentForm";
 // import CommentArea from "../components/Comment/CommentArea";
-import { useState, useEffect, useRef } from "react";
-import { CommentResponseType, CommentType } from "../types";
+import { useState, useEffect, useRef, FormEvent } from "react";
+import { CommentResponseType, CommentType, CommentProps } from "../types";
 import axios from "axios";
 import { useCurrentUserContext } from "../context/CurrentUserContextProvider";
 import { BASE_URL } from "../api/signup";
@@ -14,7 +14,8 @@ const month = String(today.getMonth() + 1).padStart(2, '0');
 const day = String(today.getDate()).padStart(2, '0');
 const formattedToday = `${year}-${month}-${day}`;
 
-const Comment = (): JSX.Element => {
+
+const Comment = ({ date: externalDate }: CommentProps): JSX.Element => {
   /* 로그인하지 않은 유저인지 확인 */
   const userInfo = useCurrentUserContext();
 
@@ -29,14 +30,12 @@ const Comment = (): JSX.Element => {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
 
   // 댓글 내용 포커싱을 위한 useRef
-  const CommentTextInput: React.MutableRefObject<HTMLInputElement | undefined> =
-    useRef();
-  const CommentEditTextInput: React.MutableRefObject<
-    HTMLTextAreaElement | undefined
-  > = useRef();
+  const CommentTextInput = useRef<HTMLInputElement>(null);
+  const CommentEditTextInput = useRef<HTMLTextAreaElement>(null);
 
   // 수정 모드 때 사용될 오류 메세지
   const [commentEditErrorMessage, setCommentEditErrorMessage] = useState("");
+
 
   // 데이터를 서버에서 가져오는 함수
   const fetchData = async () => {
@@ -48,15 +47,14 @@ const Comment = (): JSX.Element => {
         { 
           // 특정일자 조회로 첫날 마지막날을 오늘로 맞춘 다음에 조회해서 id 가지고 오면 될거같음!
           params: {
-            from_date: formattedToday,
-            to_date: formattedToday,
+            from_date: externalDate ?? formattedToday,
+            to_date: externalDate ?? formattedToday,
           }
         }
       );
-      // scheduleId = today_schedule_id_response.data.filter((item: { category: string; }) => item.category === '출석')[0].id;
-      // 지금은 생성이 기본 일정으로만 되어있어서 출석부가 생성이 안되기 때문에 임시로!
-      scheduleId = today_schedule_id_response.data[0].id;
+      scheduleId = today_schedule_id_response.data.filter((item: { category: string; }) => item.category === '출석')[0].id;
       setTodayScheduleId(scheduleId);
+      console.log(todayScheduleId)
     } catch (error) {
       console.error("댓글 아이디를 가져오는 중 오류 발생:", error);
     }
@@ -68,24 +66,23 @@ const Comment = (): JSX.Element => {
         { withCredentials: true }
       );
       const commentData = response.data;
-      console.log(commentData[0].user_info.profile_image)
       setComments(commentData)
     } catch (error) {
       // 없으면 없는대로 error 안띄워주기로..
     }
-    
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [todayScheduleId]);
 
-  const handleCommentAddPress = (e: { key: string; }) => {
-    if (e.key === 'Enter') {
-      createCommentSubmit(todayScheduleId);
-    }
+  // 댓글 생성시 submit
+  const handleCommentSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // 기본 폼 제출 동작을 막음
+    createCommentSubmit(todayScheduleId);
   };
 
+  // 댓글 생성 로직
   const createCommentSubmit = async (schedule_id: number | null) => {
     // 유효성 검사 (댓글 내용 비어있는지)
     if (newText.length === 0) {
@@ -156,12 +153,12 @@ const Comment = (): JSX.Element => {
       return;
     }
     // 수정된 내용을 백엔드로 전송하고 상태를 업데이트
-    updateComment(id, newEditText);
+    editComment(id, newEditText);
     setCommentEditErrorMessage('');
   };
 
-  // 댓글 수정 함수
-  const updateComment = async (id: number, text: string) => {
+  // 댓글 수정
+  const editComment = async (id: number, text: string) => {
     if (text.length === 0 || id === null) {
       // 댓글 내용이 비어있거나 수정 대상 댓글이 없으면 수정하지 않음
       return;
@@ -195,6 +192,7 @@ const Comment = (): JSX.Element => {
     }
   };
 
+  // 댓글 삭제
   const deleteCommentSubmit = async (id: number) => {
     try {
       await axios.delete(`${BASE_URL}/api/schedule/comments/${id}`,
@@ -227,105 +225,104 @@ const Comment = (): JSX.Element => {
   };
 
   return (
-    <div className="comment">
-      {/* <CommentArea/> */}
-      <ul>
-        {comments.map((comment) => (
-          <li key={comment.id}>
-            <div className="comment-profile-timestamp-box">
-              <div className="comment-profile-box">
-                <img
-                  className="comment-pf-pic"
-                  // back/profile_images/230611_0.jpeg 상대경로
-                  // /Users/senga/Desktop/Potato_api/back/profile_images/230611_0.jpeg  절대경로
-                  // src={userInfo?.first_name ? `${BASE_URL}${comment.user_info.profile_image}` : 'https://dummyimage.com/500x500/000/fff&text=.'}
-                  src={'https://dummyimage.com/500x500/000/fff&text=.'} // s3 들어가면 경로가 바뀔 예정이라 더이상 진행하지 않고 임시로 더미 이미지 넣어둠
-                  alt="프로필 사진"
-                />
-                <p className="comment-name">
-                  {userInfo?.first_name ? `${comment.user_info.username}` : "이름을 불러올 수 없습니다."}
-                </p>
-              </div>
-              <div>
-                <p>{elapsedTime(comment.timestamp)}</p>
-              </div>
-            </div>
+    <>
+      {todayScheduleId === null ? (
+        <p style={{textAlign: 'center'}}>오늘은 스터디 휴일입니다 ~ ✌️</p>
+      ) : (
+        <div className="comment">
+          <ul>
+            {comments.map((comment) => (
+              <li key={comment.id}>
+                <div className="comment-profile-timestamp-box">
+                  <div className="comment-profile-box">
+                    <img
+                      className="comment-pf-pic"
+                      // back/profile_images/230611_0.jpeg 상대경로
+                      // /Users/senga/Desktop/Potato_api/back/profile_images/230611_0.jpeg  절대경로
+                      // src={userInfo?.first_name ? `${BASE_URL}${comment.user_info.profile_image}` : 'https://dummyimage.com/500x500/000/fff&text=.'}
+                      src={'https://dummyimage.com/500x500/000/fff&text=.'} // s3 들어가면 경로가 바뀔 예정이라 더이상 진행하지 않고 임시로 더미 이미지 넣어둠
+                      alt="프로필 사진"
+                    />
+                    <p className="comment-name">
+                      {userInfo?.first_name ? `${comment.user_info.username}` : "이름을 불러올 수 없습니다."}
+                    </p>
+                  </div>
+                  <div>
+                    <p>{elapsedTime(comment.timestamp)}</p>
+                  </div>
+                </div>
 
-            <div className="comment-edit-content">
-              {/*  수정 모드 일때 */}
-              {editingCommentId === comment.id ? (
-                <div className="comment-edit-form-box">
-                  <span className='comment-edit-invalid-span'>{commentEditErrorMessage}</span>
-                  <textarea 
-                    ref={
-                      CommentEditTextInput as React.MutableRefObject<HTMLTextAreaElement>
-                    }
-                    className="comment-edit-input"
-                    placeholder="댓글을 입력하세요"
-                    value={newEditText}
-                    onChange={(e) => setNewEditText(e.target.value)}
-                    cols={51}
-                    rows={2}
-                  />
+                <div className="comment-edit-content">
+                  {/*  수정 모드 일때 */}
+                  {editingCommentId === comment.id ? (
+                    <div className="comment-edit-form-box">
+                      <span className='comment-edit-invalid-span'>{commentEditErrorMessage}</span>
+                      <textarea 
+                        ref={CommentEditTextInput}
+                        className="comment-edit-input"
+                        placeholder="댓글을 입력하세요"
+                        value={newEditText}
+                        onChange={(e) => setNewEditText(e.target.value)}
+                        cols={51}
+                        rows={2}
+                      />
+                    </div>
+                  ) : (
+                    // 수정 모드 아닐 때
+                    <p className="comment-text">{comment.text}</p>
+                  )}
+                  <div className="comment-btn-container">
+                    {userInfo && (
+                      <>
+                        <button
+                          className="comment-btn"
+                          onClick={() =>
+                            editCommentSubmit(comment.id, comment.text)
+                          }
+                        >
+                          {editingCommentId === comment.id ? "취소" : "수정"}
+                        </button>
+                        {editingCommentId === comment.id ? (
+                          <button
+                            className="comment-btn"
+                            onClick={() => handleConfirmEdit(comment.id)}
+                          >
+                            확인
+                          </button>
+                        ) : <></>}
+                        <button
+                          className="comment-btn"
+                          onClick={() => deleteCommentSubmit(comment.id)}
+                        >
+                          삭제
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
-              ) : (
-                // 수정 모드 아닐 때
-                <div>
-                  <p className="comment-text">{comment.text}</p>
-                </div>
-              )}
-              <div className="comment-btn-container">
-                {userInfo && (
-                  <>
-                    <button
-                      className="comment-btn"
-                      onClick={() =>
-                        editCommentSubmit(comment.id, comment.text)
-                      }
-                    >
-                      {editingCommentId === comment.id ? "취소" : "수정"}
-                    </button>
-                    {editingCommentId === comment.id ? (
-                      <button
-                        className="comment-btn"
-                        onClick={() => handleConfirmEdit(comment.id)}
-                      >
-                        확인
-                      </button>
-                    ) : <></>}
-                    <button
-                      className="comment-btn"
-                      onClick={() => deleteCommentSubmit(comment.id)}
-                    >
-                      삭제
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-      <div className="comment-input-box">
-        {userInfo ? (
-          // <CommentForm/>
-          <>
-            <input
-              ref={CommentTextInput as React.MutableRefObject<HTMLInputElement>}
-              className="comment-input"
-              type="text"
-              placeholder="댓글을 입력하세요"
-              value={newText}
-              onChange={(e) => setNewText(e.target.value)}
-              onKeyPress={handleCommentAddPress}
-            />
-            <button onClick={() => createCommentSubmit(todayScheduleId)}>댓글 생성</button>
-          </>
-        ) : (
-          <p>로그인이 필요합니다.</p>
-        )}
-      </div>
-    </div>
+              </li>
+            ))}
+          </ul>
+          <div className="comment-input-box">
+          {userInfo ? (
+            <form onSubmit={handleCommentSubmit}>
+              <input
+                ref={CommentTextInput}
+                className="comment-input"
+                type="text"
+                placeholder="댓글을 입력하세요"
+                value={newText}
+                onChange={(e) => setNewText(e.target.value)}
+              />
+              <button type="submit">댓글 생성</button>
+            </form>
+          ) : (
+            <p>로그인이 필요합니다.</p>
+          )}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

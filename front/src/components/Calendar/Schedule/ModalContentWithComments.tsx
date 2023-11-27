@@ -36,8 +36,8 @@ function ModalContentWithComments(props: ModalWithCommentsProps) {
   
   // props.is_holiday 값이 변경될 때마다 useEffect가 실행.. 체크박스의 초기값이 제대로 설정되겠지?
   useEffect(() => {
-    console.log("props:", props);
-    console.log("is_holiday: ", props.is_holiday)
+    // console.log("props:", props);
+    // console.log("is_holiday: ", props.is_holiday)
     setIsHoliday(props.is_holiday);
   }, [props.is_holiday]);
   
@@ -99,7 +99,6 @@ function ModalContentWithComments(props: ModalWithCommentsProps) {
             checked={props.is_holiday}
             onChange={e => setIsHoliday(e.target.checked)}
           />
-          {/* <label htmlFor="is_holiday">휴일인가요?</label> */}
           <span>휴일인가요?</span>
         </div>
         <h1
@@ -115,7 +114,7 @@ function ModalContentWithComments(props: ModalWithCommentsProps) {
         </div>
       </header>
       <div className="eventWindow-contents">
-        <Comment />
+        <Comment date={props.date}/>
       </div>
       <footer className="eventWindow-footer">
         {userInfo?.is_staff && (
