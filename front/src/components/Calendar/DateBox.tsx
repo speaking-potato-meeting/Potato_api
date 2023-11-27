@@ -1,6 +1,7 @@
 import Schedule from "./Schedule/Schedule";
 import { ISchedule } from "../../api/schedule";
 
+import { useState } from 'react';
 import { useDroppable } from "@dnd-kit/core";
 import { useShowModal } from "./Schedule/useShowModal";
 import { dateToString } from "../../utils/getDays";
@@ -47,6 +48,7 @@ export default function DateBox({ day, nowDate, schedule }: Props) {
         date: modalDate,
         content: "",
         scheduleSetter: { add: dispatch?.add },
+        is_holiday: false
       },
     });
   };

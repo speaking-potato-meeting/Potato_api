@@ -8,6 +8,7 @@ export interface ModalProps {
   id?: number;
   date: string;
   content: string;
+  is_holiday: boolean;
   scheduleSetter?: scheduleSetter;
 }
 

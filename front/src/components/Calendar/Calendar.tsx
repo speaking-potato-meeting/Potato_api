@@ -55,7 +55,8 @@ export default function Calendar() {
       editSchedule(
         parseInt(editId),
         over.id.toString(),
-        toEditSchedule.schedule
+        toEditSchedule.schedule,
+        toEditSchedule.is_holiday
       );
     }
   }

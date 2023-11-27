@@ -76,7 +76,11 @@ class Schedule(models.Model):
     end_date = models.DateField(null=True, blank=True)
     schedule = models.CharField(max_length=100)
     is_holiday = models.BooleanField(default=False)
-
+    CATEGORY_CHOICES = (
+        ('출석', '출석'),
+        ('일정', '일정'),
+    )
+    category = models.CharField(max_length=2, default='',blank=False,choices=CATEGORY_CHOICES)
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Comment from "../../Comment";
 
 import { useModalContext } from "../../../context/ModalProvider";
@@ -22,6 +22,8 @@ type ModalWithCommentsProps = UserModalProps | AdminModalProps;
 function ModalContentWithComments(props: ModalWithCommentsProps) {
   const focusRef = useRef<HTMLHeadingElement>(null!);
 
+  const [isHoliday, setIsHoliday] = useState(props.is_holiday);
+
   const userInfo = useCurrentUserContext();
 
   const modalContext = useModalContext();
@@ -31,7 +33,15 @@ function ModalContentWithComments(props: ModalWithCommentsProps) {
   useEffect(() => {
     focusRef.current.focus();
   }, []);
-
+  
+  // props.is_holiday 값이 변경될 때마다 useEffect가 실행.. 체크박스의 초기값이 제대로 설정되겠지?
+  useEffect(() => {
+    // console.log("props:", props);
+    // console.log("is_holiday: ", props.is_holiday)
+    setIsHoliday(props.is_holiday);
+  }, [props.is_holiday]);
+  
+  
   useEffect(() => {
     if (modalContext?.close !== "ModalClose") return;
 
@@ -39,15 +49,15 @@ function ModalContentWithComments(props: ModalWithCommentsProps) {
       const { add, edit } = props.scheduleSetter;
 
       if (add || (!props.id && add)) {
-        add(props.date, focusRef.current.textContent ?? "제목없음");
+        add(props.date, focusRef.current.textContent ?? "제목없음", isHoliday);
         return onClose(null);
       }
 
       if (edit && props.id) {
         /* 이전과 같은 값이면 요청을 보내지 않습니다. */
-        if (focusRef.current.textContent === props.content)
+        if (focusRef.current.textContent === props.content && isHoliday === props.is_holiday)
           return onClose(null);
-        edit(props.id, props.date, focusRef.current.textContent ?? "제목없음");
+        edit(props.id, props.date, focusRef.current.textContent ?? "제목없음", isHoliday);
       }
     }
     return onClose(null);
@@ -80,6 +90,17 @@ function ModalContentWithComments(props: ModalWithCommentsProps) {
   return (
     <section className="eventWindow">
       <header className="eventWindow-header">
+        <div className="eventWindow-isholiday">
+          <input 
+            type="checkbox" 
+            className="eventWindow-checkbox" 
+            id="is_holiday" 
+            contentEditable={userInfo?.is_staff}
+            checked={props.is_holiday}
+            onChange={e => setIsHoliday(e.target.checked)}
+          />
+          <span>휴일인가요?</span>
+        </div>
         <h1
           suppressContentEditableWarning={true}
           ref={focusRef}
@@ -93,7 +114,7 @@ function ModalContentWithComments(props: ModalWithCommentsProps) {
         </div>
       </header>
       <div className="eventWindow-contents">
-        <Comment />
+        <Comment date={props.date}/>
       </div>
       <footer className="eventWindow-footer">
         {userInfo?.is_staff && (
