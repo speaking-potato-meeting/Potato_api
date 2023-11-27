@@ -19,9 +19,6 @@ const Comment = ({ date: externalDate }: CommentProps): JSX.Element => {
   /* 로그인하지 않은 유저인지 확인 */
   const userInfo = useCurrentUserContext();
 
-  // 댓글 가지고 올 때 쓰는 date
-  const [date, setDate] = useState<string>(formattedToday);
-
   const [newText, setNewText] = useState("");
   const [newEditText, setNewEditText] = useState("");
   // 댓글 담기는 곳
@@ -39,12 +36,6 @@ const Comment = ({ date: externalDate }: CommentProps): JSX.Element => {
   // 수정 모드 때 사용될 오류 메세지
   const [commentEditErrorMessage, setCommentEditErrorMessage] = useState("");
 
-  // 댓글 fetch 해오기 전에 schedule에서 날짜를 넣어주고 있다면 date를 그것으로 setting
-  useEffect(() => {
-    if (externalDate) {
-      setDate(externalDate);
-    }
-  }, [externalDate]);
 
   // 데이터를 서버에서 가져오는 함수
   const fetchData = async () => {
@@ -56,8 +47,8 @@ const Comment = ({ date: externalDate }: CommentProps): JSX.Element => {
         { 
           // 특정일자 조회로 첫날 마지막날을 오늘로 맞춘 다음에 조회해서 id 가지고 오면 될거같음!
           params: {
-            from_date: date,
-            to_date: date,
+            from_date: externalDate ?? formattedToday,
+            to_date: externalDate ?? formattedToday,
           }
         }
       );
