@@ -1,3 +1,7 @@
+export interface CommentProps {
+  date?: string;
+}
+
 export interface CommentResponseType {
   data: {
     comment: {
