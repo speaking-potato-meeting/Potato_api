@@ -4,6 +4,7 @@ import { NavbarContent } from "../../router";
 
 /* React-Query */
 import { useUserQuery } from "../../hooks/useUserQuery";
+import Tictoc from "../Timer/Tictoc";
 
 export default function GeneralLayout() {
   const userQuery = useUserQuery();
@@ -17,10 +18,12 @@ export default function GeneralLayout() {
     return NavbarContent.filter((r) => !r.withAuth);
   };
 
+
   return (
     <>
       <Navbar NavbarContent={navbarLists()} />
       <Outlet />
+      {(userQuery.isSuccess && userQuery.data) ? <Tictoc/> : <></>}
     </>
   );
 }
