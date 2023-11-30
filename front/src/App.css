@@ -347,7 +347,7 @@ input[type="checkbox"] {
   display: block;
   color: #222;
   padding: 20px 0;
-  margin-top: 25px;
+  margin-top: 20px;
 }
 .navigate-link:hover {
   text-decoration: underline;

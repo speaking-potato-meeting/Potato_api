@@ -75,7 +75,7 @@ export default function Login() {
           로그인
         </button>
       </form>
-      <Link to={"/signup"} className="navigate-link">
+      <Link to={"/account/signup"} className="navigate-link">
         감자 맞나요?
       </Link>
     </div>
