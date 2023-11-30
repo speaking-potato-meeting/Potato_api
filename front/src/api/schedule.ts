@@ -1,11 +1,10 @@
 import { BASE_URL } from "./signup";
 
-type scheduleResponse = "success" | "fail";
+type scheduleResponse = ISchedule | "fail";
 
 export interface ISchedule {
   id: number;
   start_date: string;
-  end_date: string;
   schedule: string;
   is_holiday: boolean;
 }
@@ -13,13 +12,14 @@ export interface ISchedule {
 export const createSchedule = async (args: {
   date: string;
   content: string;
+  is_holiday: boolean;
 }): Promise<scheduleResponse> => {
   const createScheduleRes = await fetch(`${BASE_URL}/api/schedule/schedules/`, {
     method: "POST",
     body: JSON.stringify({
       start_date: args.date,
       schedule: args.content,
-      is_holiday: false,
+      is_holiday: args.is_holiday,
     }),
     credentials: "include",
     headers: {
@@ -29,12 +29,7 @@ export const createSchedule = async (args: {
 
   try {
     if (createScheduleRes.ok) {
-      const httpResponse = await createScheduleRes.json();
-      if (httpResponse.success) {
-        return "success";
-      }
-
-      return "fail";
+      return createScheduleRes.json();
     }
 
     throw new Error("서버 에러 발생");
@@ -76,6 +71,7 @@ export const updateSchedule = async (args: {
   id: number;
   editDate: string;
   content: string;
+  is_holiday: boolean;
 }): Promise<ISchedule | null> => {
   const updateScheduleRes = await fetch(
     `${BASE_URL}/api/schedule/schedules/${args.id}/`,
@@ -84,7 +80,7 @@ export const updateSchedule = async (args: {
       body: JSON.stringify({
         start_date: args.editDate,
         schedule: args.content,
-        is_holiday: false,
+        is_holiday: args.is_holiday,
       }),
       credentials: "include",
       headers: {
@@ -106,6 +102,25 @@ export const updateSchedule = async (args: {
     throw new Error("서버 에러 발생");
   } catch (error) {
     console.log(error);
+    return null;
+  }
+};
+
+export const deleteSchedule = async (id: number): Promise<"success" | null> => {
+  try {
+    const deleteScheduleRes = await fetch(
+      `${BASE_URL}/api/schedule/schedules/${id}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
+      }
+    );
+
+    return deleteScheduleRes.ok ? deleteScheduleRes.json() : null;
+  } catch (err) {
     return null;
   }
 };

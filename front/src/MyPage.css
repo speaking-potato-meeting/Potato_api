@@ -1,0 +1,170 @@
+.MyPage {
+  margin: 5rem 18rem;
+}
+
+.MyPage button:hover {
+  border: 0;
+}
+
+/* 상위에서 입혀져 내려온 p margin 없애기 */
+.MyPage p {
+  margin: 0;
+}
+
+.mypage-first-box {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.mypage-profile-box {
+  margin: 3rem 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.mypage-profile-img-box {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  margin: 0 3rem;
+}
+
+.mypage-profile-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(50, 50);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  margin: auto;
+  border-radius: 50rem;
+}
+
+.mypage-profile-content {
+  margin: 2rem 3rem;
+}
+
+.mypage-profile-nickname {
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.ballon-a {
+  position: absolute;
+  width: 30px;
+  height: 5px;
+  left: 600px;
+  background: #49f38a;
+  color: rgb(0, 0, 0);
+  border-radius: 5px;
+  padding: 12px 12.8px;
+  margin-top: 2rem;
+}
+
+.ballon-a p {
+  text-align: center;
+  position: relative;
+  top: -10px;
+}
+
+.ballon-a:after {
+  border-top: 10px solid #49f38a;
+  border-left: 0px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  content: "";
+  position: relative;
+}
+
+.ballon-b {
+  position: absolute;
+  width: 30px;
+  height: 5px;
+  left: 660px;
+  background: #fb94ff;
+  color: rgb(0, 0, 0);
+  border-radius: 5px;
+  padding: 12px 12.8px;
+  margin-top: 2rem;
+}
+
+.ballon-b p {
+  text-align: center;
+  position: relative;
+  top: -8px;
+}
+
+.ballon-b:after {
+  border-top: 10px solid #fb94ff;
+  border-left: 0px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  content: "";
+  position: relative;
+}
+
+.mypage-profile-btn {
+  margin: 0 3rem 0 0;
+  color: white;
+  background-color: #25a4ff;
+  font-size: 13px;
+}
+
+.mypage-second-box {
+  display: flex;
+}
+
+.mypage-comment-box {
+  /* border: 3px solid var(--point-red); */
+  border: 3px solid #F9BEBE;
+  border-radius: 10px;
+  width: 70%;
+  margin-right: 3rem;
+  padding: 2rem;
+}
+
+.mypage-comment-list {
+  margin: 1rem 0;
+  color: rgb(188, 188, 188);
+}
+
+.mypage-study-box {
+  border: 3px solid #F9BEBE;
+  border-radius: 10px;
+  width: 30%;
+  padding: 2rem;
+}
+
+.mypage-study-money-box {
+  display: flex;
+  align-items: center;
+}
+
+.mypage-money-reset-btn {
+  margin-left: 1rem;
+  padding: 0.1rem 0.7rem;
+  color: white;
+  background-color: orange;
+  border-radius: 10px;
+}
+
+.mypage-third-box {
+  margin-top: 3rem;
+  border: 3px solid #F9BEBE;
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+.mypage-third-box table {
+  border: 0.5px solid gray;
+  border-spacing: 0px;
+  margin-top: 2rem;
+}
+
+.mypage-third-box table th,
+.mypage-third-box table td {
+  border: 0.5px solid gray;
+  padding: 1rem 2rem;
+}

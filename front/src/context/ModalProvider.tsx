@@ -1,14 +1,20 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { ModalProps } from "../components/Calendar/Schedule/Modal";
 
 export type state = {
   props: ModalProps;
+  close?: "ModalClose";
 } | null;
 
 type setter = React.Dispatch<React.SetStateAction<state>>;
 
 export const ModalStateContext = createContext<state>(null);
 export const ModalSetterContext = createContext<setter>(() => {});
+
+export const useModalContext = () => {
+  const modalContext = useContext(ModalStateContext);
+  return modalContext;
+};
 
 export default function ModalProvider({
   children,

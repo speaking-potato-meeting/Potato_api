@@ -1,9 +1,9 @@
-import { createSchedule } from "../../api/schedule";
-import { dateToString, getDays } from "../../utils/getDays";
+import { getDays } from "../../utils/getDays";
 import DateBox from "./DateBox";
 import DateController from "./DateController";
 import "./style.css";
-import type { ISchedule } from "../../api/schedule";
+
+import { ScheduleDispatchContext } from "../../context/ScheduleProvider";
 
 import {
   DndContext,
@@ -36,31 +36,8 @@ export default function Calendar() {
   const weeks = ["일", "월", "화", "수", "목", "금", "토"];
   const allDay: Date[] = getDays(nowDate);
 
-  const { allSchedule, editSchedule } = useSchedule(allDay, nowDate);
-
-  function generateId(arr: ISchedule[] | contents[]) {
-    const maxId = arr.reduce((max, obj) => (obj.id > max ? obj.id : max), 0);
-    return maxId;
-  }
-
-  const addNewSchedule = async (date: string, content: string) => {
-    let newSchedule: ISchedule;
-
-    date = dateToString(date);
-
-    const responseMsg = await createSchedule({ date, content });
-
-    if (responseMsg === "fail") return;
-
-    newSchedule = {
-      id: generateId(allSchedule) + 1,
-      start_date: date,
-      end_date: date,
-      schedule: content,
-      is_holiday: false,
-    };
-    return setAllSchedule([...allSchedule, newSchedule]);
-  };
+  const { allSchedule, editSchedule, addNewSchedule, removeSchedule } =
+    useSchedule(allDay, nowDate);
 
   async function handleDragEnd(event: DragEndEvent) {
     const { over, active } = event;
@@ -78,7 +55,8 @@ export default function Calendar() {
       editSchedule(
         parseInt(editId),
         over.id.toString(),
-        toEditSchedule.schedule
+        toEditSchedule.schedule,
+        toEditSchedule.is_holiday
       );
     }
   }
@@ -116,32 +94,39 @@ export default function Calendar() {
         </div>
       </header>
       <div className={"dateContainer"}>
-        <DndContext
-          collisionDetection={pointerWithin}
-          onDragEnd={handleDragEnd}
-          sensors={sensors}
+        <ScheduleDispatchContext.Provider
+          value={{
+            edit: editSchedule,
+            add: addNewSchedule,
+            delete: removeSchedule,
+          }}
         >
-          {allSchedule ? (
-            allDay.map((day, idx) => (
-              <DateBox
-                key={idx}
-                day={day}
-                nowDate={nowDate}
-                schedule={allSchedule.filter((s) => {
-                  const scheduleDate = new Date(Date.parse(s.start_date));
-                  return (
-                    day.getFullYear() === scheduleDate.getFullYear() &&
-                    day.getMonth() === scheduleDate.getMonth() &&
-                    day.getDate() === scheduleDate.getDate()
-                  );
-                })}
-                scheduleSetter={{ addNewSchedule, editSchedule }}
-              />
-            ))
-          ) : (
-            <p>일정을 불러오고 있습니다.</p>
-          )}
-        </DndContext>
+          <DndContext
+            collisionDetection={pointerWithin}
+            onDragEnd={handleDragEnd}
+            sensors={sensors}
+          >
+            {allSchedule ? (
+              allDay.map((day, idx) => (
+                <DateBox
+                  key={idx}
+                  day={day}
+                  nowDate={nowDate}
+                  schedule={allSchedule.filter((s) => {
+                    const scheduleDate = new Date(Date.parse(s.start_date));
+                    return (
+                      day.getFullYear() === scheduleDate.getFullYear() &&
+                      day.getMonth() === scheduleDate.getMonth() &&
+                      day.getDate() === scheduleDate.getDate()
+                    );
+                  })}
+                />
+              ))
+            ) : (
+              <p>일정을 불러오고 있습니다.</p>
+            )}
+          </DndContext>
+        </ScheduleDispatchContext.Provider>
       </div>
     </section>
   );

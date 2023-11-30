@@ -1,25 +1,20 @@
 import { ISchedule } from "../../../api/schedule";
 import { useDraggable } from "@dnd-kit/core";
 import { useShowModal } from "./useShowModal";
-import type { scheduleSetter } from "../DateBox";
+import { useScheduleDispatchContext } from "../../../context/ScheduleProvider";
+import { useCurrentUserContext } from "../../../context/CurrentUserContextProvider";
 
 interface Props {
   day: string;
   schedule: ISchedule[];
-  scheduleSetter: scheduleSetter;
 }
 
-export default function Schedule({ schedule, day, scheduleSetter }: Props) {
+export default function Schedule({ schedule, day }: Props) {
   return (
     <ul className="schedule">
       {schedule.map((s) => (
         <li key={s.id}>
-          <ScheduleItem
-            content={s.schedule}
-            date={day}
-            id={`${s.id}+${day}`}
-            scheduleSetter={scheduleSetter}
-          />
+          <ScheduleItem content={s.schedule} date={day} id={`${s.id}+${day}`} />
         </li>
       ))}
     </ul>
@@ -28,15 +23,15 @@ export default function Schedule({ schedule, day, scheduleSetter }: Props) {
 
 function ScheduleItem({
   id,
-  scheduleSetter,
   date,
   content,
 }: {
   id: string;
   date: Date;
-  scheduleSetter?: scheduleSetter;
   content: string;
 }) {
+  const userInfo = useCurrentUserContext();
+  const dispatch = useScheduleDispatchContext();
   const { onShow } = useShowModal();
   const { setNodeRef, listeners, transform } = useDraggable({
     id: id,
@@ -47,8 +42,10 @@ function ScheduleItem({
       props: {
         content,
         date,
-        scheduleSetter,
         id: parseInt(id.split("+")[0]),
+        scheduleSetter: userInfo?.is_staff
+          ? { edit: dispatch?.edit, delete: dispatch?.delete }
+          : undefined,
       },
     });
   };
@@ -58,15 +55,23 @@ function ScheduleItem({
     : undefined;
 
   return (
-    <button
-      className="schedule-modal-btn"
-      ref={setNodeRef}
-      {...listeners}
-      style={style}
-      onClick={handleShow}
-      // document.body.style.overflow = "hidden";
-    >
-      <p className="schedule-content"> {content}</p>
-    </button>
+    <>
+      {userInfo?.is_staff ? (
+        <button
+          className="schedule-modal-btn"
+          ref={setNodeRef}
+          {...listeners}
+          style={style}
+          onClick={handleShow}
+          // document.body.style.overflow = "hidden";
+        >
+          <p className="schedule-content"> {content}</p>
+        </button>
+      ) : (
+        <button className="schedule-modal-btn" onClick={handleShow}>
+          <p className="schedule-content">{content}</p>
+        </button>
+      )}
+    </>
   );
 }
