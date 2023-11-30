@@ -31,10 +31,8 @@ class TodoListCreateSchema(Schema):
 #타이머스키마
 class TimerStart(Schema):
     date : date
-    user_id: int
 
 class TimerPause(Schema):
-    user_id: int
     date : date
     study: int
     
