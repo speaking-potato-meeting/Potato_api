@@ -348,223 +348,221 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
   };
 
   return (
-    <>
-      <form className="form" onSubmit={(e) => handleSubmit(e)}>
-        <h1 className="signForm-title">회원가입</h1>
+    <form className="form" onSubmit={(e) => handleSubmit(e)}>
+      <h1 className="signForm-title">회원가입</h1>
 
-        <fieldset className="form-fieldset">
-          <legend>
-            <span className="sr-only">계정 정보</span>
-          </legend>
-          <div className={`signForm-field${errors.username ? " invalid" : ""}`}>
-            <label htmlFor="field_id" className="field-label">
-              <span className="field-label-txt">아이디</span>
-              <span className="field_error">{errors.username}</span>
-            </label>
-            <div className="input">
-              <input
-                id="field_id"
-                type="text"
-                name="username"
-                onBlur={handleBlur}
-              />
-            </div>
+      <fieldset className="form-fieldset">
+        <legend>
+          <span className="sr-only">계정 정보</span>
+        </legend>
+        <div className={`signForm-field${errors.username ? " invalid" : ""}`}>
+          <label htmlFor="field_id" className="field-label">
+            <span className="field-label-txt">아이디</span>
+            <span className="field_error">{errors.username}</span>
+          </label>
+          <div className="input">
+            <input
+              id="field_id"
+              type="text"
+              name="username"
+              onBlur={handleBlur}
+            />
           </div>
+        </div>
 
-          <div
-            className={`signForm-field${
-              passwordInput.password.error ? " invalid" : ""
-            }`}
-          >
-            <label htmlFor="field_pw" className="field-label">
-              <span className="field-label-txt">비밀번호</span>
-              <span className="field_error">
-                {passwordInput.password.error}
-              </span>
-            </label>
-            <div className="input">
-              <input
-                id="field_pw"
-                type="password"
-                name="password"
-                onBlur={handleBlur}
-                value={passwordInput.password.value}
-                onChange={handleConfirmFormChange}
-              />
-            </div>
+        <div
+          className={`signForm-field${
+            passwordInput.password.error ? " invalid" : ""
+          }`}
+        >
+          <label htmlFor="field_pw" className="field-label">
+            <span className="field-label-txt">비밀번호</span>
+            <span className="field_error">{passwordInput.password.error}</span>
+          </label>
+          <div className="input">
+            <input
+              id="field_pw"
+              type="password"
+              name="password"
+              onBlur={handleBlur}
+              value={passwordInput.password.value}
+              onChange={handleConfirmFormChange}
+            />
           </div>
+        </div>
 
-          <div
-            className={`signForm-field${
-              passwordInput.password.value
-                ? passwordInput.password.value ===
-                  passwordInput.password_confirm.value
-                  ? " valid"
-                  : " invalid"
-                : passwordInput.password.value ===
-                  passwordInput.password_confirm.value
-                ? ""
+        <div
+          className={`signForm-field${
+            passwordInput.password.value
+              ? passwordInput.password.value ===
+                passwordInput.password_confirm.value
+                ? " valid"
                 : " invalid"
-            }`}
+              : passwordInput.password.value ===
+                passwordInput.password_confirm.value
+              ? ""
+              : " invalid"
+          }`}
+        >
+          <label htmlFor="field_confirm" className="field-label">
+            <span className="field-label-txt"> 비밀번호 확인</span>
+            <span className="field_error">
+              {passwordInput.password_confirm.error}
+            </span>
+          </label>
+          <div className="input">
+            <input
+              id="field_confirm"
+              type="password"
+              name="password_confirm"
+              value={passwordInput.password_confirm.value}
+              onChange={handleConfirmFormChange}
+            />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset className="form-fieldset">
+        <legend>
+          <span className="sr-only">인적 사항</span>
+        </legend>
+        <div className={`signForm-field${errors.private ? " invalid" : ""}`}>
+          <label
+            htmlFor={`field_${focusPrivateLabel.current}`}
+            className="field-label"
           >
-            <label htmlFor="field_confirm" className="field-label">
-              <span className="field-label-txt"> 비밀번호 확인</span>
-              <span className="field_error">
-                {passwordInput.password_confirm.error}
-              </span>
-            </label>
-            <div className="input">
-              <input
-                id="field_confirm"
-                type="password"
-                name="password_confirm"
-                value={passwordInput.password_confirm.value}
-                onChange={handleConfirmFormChange}
-              />
+            <span className="field-label-txt">인적사항</span>
+            <span className="field_error">{errors.private}</span>
+          </label>
+          <div
+            className="l_row"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(12, 1fr)",
+              gap: "10px",
+            }}
+          >
+            <div style={{ gridColumn: "auto / span 4" }} className="l_col_4">
+              <div className="input">
+                <input
+                  type="text"
+                  placeholder="이름"
+                  id="field_first_name"
+                  name="first_name"
+                  onBlur={handleBlur}
+                />
+              </div>
             </div>
-          </div>
-        </fieldset>
-
-        <fieldset className="form-fieldset">
-          <legend>
-            <span className="sr-only">인적 사항</span>
-          </legend>
-          <div className={`signForm-field${errors.private ? " invalid" : ""}`}>
-            <label
-              htmlFor={`field_${focusPrivateLabel.current}`}
-              className="field-label"
-            >
-              <span className="field-label-txt">인적사항</span>
-              <span className="field_error">{errors.private}</span>
-            </label>
-            <div
-              className="l_row"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(12, 1fr)",
-                gap: "10px",
-              }}
-            >
-              <div style={{ gridColumn: "auto / span 4" }} className="l_col_4">
-                <div className="input">
-                  <input
-                    type="text"
-                    placeholder="이름"
-                    id="field_first_name"
-                    name="first_name"
-                    onBlur={handleBlur}
-                  />
-                </div>
+            <div style={{ gridColumn: "auto / span 4" }} className="l_col_4">
+              <div className="input">
+                <input
+                  maxLength={10}
+                  type="text"
+                  placeholder="생일(8자리)"
+                  id="field_birth"
+                  name="birth"
+                  onBlur={handleBlur}
+                />
               </div>
-              <div style={{ gridColumn: "auto / span 4" }} className="l_col_4">
-                <div className="input">
-                  <input
-                    maxLength={10}
-                    type="text"
-                    placeholder="생일(8자리)"
-                    id="field_birth"
-                    name="birth"
-                    onBlur={handleBlur}
-                  />
-                </div>
-              </div>
-              <div style={{ gridColumn: "auto / span 4" }} className="l_col_4">
-                <div className="input">
-                  <input
-                    type="text"
-                    placeholder="지역"
-                    id="field_address"
-                    name="address"
-                    onBlur={handleBlur}
-                  />
-                </div>
+            </div>
+            <div style={{ gridColumn: "auto / span 4" }} className="l_col_4">
+              <div className="input">
+                <input
+                  type="text"
+                  placeholder="지역"
+                  id="field_address"
+                  name="address"
+                  onBlur={handleBlur}
+                />
               </div>
             </div>
           </div>
+        </div>
 
-          <div className={`signForm-field${errors.phone ? " invalid" : ""}`}>
-            <label htmlFor="field_phone" className="field-label">
-              <span className="field-label-txt">전화번호</span>
-              <span className="field_error">{errors.phone}</span>
-            </label>
-            <div className="input">
-              <input
-                id="field_phone"
-                type="text"
-                name="phone"
-                onBlur={handleBlur}
-                maxLength={14}
-              />
-            </div>
+        <div className={`signForm-field${errors.phone ? " invalid" : ""}`}>
+          <label htmlFor="field_phone" className="field-label">
+            <span className="field-label-txt">전화번호</span>
+            <span className="field_error">{errors.phone}</span>
+          </label>
+          <div className="input">
+            <input
+              id="field_phone"
+              type="text"
+              name="phone"
+              onBlur={handleBlur}
+              maxLength={14}
+            />
           </div>
+        </div>
 
-          <div className="signForm-field">
-            <label htmlFor="field_MBTI" className="field-label">
-              나의 mbti는?
-            </label>
-            <div className="input">
-              <select id="field_MBTI" defaultValue={"MBTI"} name="MBTI">
-                {mbtiList.map((m, idx) => (
-                  <option key={idx} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <div className="signForm-field">
+          <label htmlFor="field_MBTI" className="field-label">
+            나의 mbti는?
+          </label>
+          <div className="input">
+            <select id="field_MBTI" defaultValue={"MBTI"} name="MBTI">
+              {mbtiList.map((m, idx) => (
+                <option key={idx} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
           </div>
-        </fieldset>
+        </div>
+      </fieldset>
 
-        <fieldset className="form-fieldset">
-          <legend>
-            <span className="sr-only">기타 사항</span>
-          </legend>
-          <div className={`signForm-field${errors.position ? " invalid" : ""}`}>
-            <label htmlFor="field_position" className="field-label">
-              <span className="field-label-txt">재직/희망 직무</span>
-              <span className="field_error">{errors.position}</span>
-            </label>
-            <div className="input">
-              <input
-                id="field_position"
-                type="text"
-                name="position"
-                onBlur={handleBlur}
-              />
-            </div>
+      <fieldset className="form-fieldset">
+        <legend>
+          <span className="sr-only">기타 사항</span>
+        </legend>
+        <div className={`signForm-field${errors.position ? " invalid" : ""}`}>
+          <label htmlFor="field_position" className="field-label">
+            <span className="field-label-txt">재직/희망 직무</span>
+            <span className="field_error">{errors.position}</span>
+          </label>
+          <div className="input">
+            <input
+              id="field_position"
+              type="text"
+              name="position"
+              onBlur={handleBlur}
+            />
           </div>
-          <div className={`signForm-field${errors.github ? " invalid" : ""}`}>
-            <label htmlFor="field_github" className="field-label">
-              <span className="field-label-txt">github주소</span>
-              <span className="field_error">{errors.github}</span>
-            </label>
-            <div className="input">
-              <input
-                id="field_github"
-                type="text"
-                name="github"
-                onBlur={handleBlur}
-              />
-            </div>
+        </div>
+        <div className={`signForm-field${errors.github ? " invalid" : ""}`}>
+          <label htmlFor="field_github" className="field-label">
+            <span className="field-label-txt">github주소</span>
+            <span className="field_error">{errors.github}</span>
+          </label>
+          <div className="input">
+            <input
+              id="field_github"
+              type="text"
+              name="github"
+              onBlur={handleBlur}
+            />
           </div>
-          <div className={`signForm-field${errors.blog ? " invalid" : ""}`}>
-            <label htmlFor="field_blog" className="field-label optional">
-              <span className="field-label-txt">
-                블로그주소<span>(선택)</span>
-              </span>
-              <span className="field_error">{errors.blog}</span>
-            </label>
-            <div className="input">
-              <input
-                id="field_blog"
-                type="text"
-                name="blog"
-                onBlur={handleBlur}
-              />
-            </div>
+        </div>
+        <div className={`signForm-field${errors.blog ? " invalid" : ""}`}>
+          <label htmlFor="field_blog" className="field-label optional">
+            <span className="field-label-txt">
+              블로그주소<span>(선택)</span>
+            </span>
+            <span className="field_error">{errors.blog}</span>
+          </label>
+          <div className="input">
+            <input
+              id="field_blog"
+              type="text"
+              name="blog"
+              onBlur={handleBlur}
+            />
           </div>
-        </fieldset>
-        <button type="submit">다음으로</button>
-      </form>
-    </>
+        </div>
+      </fieldset>
+      <button type="submit" className="formSubmitButton">
+        다음으로
+      </button>
+    </form>
   );
 }
