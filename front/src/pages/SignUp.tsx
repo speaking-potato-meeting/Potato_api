@@ -2,18 +2,18 @@ import { useState, useRef } from "react";
 import { RuleForm } from "../components/SignUp/RuleForm";
 import SignUpForm from "../components/SignUp/SignUpForm";
 
-interface SignUpData {
-  email: string;
-  password: string;
-  username: string;
-  birth: string;
-  address: string;
-  phone: string;
-  MBTI: string;
-  position: string;
-  github: string;
-  blog: string;
-}
+// interface SignUpData {
+//   email: string;
+//   password: string;
+//   username: string;
+//   birth: string;
+//   address: string;
+//   phone: string;
+//   MBTI: string;
+//   position: string;
+//   github: string;
+//   blog: string;
+// }
 
 const SignUp = () => {
   const ruleFormRef = useRef<HTMLLIElement>(null);
