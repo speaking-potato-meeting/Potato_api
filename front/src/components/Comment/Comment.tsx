@@ -1,11 +1,9 @@
-import "../components/Comment/Comment.css";
-// import CommentForm from "../components/Comment/CommentForm";
-// import CommentArea from "../components/Comment/CommentArea";
+import "./Comment.css";
 import { useState, useEffect, useRef, FormEvent } from "react";
-import { CommentResponseType, CommentType, CommentProps } from "../types";
+import { CommentResponseType, CommentType, CommentProps } from "../../types";
 import axios from "axios";
-import { useCurrentUserContext } from "../context/CurrentUserContextProvider";
-import { BASE_URL } from "../api/signup";
+import { useCurrentUserContext } from "../../context/CurrentUserContextProvider";
+import { BASE_URL } from "../../api/signup";
 
 // 한국 시간으로 포매팅된 오늘 날짜
 const today = new Date();

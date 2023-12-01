@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Comment from "../../Comment";
+import Comment from "../../Comment/Comment";
 
 import { useModalContext } from "../../../context/ModalProvider";
 import { useShowModal } from "./useShowModal";

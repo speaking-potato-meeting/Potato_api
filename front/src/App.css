@@ -366,3 +366,7 @@ input[type="checkbox"] {
   box-sizing: border-box;
   font-size: 1.4rem;
 }
+
+.today {
+  margin: 0 9rem;
+}
