@@ -27,7 +27,7 @@ function ScheduleItem({
   content,
 }: {
   id: string;
-  date: Date;
+  date: string;
   content: string;
 }) {
   const userInfo = useCurrentUserContext();
@@ -46,6 +46,7 @@ function ScheduleItem({
         scheduleSetter: userInfo?.is_staff
           ? { edit: dispatch?.edit, delete: dispatch?.delete }
           : undefined,
+        is_holiday: false
       },
     });
   };

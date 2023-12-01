@@ -1,9 +1,8 @@
 import type { ISchedule } from "../../api/schedule";
 import useSchedule from "../../hooks/useSchedule";
-import { useState } from "react";
 
 export function AdminSchedule() {
-  const [today, setToday] = useState(new Date());
+  const today = new Date();
 
   // 이번 주의 일요일을 계산
   const sunday = new Date(today);

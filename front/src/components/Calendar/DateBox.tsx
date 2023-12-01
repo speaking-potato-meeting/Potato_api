@@ -1,7 +1,6 @@
 import Schedule from "./Schedule/Schedule";
 import { ISchedule } from "../../api/schedule";
 
-import { useState } from 'react';
 import { useDroppable } from "@dnd-kit/core";
 import { useShowModal } from "./Schedule/useShowModal";
 import { dateToString } from "../../utils/getDays";
