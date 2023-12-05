@@ -37,7 +37,7 @@ SECRET_KEY = "django-insecure-1s!6h%2)j@94^0jbx9xrc9=lxryp)ivt3*&n$vwi3xb^zo3#nv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [".ap-northeast-2.compute.amazonaws.com"]
 
 AUTH_USER_MODEL = "potato.User"
 
