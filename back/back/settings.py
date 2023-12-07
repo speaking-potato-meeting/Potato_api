@@ -26,7 +26,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "potato",  # DB name
-        "USER": "root",  # DB account
+        "USER": "suhong",  # DB account
         "PASSWORD": "Rokmc1218!",  # DB account's password
         "HOST": "localhost",  # DB address(IP)
         "PORT": "3306",  # DB port(normally 3306)
