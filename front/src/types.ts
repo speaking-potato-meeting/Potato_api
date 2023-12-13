@@ -26,7 +26,7 @@ export interface CommentType {
 export interface UserInfo {
   user_id: number; // 마이페이지에서 보여줄 때 필요함
   username: string; // 댓글 띄워줄 때 필요함
-  profile_image: string
+  profile_image: string;
 }
 
 export interface timerType {
@@ -49,6 +49,7 @@ export type RuleFormData = {
 };
 
 export interface User {
+  [key: string]: unknown;
   id: number;
   username: string;
   first_name: string;

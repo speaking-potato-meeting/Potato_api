@@ -45,7 +45,7 @@ export default function Calendar() {
     if (over) {
       // 옮기고자 하는 날짜 정보
       const { id } = active as { id: string };
-      const [editId, editDate] = id.split("+");
+      const [editId, ,] = id.split("+");
       const toEditSchedule = allSchedule!.find(
         (s) => s.id === parseInt(editId)
       );

@@ -28,10 +28,9 @@ export default function CurrentUserContextProvider({
     return <>문제가 발생했습니다. {currentUserQuery.error}</>;
   }
 
-  if (currentUserQuery.isSuccess)
-    return (
-      <CurrentUserContext.Provider value={currentUserQuery.data}>
-        {children}
-      </CurrentUserContext.Provider>
-    );
+  return (
+    <CurrentUserContext.Provider value={currentUserQuery.data ?? null}>
+      {children}
+    </CurrentUserContext.Provider>
+  );
 }

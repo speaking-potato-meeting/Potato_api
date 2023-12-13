@@ -7,7 +7,7 @@ interface RootProps {
   isAdminPage?: boolean;
 }
 
-const Root = ({ children, isAdminPage }: RootProps) => {
+const Root = ({ children }: RootProps) => {
   const navigate = useNavigate();
 
   /* 로그인이 필요한 페이지는 '수시로' 로그인이 되어있는지 확인이 필요합니다. */

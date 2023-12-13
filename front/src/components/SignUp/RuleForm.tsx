@@ -58,12 +58,13 @@ export function RuleForm({ onClick, signUpData }: formProps) {
     const feeMap = getMap("fee");
     const ruleMap = getMap("rule");
 
-    feeMap.forEach((v, k) => {
-      v.parentElement!.classList.remove("invalid");
-    });
-    ruleMap.forEach((v, k) => {
-      v.parentElement!.classList.remove("invalid");
-    });
+    for (let input of feeMap.values()) {
+      input.parentElement!.classList.remove("invalid");
+    }
+
+    for (let input of ruleMap.values()) {
+      input.parentElement!.classList.remove("invalid");
+    }
 
     setValidateMode(false);
     setInputFields([...inputFields, newField]);

@@ -56,7 +56,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
 
   const onValidate = (
     word: string,
-    value?: string | FormDataEntryValue
+    value: string | FormDataEntryValue
   ): string | void => {
     (!!value && (value as string).trim()) ?? "";
     switch (word) {
@@ -130,7 +130,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
           });
 
           // 사용자 입력값은 모두 숫자만 받는다.(나머지는 ""처리)
-          let val = value.replace(/\D/g, "");
+          let val = (value as string).replace(/\D/g, "");
           let leng = val.length;
 
           // 출력할 결과 변수
@@ -227,7 +227,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
         const RegExp =
           /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
 
-        if (!RegExp.test(value)) {
+        if (!RegExp.test(value as string)) {
           message = "올바른 주소를 입력해주세요.";
         }
         {
@@ -248,7 +248,7 @@ export default function SignUpForm({ onClick, onSignUp }: Prop) {
         const RegExp =
           /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
 
-        if (!RegExp.test(value)) {
+        if (!RegExp.test(value as string)) {
           message = "올바른 주소를 입력해주세요.";
         }
         setErrors((prev) => {

@@ -12,10 +12,18 @@ import Root from "./components/Layout/Root";
 import Account from "./components/Layout/Account";
 import GeneralLayout from "./components/Layout/GeneralLayout";
 import { Admin } from "./pages/Admin";
-
 // withAuthorization: 로그인이 필요한가?
 
-const routerData = [
+interface IRouterElement {
+  path: string;
+  element: React.ReactNode;
+  children?: IRouterElement[];
+  withAuthorization?: boolean;
+  label?: string;
+  isAdminPage?: boolean;
+}
+
+const routerData: IRouterElement[] = [
   {
     path: "/",
     element: <GeneralLayout />,
@@ -85,7 +93,7 @@ const routerData = [
   },
 ];
 
-function checkAuthorize(routerData) {
+function checkAuthorize(routerData: IRouterElement[]) {
   const newRouter = routerData.map((router) => {
     if (router.children) {
       const newChild = router.children.map((r) => {
@@ -124,8 +132,8 @@ export const ReactRouterObject: RemixRouter = createBrowserRouter(
 
 export type NavbarElement = {
   path: string;
-  label: string;
-  withAuth: boolean;
+  label?: string;
+  withAuth?: boolean;
 };
 
 export const NavbarContent: NavbarElement[] = routerData.reduce(
@@ -144,8 +152,10 @@ export const NavbarContent: NavbarElement[] = routerData.reduce(
       });
       return prev.concat(childArr);
     }
+
+    return prev;
   },
-  []
+  [] as NavbarElement[]
 );
 
 // export const NavbarContent: NavbarElement[] = routerData.map((router) => {

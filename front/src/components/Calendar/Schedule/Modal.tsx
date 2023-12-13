@@ -3,6 +3,7 @@ import { useShowModal } from "./useShowModal";
 import "./schedule.css";
 import ModalContentWithComments from "./ModalContentWithComments";
 import { scheduleSetter } from "../../../hooks/useSchedule";
+import { ModalWithCommentsProps } from "./ModalContentWithComments";
 
 export interface ModalProps {
   id?: number;
@@ -35,7 +36,7 @@ export default function Modal(props: ModalProps) {
   };
 
   const ModalContent = () => {
-    return <ModalContentWithComments {...props} />;
+    return <ModalContentWithComments {...(props as ModalWithCommentsProps)} />;
   };
 
   return (

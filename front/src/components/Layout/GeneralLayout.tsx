@@ -22,12 +22,10 @@ export default function GeneralLayout() {
   };
 
   return (
-    <>
-      <CurrentUserContextProvider>
-        <Navbar NavbarContent={navbarLists()} />
-        <Outlet />
-        {(userQuery.isSuccess && userQuery.data) ? <Tictoc/> : <></>}
-      </CurrentUserContextProvider>
-    </>
+    <CurrentUserContextProvider>
+      <Navbar NavbarContent={navbarLists()} />
+      <Outlet />
+      {userQuery.isSuccess && userQuery.data ? <Tictoc /> : <></>}
+    </CurrentUserContextProvider>
   );
 }

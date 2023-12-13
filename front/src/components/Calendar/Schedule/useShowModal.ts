@@ -11,7 +11,7 @@ export function useShowModal() {
   const onClose = (args: "ModalClose" | null) => {
     if (args === "ModalClose")
       return setModalState((prev) => {
-        return { ...prev, close: args };
+        return { ...prev, close: args } as state;
       });
 
     return setModalState(null);
