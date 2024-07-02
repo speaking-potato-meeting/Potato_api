@@ -39,6 +39,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     ".ap-northeast-2.compute.amazonaws.com",
+    ".43.203.239.36"
     ".talking-potato.shop",
 ]
 
